@@ -42,3 +42,25 @@ const pi = (start, end, funct) => {
   return product
 }
 
+//time derivative(s)
+const velocity = (force, time) => {
+  return force / time
+}
+
+export {
+  add2Vectors,
+  vectorMultiply,
+  addNumVectors,
+  sigma,
+  pi, 
+  velocity
+}
+
+//Verlet Integration, don't worry about this for now (I gotta take Calc BC now xD)
+/*
+last_acceleration = acceleration
+position += velocity * time_step + ( 0.5 * last_acceleration * time_step^2 )
+new_acceleration = force / mass 
+avg_acceleration = ( last_acceleration + new_acceleration ) / 2
+velocity += avg_acceleration * time_step
+*/
