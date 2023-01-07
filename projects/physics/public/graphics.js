@@ -2,6 +2,15 @@ let ctx;
 let width;
 let height;
 
+let onclick = (x, y) => {};
+let onkeydown = (k) => {};
+
+canvas.onclick = (e) => onclick(e.offsetX, e.offsetY);
+document.onkeydown = (e) => onkeydown(e.key);
+
+const registerOnclick = (fn) => onclick = fn;
+const registerOnKeyDown = (fn) => onkeydown = fn;
+
 const setCanvas = (canvas) => {
   ctx = canvas.getContext('2d');
   width = canvas.width;
@@ -117,4 +126,6 @@ export {
   height,
   now,
   animate,
+  registerOnclick,
+  registerOnKeyDown
 };
