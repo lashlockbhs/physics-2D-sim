@@ -1,51 +1,70 @@
-//vector manipulation
-const vector = (angle, magnitude) => {
-  return ({ angle: angle * Math.PI / 180, magnitude });
+//vector manipulation, stored in radians
+const vector = (degrees, magnitude) => {
+  return ({ angle: degrees * Math.PI / 180, magnitude });
 };
 
-const add2Vectors = (a) => {
-  const x1 = Math.cos(a[0].angle) * a[0].magnitude;
-  const x2 = Math.cos(a[1].angle) * a[1].magnitude;
-  const y1 = Math.sin(a[0].angle) * a[0].magnitude;
-  const y2 = Math.sin(a[1].angle) * a[1].magnitude;
+const add2Vectors = (v1, v2) => {
+  const x1 = Math.cos(v1.angle) * v1.magnitude;
+  const x2 = Math.cos(v2.angle) * v2.magnitude;
+  const y1 = Math.sin(v1.angle) * v1.magnitude;
+  const y2 = Math.sin(v2.angle) * v2.magnitude;
   const angle = Math.atan2(y1 + y2, x1 + x2);
-  const mag = Math.sqrt((x1 + x2) ** 2 + (y1 + y2) ** 2);
+  const mag = Math.hypot((x1 - x2), (y1 - y2));
   return ({ angle, magnitude: mag });
 };
 
-const vectorMultiply = (o, n) => {
+const vectorMultiply = (vector, n) => {
    if (n >= 0) {
-    return ({ angle: o.angle, magnitude: o.magnitude * n });
+    return ({ angle: vector.angle, magnitude: vector.magnitude * n });
    } else {
-    return ({ angle: o.angle + Math.PI, magnitude: o.magnitude * -n });
+    return ({ angle: (vector.angle + Math.PI) % (2 * Math.PI), magnitude: vector.magnitude * -n });
   };
 };
 
-const addNumVectors = (a) => {
-  return a.reduce((acc, x) => add2Vectors([acc, x]), vector(0, 0));
+const addNumVectors = (vectors) => {
+  return vectors.reduce((acc, x) => add2Vectors(acc, x), vector(0, 0));
 };
 
 //general math functions
 const sigma = (start, end, funct) => {
-  const sum = 0;
-  for (let i = start; i <= end; i++) {
-    sum += funct(i);
-  };
-  return sum;
+  return overRange(start, end, (acc, n) => acc + funct(n), 0);
 };
 
 const pi = (start, end, funct) => {
-  let product = 1;
-  for (let i = start; i <= end; i++) {
-    product *= funct(i);
-  };
-  return product;
+  return overRange(start, end, (acc, n) => acc * funct(n), 1);
+};
+
+const degToRad = (radAngle) => {
+  return radAngle * Math.PI / 180;
+};
+
+const radToDeg = (degAngle) => {
+  return degAngle * 180 / Math.PI;
+};
+
+const mean = (array) => {
+  return array.reduce((a,e) => a+e, 0) / array.length;
+};
+
+const geoMean = (array) => {
+  return pi(0, array.length - 1, i => array[i]) ** (1 / (array.length - 1));
+};
+
+//these next two take 2 objects with x and y
+const twoPointAngle = (p1, p2) => {
+  return Math.atan2(p2.y - p1.y, p2.x - p1.x);
+};
+
+const twoPointDist = (p1, p2) => {
+  return Math.hypot(Math.abs(p1.x - p2.x), Math.abs(p1.y - p2.y));
 };
 
 //time derivative(s)
-const velocity = (force, time) => {
-  return force / time;
+const getAcceleration = (force, mass, appliedTime) => {
+  return force/mass*appliedTime;
 };
+
+const getVelocity = (force, mass, appliedTime, fps) => getAcceleration(force, mass, appliedTime) * (1/fps);
 
 export {
   add2Vectors,
@@ -53,7 +72,14 @@ export {
   addNumVectors,
   sigma,
   pi, 
-  velocity
+  degToRad,
+  radToDeg,
+  mean,
+  geoMean,
+  twoPointAngle,
+  twoPointDist,
+  getAcceleration,
+  getVelocity
 };
 
 //Verlet Integration, don't worry about this for now (I gotta take Calc BC now xD)
