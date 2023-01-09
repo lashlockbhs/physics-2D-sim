@@ -37,7 +37,7 @@ const overRange = (start, end, funct, startValue) => {
 const sigma = (start, end, funct) => {
   let sum = 0;
   for (let i = start; i <= end; i++) {
-    sum += funct(n);
+    sum += funct(i);
   };
   return sum;
 };
@@ -45,7 +45,7 @@ const sigma = (start, end, funct) => {
 const pi = (start, end, funct) => {
   let product = 1;
   for (let i = start; i <= end; i++) {
-    product *= funct(n);
+    product *= funct(i);
   };
   return product;
 };
