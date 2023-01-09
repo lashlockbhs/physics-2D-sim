@@ -71,7 +71,7 @@ const twoPointAngle = (p1, p2) => {
   return Math.atan2(p2.y - p1.y, p2.x - p1.x);
 };
 
-const twoPointDist = (p1, p2) => {
+const distance = (p1, p2) => {
   return Math.hypot(Math.abs(p1.x - p2.x), Math.abs(p1.y - p2.y));
 };
 
