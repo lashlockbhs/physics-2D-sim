@@ -93,7 +93,7 @@ export {
   mean,
   geoMean,
   twoPointAngle,
-  twoPointDist,
+  distance,
   getAcceleration,
   getVelocity
 };
