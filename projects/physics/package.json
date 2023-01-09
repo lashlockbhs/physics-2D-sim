@@ -2,5 +2,8 @@
   "type": "module",
   "dependencies": {
     "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "prettier": "^2.8.2"
   }
 }
