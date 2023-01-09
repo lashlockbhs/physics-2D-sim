@@ -5,13 +5,13 @@ let height;
 let onclick = (x, y) => {};
 let onkeydown = (k) => {};
 
-canvas.onclick = (e) => onclick(e.offsetX, e.offsetY);
 document.onkeydown = (e) => onkeydown(e.key);
 
 const registerOnclick = (fn) => onclick = fn;
 const registerOnKeyDown = (fn) => onkeydown = fn;
 
 const setCanvas = (canvas) => {
+  canvas.onclick = (e) => onclick(e.offsetX, e.offsetY);
   ctx = canvas.getContext('2d');
   width = canvas.width;
   height = canvas.height;

@@ -95,7 +95,8 @@ export {
   twoPointAngle,
   distance,
   getAcceleration,
-  getVelocity
+  getVelocity,
+  vector,
 };
 
 //Verlet Integration, don't worry about this for now (I gotta take Calc BC now xD)

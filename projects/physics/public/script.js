@@ -1,12 +1,8 @@
 import { setCanvas, drawFilledCircle, clear, width, height, animate, now, registerOnKeyDown, registerOnclick, drawFilledRect, drawLine } from './graphics.js';
-import {add2Vectors, vectorMultiply, addNumVectors, sigma, pi, degToRad, radToDeg, mean, geoMean, twoPointAngle, distance, getAcceleration, getVelocity} from './math.js';
+import { add2Vectors, vectorMultiply, addNumVectors, sigma, pi, degToRad, radToDeg, mean, geoMean, twoPointAngle, distance, getAcceleration, getVelocity, vector } from './math.js';
 
 const canvas = document.getElementById('screen');
 setCanvas(canvas)
-
-
-
-
 
 //returns points that are 1 or less pixels away from eachother
 const closePoints = (ar1, ar2) => ar1.filter(e => ar2.find(e2 => distance(e, e2) <= 1) != undefined ? true : false)
@@ -129,6 +125,7 @@ registerOnKeyDown(() => {
     animateStart = objArray.length >= 3 ? true : false
   }
 })
+console.log("e")
 
 let next = 0;
 let countFrame = 0;
@@ -139,7 +136,6 @@ const drawFrame = (time) => {
       drawFilledCircle(shape.centerX, shape.centerY, 2.5, "red")
       shape.drawShape();
       shape.rotation = countFrame;
-
       next += 1;
       countFrame++;
     }
