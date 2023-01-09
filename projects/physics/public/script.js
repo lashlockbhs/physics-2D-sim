@@ -5,13 +5,9 @@ setCanvas(canvas)
 
 
 
-const detectSelfIntersection = (shape) => shape.getBoundOfObject//not done
 
 //returns points that are 1 or less pixels away from eachother
 const closePoints = (ar1, ar2) => ar1.filter(e => ar2.find(e2 => distance(e, e2) <= 1) != undefined ? true : false)
-
-const distance = (p1, p2) => Math.hypot(p1.x - p2.x, p1.y - p2.y)//math func
-
 
 //returns an array of objects that have a x, y point of collison and the shapes involved
 const collisions = (shapes) => {
@@ -32,13 +28,6 @@ const collisions = (shapes) => {
 
 
 const getBoundCenter = (arr) => {
-  const sigma = (start, end, funct) => {
-    let sum = 0
-    for (let n = start; n <= end; n++) {
-      sum += funct(n)
-    }
-    return sum
-  }
   const findCentroid = (points) => {
     const pts = points.concat(points[0])
     const area = (sigma(0, pts.length - 2, i => (pts[i].x * pts[i + 1].y) - (pts[i + 1].x * pts[i].y))) / 2
@@ -48,17 +37,6 @@ const getBoundCenter = (arr) => {
   }
   const returner = findCentroid(arr)
   return returner
-
-  /* let xMinMax = {min: arr[0].x, max: arr[0].x}
-   let yMinMax =  {min: arr[0].y, max: arr[0].y}
-   for (const e of arr){
-     if (e.x < xMinMax.min) xMinMax.min = e.x
-     if (e.x > xMinMax.max) xMinMax.max = e.x
-     if (e.y < yMinMax.min) yMinMax.min = e.y
-     if (e.y > yMinMax.max) yMinMax.max = e.y
-   }*/
-
-  //return {x: (xMinMax.min + xMinMax.max)/2 , y: (yMinMax.min + yMinMax.max)/2 }
 }
 //from web
 const rotate = (cx, cy, x, y, angle) => {
@@ -68,39 +46,6 @@ const rotate = (cx, cy, x, y, angle) => {
     nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
     ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
   return [nx, ny];
-}
-
-//vector manipulation
-const vector = (angle, magnitude) => {
-  return ({ angle: angle * Math.PI / 180, magnitude })
-}
-
-const add2Vectors = (a) => {
-  const x1 = Math.cos(a[0].angle) * a[0].magnitude
-  const x2 = Math.cos(a[1].angle) * a[1].magnitude
-  const y1 = Math.sin(a[0].angle) * a[0].magnitude
-  const y2 = Math.sin(a[1].angle) * a[1].magnitude
-  const angle = Math.atan2(y1 + y2, x1 + x2)
-  const mag = Math.sqrt((x1 + x2) ** 2 + (y1 + y2) ** 2)
-  return ({ angle, magnitude: mag })
-}
-
-const vectorMultiply = (o, n) => {
-  if (n >= 0) {
-    return ({ angle: o.angle, magnitude: o.magnitude * n })
-  } else {
-    return ({ angle: o.angle + Math.PI, magnitude: o.magnitude * -n })
-  }
-}
-
-const addNumVectors = (a, mode) => {
-  if (mode === 'degrees') {
-    const r = a.reduce((acc, x) => add2Vectors([acc, x]), vector(0, 0))
-    r.angle = r.angle * 180 / Math.PI
-    return r
-  } else {
-    return a.reduce((acc, x) => add2Vectors([acc, x]), vector(0, 0))
-  }
 }
 
 class Shape {
@@ -151,7 +96,6 @@ class Shape {
     return array
   }
 }
-
 
 const createSides = (array) => {
   const returnArray = []
