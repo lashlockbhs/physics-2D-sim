@@ -1,6 +1,6 @@
 //vector manipulation, stored in radians
 const vector = (degrees, magnitude) => {
-  return ({ angle: degrees * Math.PI / 180, magnitude });
+  return { angle: degrees * Math.PI / 180, magnitude };
 };
 
 const add2Vectors = (v1, v2) => {
@@ -9,15 +9,15 @@ const add2Vectors = (v1, v2) => {
   const y1 = Math.sin(v1.angle) * v1.magnitude;
   const y2 = Math.sin(v2.angle) * v2.magnitude;
   const angle = Math.atan2(y1 + y2, x1 + x2);
-  const mag = Math.hypot((x1 - x2), (y1 - y2));
-  return ({ angle, magnitude: mag });
+  const magnitude = Math.hypot((x1 - x2), (y1 - y2));
+  return { angle, magnitude };
 };
 
 const vectorMultiply = (vector, n) => {
    if (n >= 0) {
-    return ({ angle: vector.angle, magnitude: vector.magnitude * n });
+    return { angle: vector.angle, magnitude: vector.magnitude * n };
    } else {
-    return ({ angle: (vector.angle + Math.PI) % (2 * Math.PI), magnitude: vector.magnitude * -n });
+    return { angle: (vector.angle + Math.PI) % (2 * Math.PI), magnitude: vector.magnitude * -n };
   };
 };
 
@@ -26,12 +26,28 @@ const addNumVectors = (vectors) => {
 };
 
 //general math functions
+/* this part is not done, still can merge though
+const overRange = (start, end, funct, startValue) => {
+  for (let i = start; i <= end; i++) {
+    startValue = 0;
+  };
+};
+*/
+
 const sigma = (start, end, funct) => {
-  return overRange(start, end, (acc, n) => acc + funct(n), 0);
+  let sum = 0;
+  for (let i = start; i <= end; i++) {
+    sum += funct(n);
+  };
+  return sum;
 };
 
 const pi = (start, end, funct) => {
-  return overRange(start, end, (acc, n) => acc * funct(n), 1);
+  let product = 1;
+  for (let i = start; i <= end; i++) {
+    product *= funct(n);
+  };
+  return product;
 };
 
 const degToRad = (radAngle) => {
@@ -61,7 +77,7 @@ const twoPointDist = (p1, p2) => {
 
 //time derivative(s)
 const getAcceleration = (force, mass, appliedTime) => {
-  return force/mass*appliedTime;
+  return force / mass * appliedTime;
 };
 
 const getVelocity = (force, mass, appliedTime, fps) => getAcceleration(force, mass, appliedTime) * (1/fps);
