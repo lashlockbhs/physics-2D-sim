@@ -1,34 +1,35 @@
 import { setCanvas, drawFilledCircle, clear, width, height, animate, now, registerOnKeyDown, registerOnclick, drawFilledRect, drawLine } from './graphics.js';
+const canvas = document.getElementById('screen');
+setCanvas(canvas)
 
 
-//rotational acceleration???
-const detectSelfIntersection = (shape) => shape.getBoundOfObject
 
 
+const detectSelfIntersection = (shape) => shape.getBoundOfObject//not done
 
+//returns points that are 1 or less pixels away from eachother
+const closePoints = (ar1, ar2) => ar1.filter(e => ar2.find(e2 => distance(e, e2) <= 1) != undefined ? true : false)
+
+const distance = (p1, p2) => Math.hypot(p1.x - p2.x, p1.y - p2.y)//math func
+
+
+//returns an array of objects that have a x, y point of collison and the shapes involved
 const collisions = (shapes) => {
-  const collisionPoints = []
-  for (let shapeNum = 0; shapeNum < shapes.length; shapeNum++) {
-    for (let shapeNumCheck = shapeNum; shapeNumCheck < shapes.length; shapeNumCheck++) {
-      if (shapeNum != shapeNumCheck) {
-        const currShapeBounds = shapes[shapeNum].getBoundOfObject()
-        const currShapeBoundsCheck = shapes[shapeNumCheck].getBoundOfObject()
+  const collisions = []
+  for (let s1 = 0; s1 < shapes.length; s1++) {
+    for (let s2 = s1 + 1; s2 < shapes.length; s2++) {
 
-        for (let currShapeBoundsIndex = 0; currShapeBoundsIndex < currShapeBounds.length; currShapeBoundsIndex++) {
-          for (let currShapeBoundsCheckIndex = 0; currShapeBoundsCheckIndex < currShapeBoundsCheck.length; currShapeBoundsCheckIndex++) {
+      const s1Bounds = shapes[s1].getBoundOfObject()
+      const s2Bounds = shapes[s2].getBoundOfObject()
 
-            if (Math.sqrt((currShapeBounds[currShapeBoundsIndex].x - currShapeBoundsCheck[currShapeBoundsCheckIndex].x) ** 2 + (currShapeBounds[currShapeBoundsIndex].y - currShapeBoundsCheck[currShapeBoundsCheckIndex].y) ** 2) <= 1) {
-              //object add
-              collisionPoints.push({ "x": currShapeBounds[currShapeBoundsIndex].x, "y": currShapeBounds[currShapeBoundsIndex].y, "shape1": shapes[shapeNum], "shape2": shapes[shapeNumCheck] })
-            }
-          }
-        }
-      }
+      collisions.push({ "points": closePoints(s1Bounds, s2Bounds), "s1": shapes[s1], "s2": shapes[s2] })
     }
   }
-  //returns an array of objects that have a x, y point of collison and the shapes involoved
-  return collisionPoints;
+  return collisions;
 }
+
+
+
 
 const getBoundCenter = (arr) => {
   const sigma = (start, end, funct) => {
@@ -119,9 +120,9 @@ class Shape {
     let currY = this.startingY;
 
     for (let i = 0; i < this.sides.length; i++) {
-      let coordSetStart = rotate(this.centerX, this.centerY, currX, currY, this.rotation)
-      let coordSetEnd = rotate(this.centerX, this.centerY, currX + this.sides[i].xAdd, currY + this.sides[i].yAdd, this.rotation)
-      drawLine(coordSetStart[0], coordSetStart[1], coordSetEnd[0], coordSetEnd[1], 'black');
+      let startPoint = rotate(this.centerX, this.centerY, currX, currY, this.rotation)
+      let endPoint = rotate(this.centerX, this.centerY, currX + this.sides[i].xAdd, currY + this.sides[i].yAdd, this.rotation)
+      drawLine(startPoint[0], startPoint[1], endPoint[0], endPoint[1], 'black');
       currX = currX + this.sides[i].xAdd;
       currY = currY + this.sides[i].yAdd;
     }
@@ -131,17 +132,17 @@ class Shape {
     let currY = this.startingX;
     let array = []
     for (let i = 0; i < this.sides.length; i++) {
-      let coordSetStart = rotate(this.centerX, this.centerY, currX, currY, this.rotation)
-      let coordSetEnd = rotate(this.centerX, this.centerY, currX + this.sides[i].xAdd, currY + this.sides[i].yAdd, this.rotation);
-      let numOfSidePixels = Math.round(Math.sqrt(((coordSetStart[0] - coordSetEnd[0]) ** 2) + ((coordSetStart[1] - coordSetEnd[1]) ** 2)));
+      let startPoint = rotate(this.centerX, this.centerY, currX, currY, this.rotation)
+      let endPoint = rotate(this.centerX, this.centerY, currX + this.sides[i].xAdd, currY + this.sides[i].yAdd, this.rotation);
+      let numOfSidePixels = Math.round(Math.sqrt(((startPoint[0] - endPoint[0]) ** 2) + ((startPoint[1] - endPoint[1]) ** 2)));
 
-      drawLine(coordSetStart[0], coordSetStart[1], coordSetEnd[0], coordSetEnd[1])
+      drawLine(startPoint[0], startPoint[1], endPoint[0], endPoint[1])
 
-      let xAddPerPix = (coordSetEnd[0] - coordSetStart[0]) / numOfSidePixels
-      let yAddPerPix = (coordSetEnd[1] - coordSetStart[1]) / numOfSidePixels
+      let xPerPix = (endPoint[0] - startPoint[0]) / numOfSidePixels
+      let yPerPix = (endPoint[1] - startPoint[1]) / numOfSidePixels
 
       for (let n = 0; n < numOfSidePixels; n++) {
-        array.push({ "x": coordSetStart[0] + n * xAddPerPix, "y": coordSetStart[1] + n * yAddPerPix })
+        array.push({ "x": startPoint[0] + n * xPerPix, "y": startPoint[1] + n * yPerPix })
       }
 
       currX = currX + this.sides[i].xAdd;
@@ -162,7 +163,7 @@ const createSides = (array) => {
 }
 
 
-const ObjArray = []
+const objArray = []
 let vertices = []
 let animateStart = false;
 
@@ -173,28 +174,22 @@ registerOnclick((x, y) => {
   }
 })
 
-
-registerOnKeyDown((Space) => {
+registerOnKeyDown(() => {
   if (!animateStart) {
-    ObjArray.push(new Shape(10, [vector(0, 0)], vertices))
-    ObjArray[ObjArray.length - 1].drawShape()
-    drawFilledCircle(ObjArray[ObjArray.length - 1].centerX, ObjArray[ObjArray.length - 1].centerY, 2.5, "red")
+    objArray.push(new Shape(10, [vector(0, 0)], vertices))
+    objArray[objArray.length - 1].drawShape()
+    drawFilledCircle(objArray[objArray.length - 1].centerX, objArray[objArray.length - 1].centerY, 2.5, "red")
     vertices = []
-    animateStart = ObjArray.length >= 3 ? true : false
+    animateStart = objArray.length >= 3 ? true : false
   }
 })
-
-
-console.log("3")
-//animate(drawFrame)
-
 
 let next = 0;
 let countFrame = 0;
 const drawFrame = (time) => {
   if ((time > next) && animateStart) {
     clear();
-    for (const shape of ObjArray) {
+    for (const shape of objArray) {
       drawFilledCircle(shape.centerX, shape.centerY, 2.5, "red")
       shape.drawShape();
       shape.rotation = countFrame;

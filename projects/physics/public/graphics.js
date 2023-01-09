@@ -1,7 +1,6 @@
 let ctx;
 let width;
 let height;
-const canvas = document.getElementById('screen');
 
 let onclick = (x, y) => {};
 let onkeydown = (k) => {};
@@ -17,7 +16,6 @@ const setCanvas = (canvas) => {
   width = canvas.width;
   height = canvas.height;
 };
-setCanvas(canvas)
 
 
 const drawLine = (x1, y1, x2, y2, color, width = 1) => {
