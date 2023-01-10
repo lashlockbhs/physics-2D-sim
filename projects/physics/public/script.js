@@ -52,34 +52,42 @@ class Shape {
     //this.startingY = vertices[0].y //for draw
     this.sides = createSides(vertices)
     this.vertices = vertices
+
+    this.vertStart = vertices
+
     this.mass = mass
     this.centerX = getBoundCenter(vertices).x
     this.centerY = getBoundCenter(vertices).y
     this.rotation = 0
     this.actingForce = [addNumVectors(actingForces)]
     this.vertDifs = []//the pos of the verticies relitive to the center, in replacment of the "sides" athgorithm
-    for (const vert of vertices) {
+    for (const vert of this.vertices) {
       this.vertDifs.push(twoPointXYDif(vert, { x: this.centerX, y: this.centerY }))
     }
   }
   //should be called everytime you update this opjects varibles outside of the class
   updateProperties() {
 
-    console.log(this.vertices)
+    //in case of rotaion vertDifs needs to be redefined
+    this.vertDifs = [];
+    for (const vert of this.vertices) {
+      this.vertDifs.push(twoPointXYDif(vert, { x: this.centerX, y: this.centerY }))
+    }
+    
+    //calc vertices pos based on centroid
     this.vertices.forEach((e, i) => e = { x: this.centerX + this.vertDifs[i].xDif, y: this.centerY + this.vertDifs[i].yDif })
 
-    this.vertices.forEach((e) => {
-      console.log(e)
+    //rotate vertices
+    this.vertices = this.vertStart.map((e) => {
       const rotateCords = rotate(this.centerX, this.centerY, e.x, e.y, this.rotation)
-      e.x = rotateCords[0]
-      e.y = rotateCords[1]
+      return {x : rotateCords[0], y : rotateCords[1]}
     })
-    console.log(this.vertices)
+
+    
+
   }
   drawShape() {
-    drawPoints(this.vertices)
-    for (let i = 0; i < vertices.length; i++) {
-
+    for (let i = 0; i < this.vertices.length; i++) {
       if (i + 1 === this.vertices.length) {
         drawLine(this.vertices[i].x, this.vertices[i].y, this.vertices[0].x, this.vertices[0].y, 'black', 1)
       }
@@ -144,32 +152,21 @@ registerOnKeyDown(() => {
     animateStart = objArray.length >= 3 ? true : false
   }
 })
-if(animateStart){
-  console.log("e")
-  for (const shape of objArray) {
-    shape.updateProperties()
-    shape.rotation = 20;
-    shape.updateProperties()
 
-    drawFilledCircle(shape.centerX, shape.centerY, 2.5, "red")
-    shape.drawShape();
-
-  }
-}
-/*
 let next = 0;
 let countFrame = 0;
 const drawFrame = (time) => {
   if ((time > next) && animateStart) {
     clear();
     for (const shape of objArray) {
-      shape.rotation = 20;
-      shape.updateProperties()
+      shape.rotation = countFrame;
+      shape.updateProperties();
 
       drawFilledCircle(shape.centerX, shape.centerY, 2.5, "red")
       shape.drawShape();
-
-      next += 1;
+      
+      
+      next += 100;
       countFrame++;
     }
   }
@@ -181,4 +178,3 @@ export {
   collisions,
   getBoundCenter,
 }
-*/
