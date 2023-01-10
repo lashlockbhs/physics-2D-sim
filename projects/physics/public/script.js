@@ -25,17 +25,14 @@ const collisions = (shapes) => {
 
 
 
-const getBoundCenter = (arr) => {
-  const findCentroid = (points) => {
-    const pts = points.concat(points[0])
-    const area = (sigma(0, pts.length - 2, i => (pts[i].x * pts[i + 1].y) - (pts[i + 1].x * pts[i].y))) / 2
-    const x = (sigma(0, pts.length - 2, i => (pts[i].x + pts[i + 1].x) * ((pts[i].x * pts[i + 1].y) - (pts[i + 1].x * pts[i].y)))) / (6 * area)
-    const y = (sigma(0, pts.length - 2, i => (pts[i].y + pts[i + 1].y) * ((pts[i].x * pts[i + 1].y) - (pts[i + 1].x * pts[i].y)))) / (6 * area)
-    return ({ x, y })
-  }
-  const returner = findCentroid(arr)
-  return returner
+const getBoundCenter = (points) => {
+  const pts = points.concat(points[0])
+  const area = (sigma(0, pts.length - 2, i => (pts[i].x * pts[i + 1].y) - (pts[i + 1].x * pts[i].y))) / 2
+  const x = (sigma(0, pts.length - 2, i => (pts[i].x + pts[i + 1].x) * ((pts[i].x * pts[i + 1].y) - (pts[i + 1].x * pts[i].y)))) / (6 * area)
+  const y = (sigma(0, pts.length - 2, i => (pts[i].y + pts[i + 1].y) * ((pts[i].x * pts[i + 1].y) - (pts[i + 1].x * pts[i].y)))) / (6 * area)
+  return ({ x, y })
 }
+
 //from web
 const rotate = (cx, cy, x, y, angle) => {
   let radians = (Math.PI / 180) * angle,
@@ -48,8 +45,8 @@ const rotate = (cx, cy, x, y, angle) => {
 
 class Shape {
   constructor(mass, actingForces, vertices) {
-    this.startingX = vertices[0].x //for draw
-    this.startingY = vertices[0].y //for draw
+    //this.startingX = vertices[0].x //for draw
+    //this.startingY = vertices[0].y //for draw
     this.sides = createSides(vertices)
     this.vertices = vertices
     this.mass = mass
@@ -57,6 +54,8 @@ class Shape {
     this.centerY = getBoundCenter(vertices).y
     this.rotation = 0
     this.actingForce = [addNumVectors(actingForces)]
+
+    this.vertices = 
   }
   drawShape() {
     let currX = this.startingX;
@@ -143,3 +142,8 @@ const drawFrame = (time) => {
 }
 
 animate(drawFrame)
+export {
+  Shape,
+  collisions,
+  getBoundCenter,
+}
