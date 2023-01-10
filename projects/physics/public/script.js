@@ -25,12 +25,13 @@ import {
   distance,
   getAcceleration,
   getVelocity,
+  getDisplacement,
   vector,
 } from './math.js';
 
 const canvas = document.getElementById('screen');
 setCanvas(canvas);
-
+const FPS = 12 // frames per second
 //returns points that are 1 or less pixels away from eachother
 const closePoints = (ar1, ar2) =>
   ar1.filter((e) => (ar2.find((e2) => distance(e, e2) <= 1) != undefined ? true : false));
@@ -94,6 +95,8 @@ class Shape {
     this.centerY = getBoundCenter(vertices).y;
     this.rotation = 0;
     this.actingForce = [addNumVectors(actingForces)];
+    this.actingAcc = getAcceleration(addNumVectors(actingForces), mass, 1/FPS)
+    this.actingVelocity = getVelocity(addNumVectors(actingForces), mass, 1/FPS, FPS)
   }
   drawShape() {
     let currX = this.startingX;
