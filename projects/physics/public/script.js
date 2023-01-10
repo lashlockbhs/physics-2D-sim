@@ -77,17 +77,14 @@ class Shape {
     console.log(this.vertices)
   }
   drawShape() {
-    console.log(this.vertices.length)
     drawPoints(this.vertices)
     for (let i = 0; i < vertices.length; i++) {
 
       if (i + 1 === this.vertices.length) {
         drawLine(this.vertices[i].x, this.vertices[i].y, this.vertices[0].x, this.vertices[0].y, 'black', 1)
-        console.log(this.vertices[i].x + ", " + this.vertices[i].y + " to " + this.vertices[0].x + ", " + this.vertices[0].y)
       }
       else {
         drawLine(this.vertices[i].x, this.vertices[i].y, this.vertices[i + 1].x, this.vertices[i + 1].y, 'black', 1)
-        console.log(this.vertices[i].x + ", " + this.vertices[i].y + " to " + this.vertices[i + 1].x + ", " + this.vertices[i + 1].y)
       }
     }
   }
@@ -141,21 +138,24 @@ registerOnKeyDown(() => {
   if (!animateStart) {
     objArray.push(new Shape(10, [vector(0, 0)], vertices))
     objArray[objArray.length - 1].drawShape()
+    console.log(objArray)
     drawFilledCircle(objArray[objArray.length - 1].centerX, objArray[objArray.length - 1].centerY, 2.5, "red")
     vertices = []
     animateStart = objArray.length >= 3 ? true : false
   }
 })
-console.log("e")
+if(animateStart){
+  console.log("e")
+  for (const shape of objArray) {
+    shape.updateProperties()
+    shape.rotation = 20;
+    shape.updateProperties()
 
-const shape1 = objArray[1]
+    drawFilledCircle(shape.centerX, shape.centerY, 2.5, "red")
+    shape.drawShape();
 
-shape1.rotation = 180;
-shape1.updateProperties()
-
-drawFilledCircle(shape1.centerX, shape1.centerY, 2.5, "red")
-shape1.drawShape();
-
+  }
+}
 /*
 let next = 0;
 let countFrame = 0;
