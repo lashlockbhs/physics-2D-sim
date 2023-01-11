@@ -1,5 +1,5 @@
 import { setCanvas, drawFilledCircle, clear, width, height, animate, now, registerOnKeyDown, registerOnclick, drawFilledRect, drawLine } from './graphics.js';
-import { add2Vectors, vectorMultiply, addNumVectors, sigma, pi, degToRad, radToDeg, mean, geoMean, twoPointAngle, distance, getAcceleration, getVelocity, vector, twoPointXYDif, distance } from './math.js';
+import { add2Vectors, vectorMultiply, addNumVectors, sigma, pi, degToRad, radToDeg, mean, geoMean, twoPointAngle, distance, getAcceleration, getVelocity, vector, twoPointXYDif } from './math.js';
 
 const canvas = document.getElementById('screen');
 setCanvas(canvas)
@@ -48,13 +48,9 @@ const drawPoints = (ar, color) => {
 
 class Shape {
   constructor(mass, actingForces, vertices) {
-    //this.startingX = vertices[0].x //for draw
-    //this.startingY = vertices[0].y //for draw
     this.sides = createSides(vertices)
     this.vertices = vertices
-
     this.vertStart = vertices
-
     this.mass = mass
     this.centerX = getBoundCenter(vertices).x
     this.centerY = getBoundCenter(vertices).y
@@ -100,25 +96,25 @@ class Shape {
   getBoundOfObject(detail) {
     let array = []
     for (let i = 0; i < this.vertices.length; i++) {
-      let xAdd, yAdd, distance, numPoints
+      let xAdd, yAdd, dist, numPoints
 
       //last side, must go to orgin vert
       if (i + 1 === this.vertices.length) {
-        distance = distance(this.vertices[i], this.vertices[0]);
-        numPoints = distance*detail
+        dist = distance(this.vertices[i], this.vertices[0]);
+        numPoints = dist*detail
 
-        xAdd = (this.vertices[i].x - this.vertices[0].x)/numPoints;
-        yAdd = (this.vertices[i].y - this.vertices[0].y)/numPoints;
+        xAdd = (this.vertices[0].x - this.vertices[i].x)/numPoints;
+        yAdd = (this.vertices[0].y - this.vertices[i].y)/numPoints;
       }
       else {
-        distance = distance(this.vertices[i], this.vertices[i+1]);
-        numPoints = distance*detail
+        dist = distance(this.vertices[i], this.vertices[i+1]);
+        numPoints = dist*detail
 
-        xAdd = (this.vertices[i].x - this.vertices[i+1].x)/numPoints;
-        yAdd = (this.vertices[i].y - this.vertices[i+1].y)/numPoints;
+        xAdd = (this.vertices[i+1].x - this.vertices[i].x)/numPoints;
+        yAdd = (this.vertices[i+1].y - this.vertices[i].y)/numPoints;
       }
-      for(let i = 0; i > Math.floor(numPoints); i++){
-        array.push({x : (xAdd*i), y : (yAdd*i)})
+      for(let j = 0; j < Math.floor(numPoints); j++){
+        array.push({x : this.vertices[i].x+(xAdd*j), y : this.vertices[i].y+(yAdd*j)})
       }
     }
     return array
@@ -163,16 +159,17 @@ const drawFrame = (time) => {
   if ((time > next) && animateStart) {
     clear();
     for (const shape of objArray) {
+      shape.centerX +=10
       shape.rotation = countFrame;
       shape.updateProperties();
-      
-      console.log(shape.getBoundOfObject(1))
+
+      const shapeBounds  = shape.getBoundOfObject(1)
 
       drawFilledCircle(shape.centerX, shape.centerY, 2.5, "red")
       shape.drawShape();
       
       
-      next += 100;
+      next += 10;
       countFrame++;
     }
   }
