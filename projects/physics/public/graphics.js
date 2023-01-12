@@ -7,8 +7,8 @@ let onkeydown = (k) => {};
 
 document.onkeydown = (e) => onkeydown(e.key);
 
-const registerOnclick = (fn) => onclick = fn;
-const registerOnKeyDown = (fn) => onkeydown = fn;
+const registerOnclick = (fn) => (onclick = fn);
+const registerOnKeyDown = (fn) => (onkeydown = fn);
 
 const setCanvas = (canvas) => {
   canvas.onclick = (e) => onclick(e.offsetX, e.offsetY);
@@ -16,7 +16,6 @@ const setCanvas = (canvas) => {
   width = canvas.width;
   height = canvas.height;
 };
-
 
 const drawLine = (x1, y1, x2, y2, color, width = 1) => {
   ctx.strokeStyle = color;
@@ -128,5 +127,5 @@ export {
   now,
   animate,
   registerOnclick,
-  registerOnKeyDown
+  registerOnKeyDown,
 };

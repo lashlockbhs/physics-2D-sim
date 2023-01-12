@@ -1,44 +1,89 @@
-import { setCanvas, drawFilledCircle, clear, width, height, animate, now, registerOnKeyDown, registerOnclick, drawFilledRect, drawLine } from './graphics.js';
-import { add2Vectors, vectorMultiply, addNumVectors, sigma, pi, degToRad, radToDeg, mean, geoMean, twoPointAngle, distance, getAcceleration, getVelocity, vector, twoPointXYDif } from './math.js';
+import { 
+  setCanvas, 
+  drawFilledCircle, 
+  clear, 
+  width, 
+  height, 
+  animate, 
+  now, 
+  registerOnKeyDown, 
+  registerOnclick, 
+  drawFilledRect, 
+  drawLine,
+} from './graphics.js';
+import { 
+  add2Vectors, 
+  vectorMultiply, 
+  addNumVectors, 
+  sigma, 
+  pi, 
+  degToRad, 
+  radToDeg, 
+  mean, 
+  geoMean, 
+  twoPointAngle, 
+  distance, 
+  getAcceleration, 
+  getVelocity, 
+  vector, 
+  twoPointXYDif 
+} from './math.js';
 
 const canvas = document.getElementById('screen');
-setCanvas(canvas)
-
+setCanvas(canvas);
+const FPS = 12 // frames per second
 //returns points that are 1 or less pixels away from eachother
-const closePoints = (ar1, ar2) => ar1.filter(e => ar2.find(e2 => distance(e, e2) <= 1) != undefined ? true : false)
+const closePoints = (ar1, ar2) =>
+  ar1.filter((e) => (ar2.find((e2) => distance(e, e2) <= 1) != undefined ? true : false));
 
 //returns an array of objects that have a x, y point of collison and the shapes involved
 const collisions = (shapes) => {
-  const collisions = []
+  const collisions = [];
   for (let s1 = 0; s1 < shapes.length; s1++) {
     for (let s2 = s1 + 1; s2 < shapes.length; s2++) {
+      const s1Bounds = shapes[s1].getBoundOfObject();
+      const s2Bounds = shapes[s2].getBoundOfObject();
 
-      const s1Bounds = shapes[s1].getBoundOfObject()
-      const s2Bounds = shapes[s2].getBoundOfObject()
-
-      collisions.push({ "points": closePoints(s1Bounds, s2Bounds), "s1": shapes[s1], "s2": shapes[s2] })
+      collisions.push({ points: closePoints(s1Bounds, s2Bounds), s1: shapes[s1], s2: shapes[s2] });
     }
   }
   return collisions;
-}
 
-const getBoundCenter = (points) => {
-  const pts = points.concat(points[0])
-  const area = (sigma(0, pts.length - 2, i => (pts[i].x * pts[i + 1].y) - (pts[i + 1].x * pts[i].y))) / 2
-  const x = (sigma(0, pts.length - 2, i => (pts[i].x + pts[i + 1].x) * ((pts[i].x * pts[i + 1].y) - (pts[i + 1].x * pts[i].y)))) / (6 * area)
-  const y = (sigma(0, pts.length - 2, i => (pts[i].y + pts[i + 1].y) * ((pts[i].x * pts[i + 1].y) - (pts[i + 1].x * pts[i].y)))) / (6 * area)
-  return ({ x, y })
-}
 
+const getBoundCenter = (arr) => {
+  const findCentroid = (points) => {
+    const pts = points.concat(points[0]);
+    const area =
+      sigma(0, pts.length - 2, (i) => pts[i].x * pts[i + 1].y - pts[i + 1].x * pts[i].y) / 2;
+    const x =
+      sigma(
+        0,
+        pts.length - 2,
+        (i) => (pts[i].x + pts[i + 1].x) * (pts[i].x * pts[i + 1].y - pts[i + 1].x * pts[i].y),
+      ) /
+      (6 * area);
+    const y =
+      sigma(
+        0,
+        pts.length - 2,
+        (i) => (pts[i].y + pts[i + 1].y) * (pts[i].x * pts[i + 1].y - pts[i + 1].x * pts[i].y),
+      ) /
+      (6 * area);
+    return { x, y };
+  };
+  const returner = findCentroid(arr);
+  return returner;
+};
+  
 //from web
 const rotate = (cx, cy, x, y, angle) => {
   let radians = (Math.PI / 180) * angle,
     cos = Math.cos(radians),
     sin = Math.sin(radians),
-    nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
-    ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+    nx = cos * (x - cx) + sin * (y - cy) + cx,
+    ny = cos * (y - cy) - sin * (x - cx) + cy;
   return [nx, ny];
-}
+};
 
 const drawPoints = (ar, color) => {
   for (const point of ar) {
@@ -106,20 +151,21 @@ class Shape {
         array.push({ x: this.vertices[i].x + (xAdd * j), y: this.vertices[i].y + (yAdd * j) })
       }
     }
-    return array
+    return array;
   }
 }
 
 const objArray = []
 let vertices = []
+
 let animateStart = false;
 
 registerOnclick((x, y) => {
   if (!animateStart) {
-    drawFilledCircle(x, y, 1.7, 'black')
-    vertices.push({ x, y })
+    drawFilledCircle(x, y, 1.7, 'black');
+    vertices.push({ x, y });
   }
-})
+});
 
 registerOnKeyDown(() => {
   if (!animateStart) {
@@ -134,7 +180,7 @@ registerOnKeyDown(() => {
 let next = 0;
 let countFrame = 0;
 const drawFrame = (time) => {
-  if ((time > next) && animateStart) {
+  if (time > next && animateStart) {
     clear();
     for (const shape of objArray) {
       shape.center.x += 10
@@ -146,6 +192,7 @@ const drawFrame = (time) => {
       const shapeBounds = shape.getBoundOfObject(1)
 
       drawFilledCircle(shape.center.x, shape.center.y, 2.5, "red")
+
       shape.drawShape();
 
 
@@ -153,11 +200,6 @@ const drawFrame = (time) => {
       countFrame++;
     }
   }
-}
+};
 
-animate(drawFrame)
-export {
-  Shape,
-  collisions,
-  getBoundCenter,
-}
+animate(drawFrame);
