@@ -201,3 +201,7 @@ const drawFrame = (time) => {
 };
 
 animate(drawFrame);
+
+export {
+  canvas
+}
