@@ -48,7 +48,7 @@ const collisions = (shapes) => {
     }
   }
   return collisions;
-
+}
 
 const getBoundCenter = (arr) => {
   const findCentroid = (points) => {
