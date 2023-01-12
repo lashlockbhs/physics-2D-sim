@@ -48,40 +48,37 @@ const drawPoints = (ar, color) => {
 
 class Shape {
   constructor(mass, actingForces, vertices) {
-    this.sides = createSides(vertices)
-    this.vertices = vertices
-    this.vertStart = vertices
+    this.vertices = vertices;
+    this.vertBase = vertices;
+    this.baseDifs = []//the pos of the verticies relitive to the center, in replacment of the "sides" athgorithm
     this.mass = mass
-    this.centerX = getBoundCenter(vertices).x
-    this.centerY = getBoundCenter(vertices).y
+    this.centerBase = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y }
+    this.center = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y }
     this.rotation = 0
+    this.lastRotation = 0
     this.actingForce = [addNumVectors(actingForces)]
-    this.vertDifs = []//the pos of the verticies relitive to the center, in replacment of the "sides" athgorithm
     for (const vert of this.vertices) {
-      this.vertDifs.push(twoPointXYDif(vert, { x: this.centerX, y: this.centerY }))
+      this.baseDifs.push(twoPointXYDif(vert, { x: this.centerBase.x, y: this.centerBase.y}))
     }
+  }
+  #getVertDifs() {
+    this.vertDifs = this.baseDifs.map(e => {
+      const rotateCords = rotate(this.centerBase.x, this.centerBase.y, this.centerBase.x+e.xDif, this.centerBase.y+e.yDif, this.rotation)
+      return { xDif: rotateCords[0]-this.centerBase.x, yDif: rotateCords[1]-this.centerBase.y, rotation : this.rotation }
+    })
   }
   //should be called everytime you update this opjects varibles outside of the class
   updateProperties() {
 
-    //in case of rotaion vertDifs needs to be redefined
-    this.vertDifs = [];
-    for (const vert of this.vertices) {
-      this.vertDifs.push(twoPointXYDif(vert, { x: this.centerX, y: this.centerY }))
-    }
-    
+    //rotate vertDifs
+    this.#getVertDifs()
     //calc vertices pos based on centroid
-    this.vertices.forEach((e, i) => e = { x: this.centerX + this.vertDifs[i].xDif, y: this.centerY + this.vertDifs[i].yDif })
-
-    //rotate vertices
-    this.vertices = this.vertStart.map((e) => {
-      const rotateCords = rotate(this.centerX, this.centerY, e.x, e.y, this.rotation)
-      return {x : rotateCords[0], y : rotateCords[1]}
-    })
-
-    
-
+    const newVertPos = this.vertices.map((e, i) => {
+      return { x: this.center.x + this.vertDifs[i].xDif, y: this.center.y + this.vertDifs[i].yDif }
+    });
+    this.vertices = newVertPos;
   }
+
   drawShape() {
     for (let i = 0; i < this.vertices.length; i++) {
       if (i + 1 === this.vertices.length) {
@@ -101,35 +98,25 @@ class Shape {
       //last side, must go to orgin vert
       if (i + 1 === this.vertices.length) {
         dist = distance(this.vertices[i], this.vertices[0]);
-        numPoints = dist*detail
+        numPoints = dist * detail
 
-        xAdd = (this.vertices[0].x - this.vertices[i].x)/numPoints;
-        yAdd = (this.vertices[0].y - this.vertices[i].y)/numPoints;
+        xAdd = (this.vertices[0].x - this.vertices[i].x) / numPoints;
+        yAdd = (this.vertices[0].y - this.vertices[i].y) / numPoints;
       }
       else {
-        dist = distance(this.vertices[i], this.vertices[i+1]);
-        numPoints = dist*detail
+        dist = distance(this.vertices[i], this.vertices[i + 1]);
+        numPoints = dist * detail
 
-        xAdd = (this.vertices[i+1].x - this.vertices[i].x)/numPoints;
-        yAdd = (this.vertices[i+1].y - this.vertices[i].y)/numPoints;
+        xAdd = (this.vertices[i + 1].x - this.vertices[i].x) / numPoints;
+        yAdd = (this.vertices[i + 1].y - this.vertices[i].y) / numPoints;
       }
-      for(let j = 0; j < Math.floor(numPoints); j++){
-        array.push({x : this.vertices[i].x+(xAdd*j), y : this.vertices[i].y+(yAdd*j)})
+      for (let j = 0; j < Math.floor(numPoints); j++) {
+        array.push({ x: this.vertices[i].x + (xAdd * j), y: this.vertices[i].y + (yAdd * j) })
       }
     }
     return array
   }
 }
-
-const createSides = (array) => {
-  const returnArray = []
-  for (let v = 0; v < array.length - 1; v++) {
-    returnArray.push({ xAdd: array[v + 1].x - array[v].x, yAdd: array[v + 1].y - array[v].y })
-  }
-  returnArray.push({ xAdd: array[0].x - array[array.length - 1].x, yAdd: array[0].y - array[array.length - 1].y })
-  return returnArray
-}
-
 
 const objArray = []
 let vertices = []
@@ -146,8 +133,7 @@ registerOnKeyDown(() => {
   if (!animateStart) {
     objArray.push(new Shape(10, [vector(0, 0)], vertices))
     objArray[objArray.length - 1].drawShape()
-    console.log(objArray)
-    drawFilledCircle(objArray[objArray.length - 1].centerX, objArray[objArray.length - 1].centerY, 2.5, "red")
+    drawFilledCircle(objArray[objArray.length - 1].center.x, objArray[objArray.length - 1].center.y, 2.5, "red")
     vertices = []
     animateStart = objArray.length >= 3 ? true : false
   }
@@ -159,16 +145,18 @@ const drawFrame = (time) => {
   if ((time > next) && animateStart) {
     clear();
     for (const shape of objArray) {
-      shape.centerX +=10
-      shape.rotation = countFrame;
+      shape.center.x += 10
+
+      shape.rotation = countFrame
+
       shape.updateProperties();
 
-      const shapeBounds  = shape.getBoundOfObject(1)
+      const shapeBounds = shape.getBoundOfObject(1)
 
-      drawFilledCircle(shape.centerX, shape.centerY, 2.5, "red")
+      drawFilledCircle(shape.center.x, shape.center.y, 2.5, "red")
       shape.drawShape();
-      
-      
+
+
       next += 10;
       countFrame++;
     }
