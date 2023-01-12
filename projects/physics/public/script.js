@@ -26,7 +26,8 @@ import {
   getAcceleration, 
   getVelocity, 
   vector, 
-  twoPointXYDif 
+  twoPointXYDif,
+  getDisplacement, 
 } from './math.js';
 
 const canvas = document.getElementById('screen');
@@ -183,8 +184,8 @@ const drawFrame = (time) => {
   if (time > next && animateStart) {
     clear();
     for (const shape of objArray) {
-      shape.center.x += 10
-
+      //shape.center.x += 10
+      //shape.center.y += 10
       shape.rotation = countFrame
 
       shape.updateProperties();
@@ -196,7 +197,7 @@ const drawFrame = (time) => {
       shape.drawShape();
 
 
-      next += 10;
+      next += 1;
       countFrame++;
     }
   }
