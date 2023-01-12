@@ -94,22 +94,14 @@ class Shape {
     let array = []
     for (let i = 0; i < this.vertices.length; i++) {
       let xAdd, yAdd, dist, numPoints
-
-      //last side, must go to orgin vert
-      if (i + 1 === this.vertices.length) {
-        dist = distance(this.vertices[i], this.vertices[0]);
-        numPoints = dist * detail
-
-        xAdd = (this.vertices[0].x - this.vertices[i].x) / numPoints;
-        yAdd = (this.vertices[0].y - this.vertices[i].y) / numPoints;
-      }
-      else {
-        dist = distance(this.vertices[i], this.vertices[i + 1]);
-        numPoints = dist * detail
-
-        xAdd = (this.vertices[i + 1].x - this.vertices[i].x) / numPoints;
-        yAdd = (this.vertices[i + 1].y - this.vertices[i].y) / numPoints;
-      }
+      //set j to 0 for last side to go to orgin point
+      const j = i+1 === this.vertices.length ? 0 : i + 1
+      
+      dist = distance(this.vertices[i], this.vertices[j]);
+      numPoints = dist * detail
+      xAdd = (this.vertices[j].x - this.vertices[i].x) / numPoints;
+      yAdd = (this.vertices[j].y - this.vertices[i].y) / numPoints;
+      
       for (let j = 0; j < Math.floor(numPoints); j++) {
         array.push({ x: this.vertices[i].x + (xAdd * j), y: this.vertices[i].y + (yAdd * j) })
       }
