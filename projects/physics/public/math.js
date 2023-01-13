@@ -34,6 +34,10 @@ const overRange = (start, end, funct, startValue) => {
 };
 */
 
+const twoPointXYDif = (p1, p2) =>{ 
+  return { xDif: (p1.x - p2.x), yDif: (p1.y - p2.y) }; 
+};
+
 const sigma = (start, end, funct) => {
   let sum = 0;
   for (let i = start; i <= end; i++) {
@@ -105,6 +109,7 @@ export {
   getVelocity,
   getDisplacement,
   vector,
+  twoPointXYDif,
 };
 
 //Verlet Integration, don't worry about this for now (I gotta take Calc BC now xD)
