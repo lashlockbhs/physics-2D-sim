@@ -13,7 +13,7 @@ import {
     canvas
 } from './script.js';
 
-/*
+
 setCanvas(canvas);
 //I'm gonna figure out a way to make this take 2 arguments: width and height of canvas
 const drawGUI = () => {
@@ -26,8 +26,7 @@ const drawGUI = () => {
             drawFilledRect(width - 130, 45 * i + extra, 110, 25, 'white');
         };
     };
-    drawText('Circle', width - 100, extra + 155, 'black', 20);
-    drawText('')
+    drawText('Circle', width - 102, extra + 155, 'black', 20);
+    //drawText('')
 };
 drawGUI();
-*/
