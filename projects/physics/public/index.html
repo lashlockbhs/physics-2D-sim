@@ -9,8 +9,8 @@
 </head>
 <labels>
   <label for="density"> Density (constant), kg/pixel:</label>
-  <input type="number" id="density" name="density"
-       min="0" max="10000000000">
+  <input type="number" id="density" name="density" value="100"
+       min="0">
        <!-- stolen from mdn xd trolled diots https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/number-->
        
   <label for="radius"> -- Radius for perfect shapes, constant --</label>
@@ -39,6 +39,6 @@
             <!--stolen mdn yee haw https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select-->
   </labels>
 <body>
-  <canvas id="screen" width="800" height="500"></canvas>
+  <canvas id="screen" width="1000" height="600"></canvas>
 </body>
 </html>

@@ -10,7 +10,6 @@ body {
   text-align: center;
 }
 canvas {
-  margin: 1in bottom;
   border: 1px dotted grey;
 }
 
