@@ -176,6 +176,7 @@ registerOnKeyDown(() => {
     objArray[objArray.length - 1].drawShape()
     drawFilledCircle(objArray[objArray.length - 1].center.x, objArray[objArray.length - 1].center.y, 2.5, "red")
     vertices = []
+    animateStart = objArray.length >= 5 ? true : false
   }
 })
 /* ficx
@@ -201,10 +202,14 @@ const drawFrame = (time) => {
       shape.drawShape();
 
 
-      next += 1;
+      next += FPS;
       countFrame++;
     }
   }
 };
 
 animate(drawFrame);
+
+export{
+
+}
