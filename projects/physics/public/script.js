@@ -171,14 +171,14 @@ registerOnclick((x, y) => {
 
 registerOnKeyDown(() => {
   if (!animateStart) {
-    const area = sigma(0, objArray.length - 2, (i) => objArray[i].x * objArray[i + 1].y - objArray[i + 1].x * objArray[i].y) / 2;
+    const area = sigma(0, vertices.length - 2, (i) => vertices[i].x * vertices[i + 1].y - vertices[i + 1].x * vertices[i].y) / 2;
     objArray.push(new Shape(10, [vector(0, 0)], vertices, area * document.getElementById('density').getAttribute('value')));
     objArray[objArray.length - 1].drawShape()
     drawFilledCircle(objArray[objArray.length - 1].center.x, objArray[objArray.length - 1].center.y, 2.5, "red")
     vertices = []
   }
 })
-/* ficx
+/* to fix
 registerOnKeyDown(()=>{
   animateStart = animateStart ? false : true 
 })*/
