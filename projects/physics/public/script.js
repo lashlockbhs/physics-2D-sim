@@ -169,12 +169,14 @@ registerOnclick((x, y) => {
 });
 
 registerOnKeyDown(() => {
-  if (!animateStart) {
+  if (!animateStart && objArray.length < 5) {
     const area = shapeArea(vertices)
     objArray.push(new Shape(10, [vector(0, 0)], vertices, area * document.getElementById('density').getAttribute('value')));
     objArray[objArray.length - 1].drawShape()
     drawFilledCircle(objArray[objArray.length - 1].center.x, objArray[objArray.length - 1].center.y, 2.5, "red")
     vertices = []
+  } else {
+    animateStart = animateStart ? false : true 
   }
 })
 /* to fix
