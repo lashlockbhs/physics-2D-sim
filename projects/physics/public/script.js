@@ -5,7 +5,7 @@ import {
   width, 
   height, 
   animate, 
-  now, 
+  now,
   registerOnKeyDown, 
   registerOnclick, 
   drawFilledRect, 
@@ -23,6 +23,7 @@ import {
   geoMean, 
   twoPointAngle, 
   distance, 
+  shapeArea,
   getAcceleration, 
   getVelocity, 
   vector, 
@@ -32,7 +33,7 @@ import {
 
 const canvas = document.getElementById('screen');
 setCanvas(canvas);
-const FPS = 12 // frames per second
+const FPS = 12 // frames per second, consider changing to ms/frame
 //returns points that are 1 or less pixels away from eachother
 const closePoints = (ar1, ar2) =>
   ar1.filter((e) => (ar2.find((e2) => distance(e, e2) <= 1) != undefined ? true : false));
@@ -54,8 +55,7 @@ const collisions = (shapes) => {
 const getBoundCenter = (arr) => {
   const findCentroid = (points) => {
     const pts = points.concat(points[0]);
-    const area =
-      sigma(0, pts.length - 2, (i) => pts[i].x * pts[i + 1].y - pts[i + 1].x * pts[i].y) / 2;
+    const area = shapeArea(pts)
     const x =
       sigma(
         0,
@@ -169,15 +169,20 @@ registerOnclick((x, y) => {
 });
 
 registerOnKeyDown(() => {
-  if (!animateStart) {
-    objArray.push(new Shape(10, [vector(0, 0)], vertices))
+  if (!animateStart && objArray.length < 5) {
+    const area = shapeArea(vertices)
+    objArray.push(new Shape(10, [vector(0, 0)], vertices, area * document.getElementById('density').getAttribute('value')));
     objArray[objArray.length - 1].drawShape()
     drawFilledCircle(objArray[objArray.length - 1].center.x, objArray[objArray.length - 1].center.y, 2.5, "red")
     vertices = []
-    animateStart = objArray.length >= 3 ? true : false
+  } else {
+    animateStart = animateStart ? false : true 
   }
 })
-
+/* to fix
+registerOnKeyDown(()=>{
+  animateStart = animateStart ? false : true 
+})*/
 let next = 0;
 let countFrame = 0;
 const drawFrame = (time) => {

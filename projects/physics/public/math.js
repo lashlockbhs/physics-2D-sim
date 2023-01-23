@@ -1,4 +1,8 @@
 //vector manipulation, stored in radians
+const shapeArea = (vArray) => {
+  return sigma(0, vArray.length - 2, (i) => vArray[i].x * vArray[i + 1].y - vArray[i + 1].x * vArray[i].y) / 2;
+}
+
 const vector = (degrees, magnitude) => {
   return { angle: (degrees * Math.PI) / 180, magnitude };
 };
@@ -110,6 +114,7 @@ export {
   getDisplacement,
   vector,
   twoPointXYDif,
+  shapeArea,
 };
 
 //Verlet Integration, don't worry about this for now (I gotta take Calc BC now xD)
