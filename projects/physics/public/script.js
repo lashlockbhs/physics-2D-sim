@@ -6,11 +6,11 @@ import {
   height, 
   animate, 
   now, 
-  onKeyDown,
   registerOnKeyDown, 
   registerOnclick, 
   drawFilledRect, 
   drawLine,
+  drawText,
 } from './graphics.js';
 import { 
   add2Vectors, 
@@ -94,7 +94,7 @@ const drawPoints = (ar, color) => {
 }
 
 class Shape {
-  constructor(mass, actingForces, vertices) {
+  constructor(actingForces, vertices, mass) {
     this.vertices = vertices;
     this.vertBase = vertices;
     this.baseDifs = []//the pos of the verticies relitive to the center, in replacment of the "sides" athgorithm
@@ -127,6 +127,7 @@ class Shape {
   }
 
   drawShape() {
+    drawText("mass " + this.mass, this.center.x, this.center.y, "black", 10)
     for (let i = 0; i < this.vertices.length; i++) {
       if (i + 1 === this.vertices.length) {
         drawLine(this.vertices[i].x, this.vertices[i].y, this.vertices[0].x, this.vertices[0].y, 'black', 1)
@@ -169,10 +170,11 @@ registerOnclick((x, y) => {
   }
 });
 
-registerOnKeyDown(() => {
+registerOnKeyDown((k) => {
+  console.log(k)
   if (!animateStart) {
-    const area = sigma(0, objArray.length - 2, (i) => objArray[i].x * objArray[i + 1].y - objArray[i + 1].x * objArray[i].y) / 2;
-    objArray.push(new Shape(10, [vector(0, 0)], vertices, area * document.getElementById('density').getAttribute('value')));
+    const area = sigma(0, vertices.length - 2, (i) => vertices[i].x * vertices[i + 1].y - vertices[i + 1].x * vertices[i].y) / 2;
+    objArray.push(new Shape([vector(0, 0)], vertices, area * parseInt(document.getElementById('density').value)));
     objArray[objArray.length - 1].drawShape()
     drawFilledCircle(objArray[objArray.length - 1].center.x, objArray[objArray.length - 1].center.y, 2.5, "red")
     vertices = []
