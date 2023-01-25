@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@500&display=swap');
 
 * {
-  padding: 0;
-  margin: 0;
+  padding: 10;
+  margin: 20px auto;
 }
 
 html,
@@ -12,8 +12,6 @@ body {
   text-align: center;
   font-family: "Lexend", sans-serif;
 }
-
 canvas {
-  margin: 1in auto;
   border: 1px dotted grey;
 }

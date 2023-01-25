@@ -1,4 +1,8 @@
 //vector manipulation, stored in radians
+const shapeArea = (vArray) => {
+  return sigma(0, vArray.length - 2, (i) => vArray[i].x * vArray[i + 1].y - vArray[i + 1].x * vArray[i].y) / 2;
+}
+
 const vector = (degrees, magnitude) => {
   return { angle: (degrees * Math.PI) / 180, magnitude };
 };
@@ -33,6 +37,10 @@ const overRange = (start, end, funct, startValue) => {
   };
 };
 */
+
+const twoPointXYDif = (p1, p2) =>{ 
+  return { xDif: (p1.x - p2.x), yDif: (p1.y - p2.y) }; 
+};
 
 const sigma = (start, end, funct) => {
   let sum = 0;
@@ -83,6 +91,12 @@ const getAcceleration = (force, mass, appliedTime) => {
 const getVelocity = (force, mass, appliedTime, fps) =>
   getAcceleration(force, mass, appliedTime) * (1 / fps);
 
+const getDisplacement = (force, mass, appliedTime, fps, angle) =>{
+  const h = getVelocity(force, mass, appliedTime, fps) * 1/fps
+  const p = Math.cos(90 - angle) * h
+  const b = Math.sqrt(h**2 - p**2)
+  return {xChange: Math.round(b), yChange: Math.round(p)}
+}
 export {
   add2Vectors,
   vectorMultiply,
@@ -97,7 +111,10 @@ export {
   distance,
   getAcceleration,
   getVelocity,
+  getDisplacement,
   vector,
+  twoPointXYDif,
+  shapeArea,
 };
 
 //Verlet Integration, don't worry about this for now (I gotta take Calc BC now xD)

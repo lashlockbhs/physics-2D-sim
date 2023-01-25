@@ -26,7 +26,10 @@ const drawGUI = () => {
             drawFilledRect(width - 130, 45 * i + extra, 110, 25, 'white');
         };
     };
-    drawText('Circle', width - 102, extra + 155, 'black', 20);
-    //drawText('')
+    drawText('Circle', width - 95, extra + 153, 'black', 15);
+    drawText('Rhombus', width - 107, extra + 198, 'black', 15);
+    drawText('Trapezoid', width - 111, extra + 243, 'black', 15);
+    drawText('Star', width - 90, extra + 288, 'black', 15);
+    drawText('R. Triangle', width - 113, extra + 333, 'black', 15);
 };
 drawGUI();
