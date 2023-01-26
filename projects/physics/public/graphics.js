@@ -1,7 +1,6 @@
 let ctx;
 let width;
 let height;
-let canvas = document.getElementById("screen");
 
 let onclick = (x, y) => {};
 let onkeydown = (k) => {};
