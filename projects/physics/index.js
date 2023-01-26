@@ -4,7 +4,7 @@
 
 import express from 'express';
 
-const port = 3001;
+const port = 0;
 
 const app = express();
 

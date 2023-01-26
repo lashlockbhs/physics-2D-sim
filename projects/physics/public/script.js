@@ -1,34 +1,34 @@
-import { 
-  setCanvas, 
-  drawFilledCircle, 
-  clear, 
-  width, 
-  height, 
-  animate, 
-  now, 
-  registerOnKeyDown, 
-  registerOnclick, 
-  drawFilledRect, 
+import {
+  setCanvas,
+  drawFilledCircle,
+  clear,
+  width,
+  height,
+  animate,
+  now,
+  registerOnKeyDown,
+  registerOnclick,
+  drawFilledRect,
   drawLine,
   drawText,
 } from './graphics.js';
-import { 
-  add2Vectors, 
-  vectorMultiply, 
-  addNumVectors, 
-  sigma, 
-  pi, 
-  degToRad, 
-  radToDeg, 
-  mean, 
-  geoMean, 
-  twoPointAngle, 
-  distance, 
-  getAcceleration, 
-  getVelocity, 
-  vector, 
+import {
+  add2Vectors,
+  vectorMultiply,
+  addNumVectors,
+  sigma,
+  pi,
+  degToRad,
+  radToDeg,
+  mean,
+  geoMean,
+  twoPointAngle,
+  distance,
+  getAcceleration,
+  getVelocity,
+  vector,
   twoPointXYDif,
-  getDisplacement, 
+  getDisplacement,
 } from './math.js';
 
 const canvas = document.getElementById('screen');
@@ -76,7 +76,7 @@ const getBoundCenter = (arr) => {
   const returner = findCentroid(arr);
   return returner;
 };
-  
+
 //from web
 const rotate = (cx, cy, x, y, angle) => {
   let radians = (Math.PI / 180) * angle,
@@ -105,13 +105,13 @@ class Shape {
     this.lastRotation = 0
     this.actingForce = [addNumVectors(actingForces)]
     for (const vert of this.vertices) {
-      this.baseDifs.push(twoPointXYDif(vert, { x: this.centerBase.x, y: this.centerBase.y}))
+      this.baseDifs.push(twoPointXYDif(vert, { x: this.centerBase.x, y: this.centerBase.y }))
     }
   }
   #getVertDifs() {
     this.vertDifs = this.baseDifs.map(e => {
-      const rotateCords = rotate(this.centerBase.x, this.centerBase.y, this.centerBase.x+e.xDif, this.centerBase.y+e.yDif, this.rotation)
-      return { xDif: rotateCords[0]-this.centerBase.x, yDif: rotateCords[1]-this.centerBase.y, rotation : this.rotation }
+      const rotateCords = rotate(this.centerBase.x, this.centerBase.y, this.centerBase.x + e.xDif, this.centerBase.y + e.yDif, this.rotation)
+      return { xDif: rotateCords[0] - this.centerBase.x, yDif: rotateCords[1] - this.centerBase.y, rotation: this.rotation }
     })
   }
   //should be called everytime you update this opjects varibles outside of the class
@@ -143,13 +143,13 @@ class Shape {
     for (let i = 0; i < this.vertices.length; i++) {
       let xAdd, yAdd, dist, numPoints
       //set j to 0 for last side to go to orgin point
-      const j = i+1 === this.vertices.length ? 0 : i + 1
-      
+      const j = i + 1 === this.vertices.length ? 0 : i + 1
+
       dist = distance(this.vertices[i], this.vertices[j]);
       numPoints = dist * detail
       xAdd = (this.vertices[j].x - this.vertices[i].x) / numPoints;
       yAdd = (this.vertices[j].y - this.vertices[i].y) / numPoints;
-      
+
       for (let j = 0; j < Math.floor(numPoints); j++) {
         array.push({ x: this.vertices[i].x + (xAdd * j), y: this.vertices[i].y + (yAdd * j) })
       }
@@ -171,20 +171,19 @@ registerOnclick((x, y) => {
 });
 
 registerOnKeyDown((k) => {
-  console.log(k)
-  if (!animateStart) {
-    const area = sigma(0, vertices.length - 2, (i) => vertices[i].x * vertices[i + 1].y - vertices[i + 1].x * vertices[i].y) / 2;
-    objArray.push(new Shape([vector(0, 0)], vertices, area * parseInt(document.getElementById('density').value)));
-    objArray[objArray.length - 1].drawShape()
-    drawFilledCircle(objArray[objArray.length - 1].center.x, objArray[objArray.length - 1].center.y, 2.5, "red")
-    vertices = []
-    animateStart = objArray.length >= 5 ? true : false
+  if (k === " ") {
+    console.log(`'${k}'`);
+    if (!animateStart) {
+      const area = sigma(0, vertices.length - 2, (i) => vertices[i].x * vertices[i + 1].y - vertices[i + 1].x * vertices[i].y) / 2;
+      objArray.push(new Shape([vector(0, 0)], vertices, area * parseInt(document.getElementById('density').value)));
+      objArray[objArray.length - 1].drawShape()
+      drawFilledCircle(objArray[objArray.length - 1].center.x, objArray[objArray.length - 1].center.y, 2.5, "red")
+      vertices = []
+      animateStart = objArray.length >= 5 ? true : false
+    }
   }
 })
-/* ficx
-registerOnKeyDown(()=>{
-  animateStart = animateStart ? false : true 
-})*/
+
 let next = 0;
 let countFrame = 0;
 const drawFrame = (time) => {
@@ -212,6 +211,6 @@ const drawFrame = (time) => {
 
 animate(drawFrame);
 
-export{
+export {
 
 }
