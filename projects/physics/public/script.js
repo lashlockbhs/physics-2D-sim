@@ -1,39 +1,42 @@
-import {
-  setCanvas,
-  drawFilledCircle,
-  clear,
-  width,
-  height,
-  animate,
+
+import { 
+  setCanvas, 
+  drawFilledCircle, 
+  clear, 
+  width, 
+  height, 
+  animate, 
   now,
-  registerOnKeyDown,
-  registerOnclick,
-  drawFilledRect,
+  registerOnKeyDown, 
+  registerOnclick, 
+  drawFilledRect, 
   drawLine,
   drawText,
 } from './graphics.js';
-import {
-  add2Vectors,
-  vectorMultiply,
-  addNumVectors,
-  sigma,
-  pi,
-  degToRad,
-  radToDeg,
-  mean,
-  geoMean,
-  twoPointAngle,
-  distance,
-  getAcceleration,
-  getVelocity,
-  vector,
+
+import { 
+  add2Vectors, 
+  vectorMultiply, 
+  addNumVectors, 
+  sigma, 
+  pi, 
+  degToRad, 
+  radToDeg, 
+  mean, 
+  geoMean, 
+  twoPointAngle, 
+  distance, 
+  shapeArea,
+  getAcceleration, 
+  getVelocity, 
+  vector, 
   twoPointXYDif,
   getDisplacement,
 } from './math.js';
 
 const canvas = document.getElementById('screen');
 setCanvas(canvas);
-const FPS = 12 // frames per second
+const FPS = 12 // frames per second, consider changing to ms/frame
 //returns points that are 1 or less pixels away from eachother
 const closePoints = (ar1, ar2) =>
   ar1.filter((e) => (ar2.find((e2) => distance(e, e2) <= 1) != undefined ? true : false));
@@ -55,8 +58,7 @@ const collisions = (shapes) => {
 const getBoundCenter = (arr) => {
   const findCentroid = (points) => {
     const pts = points.concat(points[0]);
-    const area =
-      sigma(0, pts.length - 2, (i) => pts[i].x * pts[i + 1].y - pts[i + 1].x * pts[i].y) / 2;
+    const area = shapeArea(pts)
     const x =
       sigma(
         0,
