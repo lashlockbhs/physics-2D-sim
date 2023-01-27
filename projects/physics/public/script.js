@@ -36,7 +36,7 @@ import {
 
 const canvas = document.getElementById('screen');
 setCanvas(canvas);
-const FPS = 12 // frames per second, consider changing to ms/frame
+const msPerFrame = 1 // frames per second, consider changing to ms/frame
 //returns points that are 1 or less pixels away from eachother
 const closePoints = (ar1, ar2) =>
   ar1.filter((e) => (ar2.find((e2) => distance(e, e2) <= 1) != undefined ? true : false));
@@ -176,7 +176,7 @@ registerOnKeyDown((k) => {
   if (k === " ") {
     console.log(`'${k}'`);
     if (!animateStart) {
-      const area = sigma(0, vertices.length - 2, (i) => vertices[i].x * vertices[i + 1].y - vertices[i + 1].x * vertices[i].y) / 2;
+      const area = Math.abs(shapeArea(vertices));
       objArray.push(new Shape([vector(0, 0)], vertices, area * parseInt(document.getElementById('density').value)));
       objArray[objArray.length - 1].drawShape()
       drawFilledCircle(objArray[objArray.length - 1].center.x, objArray[objArray.length - 1].center.y, 2.5, "red")
@@ -194,7 +194,12 @@ const drawFrame = (time) => {
     for (const shape of objArray) {
       //shape.center.x += 10
       //shape.center.y += 10
-      shape.rotation = countFrame
+
+      console.log(shape.vertices)
+
+      //shape.rotation = countFrame
+
+      //shape.center.x+=1
 
       shape.updateProperties();
 
@@ -205,7 +210,7 @@ const drawFrame = (time) => {
       shape.drawShape();
 
 
-      next += FPS;
+      next += msPerFrame;
       countFrame++;
     }
   }
