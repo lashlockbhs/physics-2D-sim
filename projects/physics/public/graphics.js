@@ -5,7 +5,9 @@ let height;
 let onclick = (x, y) => {};
 let onkeydown = (k) => {};
 
-document.onkeydown = (e) => onkeydown(e.key);
+document.onkeydown = (e) => {
+  onkeydown(e.key)
+};
 
 const registerOnclick = (fn) => (onclick = fn);
 const registerOnKeyDown = (fn) => (onkeydown = fn);
