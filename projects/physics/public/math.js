@@ -1,6 +1,7 @@
 //vector manipulation, stored in radians
-const shapeArea = (vArray) => {
-  return sigma(0, vArray.length - 2, (i) => vArray[i].x * vArray[i + 1].y - vArray[i + 1].x * vArray[i].y) / 2;
+const shapeArea = (vertices) => {
+  const verticeArray = vertices.concat(vertices[0]);
+  return Math.abs(sigma(0, verticeArray.length - 2, (i) => verticeArray[i].x * verticeArray[i + 1].y - verticeArray[i + 1].x * verticeArray[i].y) / 2);
 }
 
 const vector = (degrees, magnitude) => {
