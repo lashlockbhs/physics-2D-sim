@@ -1,16 +1,13 @@
-* {
-  padding: 10;
-  margin: 20px auto;
-}
 
-html,
-body {
-  height: 100%;
-  width: 100%;
-  text-align: center;
-}
 canvas {
+
   border: 1px dotted grey;
 }
+
+#menu {
+  background-color: rgb(196, 188, 188);
+  display: inline-block;
+}
+
 
 

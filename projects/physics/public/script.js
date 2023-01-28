@@ -7,11 +7,11 @@ import {
   height, 
   animate, 
   now,
-  registerOnKeyDown, 
-  registerOnclick, 
   drawFilledRect, 
   drawLine,
   drawText,
+  registerOnclick,
+  registerOnKeyDown,
 } from './graphics.js';
 
 import { 
@@ -36,8 +36,10 @@ import {
 
 const canvas = document.getElementById('screen');
 setCanvas(canvas);
+
 const msPerFrame = 1 // frames per second, consider changing to ms/frame
 //returns points that are 1 or less pixels away from eachother
+
 const closePoints = (ar1, ar2) =>
   ar1.filter((e) => (ar2.find((e2) => distance(e, e2) <= 1) != undefined ? true : false));
 
@@ -163,47 +165,51 @@ class Shape {
 const objArray = []
 let vertices = []
 
-let animateStart = false;
+let paused = true;
 
 registerOnclick((x, y) => {
-  if (!animateStart) {
+  if (paused) {
     drawFilledCircle(x, y, 1.7, 'black');
     vertices.push({ x, y });
   }
 });
 
 registerOnKeyDown((k) => {
-  if (k === " ") {
-    console.log(`'${k}'`);
-    if (!animateStart) {
+  if (k === "Enter") {
+    if (paused) {
       const area = Math.abs(shapeArea(vertices));
-      objArray.push(new Shape([vector(0, 0)], vertices, area * parseInt(document.getElementById('density').value)));
+      //objArray.push(new Shape([vector(0, 0)], vertices, area * parseInt(document.getElementById('density').value)));
+      objArray.push(new Shape([vector(0, 0)], vertices, 10));
       objArray[objArray.length - 1].drawShape()
       drawFilledCircle(objArray[objArray.length - 1].center.x, objArray[objArray.length - 1].center.y, 2.5, "red")
       vertices = []
-      animateStart = objArray.length >= 5 ? true : false
+      paused = objArray.length >= 5 ? false : true
     }
   }
+  else if (k === " "){
+    paused = true;
+  }
 })
+
 
 let next = 0;
 let countFrame = 0;
 const drawFrame = (time) => {
-  if (time > next && animateStart) {
+  if (time > next && !paused) {
     clear();
     for (const shape of objArray) {
       //shape.center.x += 10
       //shape.center.y += 10
 
-      console.log(shape.vertices)
+      //console.log(shape.vertices)
 
       //shape.rotation = countFrame
 
       //shape.center.x+=1
 
-      shape.updateProperties();
+      //shape.updateProperties();
 
-      const shapeBounds = shape.getBoundOfObject(1)
+      //const shapeBounds = shape.getBoundOfObject(1)
 
       drawFilledCircle(shape.center.x, shape.center.y, 2.5, "red")
 
