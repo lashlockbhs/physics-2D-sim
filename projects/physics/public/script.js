@@ -3,14 +3,11 @@ import {
   setCanvas, 
   drawFilledCircle, 
   clear, 
-  width, 
-  height, 
   animate, 
   now,
   drawFilledRect, 
   drawLine,
   drawText,
-  registerOnclick,
   registerOnKeyDown,
 } from './graphics.js';
 
@@ -35,7 +32,16 @@ import {
 } from './math.js';
 
 const canvas = document.getElementById('screen');
-setCanvas(canvas);
+const canvasProps = setCanvas(canvas);
+
+const width = canvasProps.width;
+const height = canvasProps.height;
+const ctx = canvasProps.ctx;
+
+
+
+
+
 
 const msPerFrame = 1 // frames per second, consider changing to ms/frame
 //returns points that are 1 or less pixels away from eachother
@@ -131,13 +137,13 @@ class Shape {
   }
 
   drawShape() {
-    drawText("mass " + this.mass, this.center.x, this.center.y, "black", 10)
+    drawText("mass " + this.mass, this.center.x, this.center.y, "black", 10, ctx)
     for (let i = 0; i < this.vertices.length; i++) {
       if (i + 1 === this.vertices.length) {
-        drawLine(this.vertices[i].x, this.vertices[i].y, this.vertices[0].x, this.vertices[0].y, 'black', 1)
+        drawLine(this.vertices[i].x, this.vertices[i].y, this.vertices[0].x, this.vertices[0].y, 'black', 1, ctx)
       }
       else {
-        drawLine(this.vertices[i].x, this.vertices[i].y, this.vertices[i + 1].x, this.vertices[i + 1].y, 'black', 1)
+        drawLine(this.vertices[i].x, this.vertices[i].y, this.vertices[i + 1].x, this.vertices[i + 1].y, 'black', 1, ctx)
       }
     }
   }
@@ -167,12 +173,12 @@ let vertices = []
 
 let paused = true;
 
-registerOnclick((x, y) => {
+const onclick = (x, y) => {
   if (paused) {
-    drawFilledCircle(x, y, 1.7, 'black');
+    drawFilledCircle(x, y, 1.7, 'black', ctx);
     vertices.push({ x, y });
   }
-});
+};
 
 registerOnKeyDown((k) => {
   if (k === "Enter") {
@@ -181,7 +187,7 @@ registerOnKeyDown((k) => {
       //objArray.push(new Shape([vector(0, 0)], vertices, area * parseInt(document.getElementById('density').value)));
       objArray.push(new Shape([vector(0, 0)], vertices, 10));
       objArray[objArray.length - 1].drawShape()
-      drawFilledCircle(objArray[objArray.length - 1].center.x, objArray[objArray.length - 1].center.y, 2.5, "red")
+      drawFilledCircle(objArray[objArray.length - 1].center.x, objArray[objArray.length - 1].center.y, 2.5, "red", ctx)
       vertices = []
       paused = objArray.length >= 5 ? false : true
     }
@@ -190,13 +196,14 @@ registerOnKeyDown((k) => {
     paused = true;
   }
 })
+canvas.onclick = (e) => onclick(e.offsetX, e.offsetY);
 
 
 let next = 0;
 let countFrame = 0;
 const drawFrame = (time) => {
   if (time > next && !paused) {
-    clear();
+    clear(ctx, width, height);
     for (const shape of objArray) {
       //shape.center.x += 10
       //shape.center.y += 10
@@ -211,7 +218,7 @@ const drawFrame = (time) => {
 
       //const shapeBounds = shape.getBoundOfObject(1)
 
-      drawFilledCircle(shape.center.x, shape.center.y, 2.5, "red")
+      drawFilledCircle(shape.center.x, shape.center.y, 2.5, "red", ctx)
 
       shape.drawShape();
 

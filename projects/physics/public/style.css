@@ -4,9 +4,19 @@ canvas {
   border: 1px dotted grey;
 }
 
-#menu {
-  background-color: rgb(196, 188, 188);
+#menuHolder {
   display: inline-block;
+  right: 20px;
+}
+#menu{
+  background-color: rgb(196, 188, 188);
+
+}
+#perfWindow{
+  background-color: rgb(196, 188, 188);
+}
+#shapeWindow{
+  background-color: rgb(196, 188, 188);
 }
 
 
