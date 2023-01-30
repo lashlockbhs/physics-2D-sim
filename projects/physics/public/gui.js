@@ -1,134 +1,97 @@
-import { clear, drawFilledRect, drawLine, drawText, setCanvas, } from "./graphics.js";
 import { getShapes } from "./script.js"
-const menuCanvas = document.getElementById("menu");
-const menuProps = setCanvas(menuCanvas);
-const ctx = menuProps.ctx;
-const width = menuProps.width;
-const height = menuProps.height;
 
 //https://stackoverflow.com/questions/4602141/variable-name-as-a-string-in-javascript
 const varToString = varObj => Object.keys(varObj)[0]
 
 
 class dropMenu {
-    constructor(options) {
+    constructor(options, menuHolder, hidden, xOffset, yOffset, boxWidth, boxHeight, textSize, child) {
+        this.child = child;
         this.options = options;
-        this.boxSize = 40;
-        this.textSize = this.boxSize / 3;
-        this.menuHolder = document.getElementById("menuHolder")
-        this.currentWindows = [{ name: "perfWindow", hidden: true, canvas: null }, { name: "shapeWindow", hidden: true, canvas: null }];
-        this.perfWindow = this.#createPerfWindow()
-        this.shapeWindow = this.#createShapeWindow()
+        this.boxWidth = boxWidth;
+        this.boxHeight = boxHeight;
+        this.textSize = textSize;
+        this.menuHolder = menuHolder
+        this.currentWindows = [];
+        this.hidden = hidden;
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
+        this.elArray = []
 
-        this.currentWindows[0].canvas = this.perfWindow;
-        this.currentWindows[1].canvas = this.shapeWindow;
-        console.log(this.currentWindows)
-
-
-    }
-    drawMenuBlocks() {
+        //create button/option elements as divs
         for (let i = 0; i < this.options.length; i++) {
-            drawLine(0, this.boxSize * (i + 1), width, this.boxSize * (i + 1), "black", 1, ctx)
-            drawText(this.options[i].text, 0, this.boxSize * (i + 1) - this.boxSize / 3, "black", this.textSize, ctx)
+            const div = document.createElement("div");
+            div.setAttribute("id", this.options[i].text);
+            div.style.width = this.boxWidth + "px";
+            div.style.height = this.boxHeight + "px";
+            let text = document.createTextNode(this.options[i].text);
+            div.append(text);
+            div.style.fontSize = this.textSize + "px";
+            div.style.position = "relative";
+            div.style.left = this.xOffset + "px";
+            div.style.top = this.yOffset + "px";
+
+            //this.hidden ? div.style.display="none" : div.style.display="grid"
+
+
+            div.onmousedown = (e) => { this.onClick(div); e.stopPropagation() };
+            div.onmouseup = (e) => { this.refresh(div); e.stopPropagation()};
+            div.onmousemove = (e) => { this.onHover(div); e.stopPropagation() };
+            div.onmouseleave = (e) => { this.refresh(div); e.stopPropagation()}; //stoppropagation from chatgbt
+
+            this.elArray.push(div);
+            this.menuHolder.append(div);
+
         }
     }
-    #hideAllWindows() {
-        this.currentWindows.forEach(e => this.#hideWindow(e.canvas))
+    #showAllEl() {
+        this.elArray.forEach(e => this.#showEl(e));
     }
-    #hideWindow(canvas) {
-        canvas.setAttribute("hidden", "hidden");
-        this.currentWindows[this.currentWindows.findIndex(e => e.name === canvas.id)].hidden = true;
+    #hideAllEl() {
+        this.elArray.forEach(e => this.#hideEl(e));
     }
-    #showWindow(canvas) {
-        canvas.removeAttribute("hidden");
-        this.currentWindows[this.currentWindows.findIndex(e => e.name === canvas.id)].hidden = false;
+    #hideEl(el) {
+        el.style.display = "none";
     }
-    #checkIfDisplayed(canvas) {
-        return !canvas.hidden;
+    #showEl(el) {
+        el.style.display = "grid";
     }
-    #createPerfWindow() {
-        const perfWindow = document.createElement("canvas");
-        perfWindow.setAttribute("id", "perfWindow");
-
-        perfWindow.width = 70;
-        perfWindow.height = 110;
-
-        this.#hideWindow(perfWindow);
-
-        this.menuHolder.append(perfWindow);
-        return perfWindow;
+    onClick(el) {
+        el.style.backgroundColor = "rgb(105, 102, 102)";
+        this.child.hidden ? this.child.hidden = false : this.child.hidden = true;
     }
-    #createShapeWindow() {
-        const shapeWindow = document.createElement("canvas");
-        shapeWindow.setAttribute("id", "shapeWindow");
-
-        shapeWindow.width = 70;
-        shapeWindow.height = 110;
-
-        this.#hideWindow(shapeWindow);
-
-        this.menuHolder.append(shapeWindow);
-
-        const canvasProps = setCanvas(shapeWindow);
-        const width = canvasProps.width;
-        const height = canvasProps.height;
-        const ctx = canvasProps.ctx;
-
-        for (let i = 0; i<5; i++){
-            console.log("Df")
-            drawLine(0, (this.boxSize/2) * (i + 1), width, (this.boxSize/2) * (i + 1), "black", 1, ctx)
-        }
-
-        return shapeWindow;
+    onHover(el) {
+        el.style.backgroundColor = "rgb(155, 151, 151)";
     }
-    #shapeWindowChangables(){
-        
-    }
-
-    onClick(x, y) {
-        const boxNum = Math.floor(y / this.boxSize);
-        if(boxNum<this.options.length){
-            clear(ctx, width, height)
-            drawFilledRect(0, this.boxSize * boxNum, width, this.boxSize, "#63666A", ctx);
-            this.drawMenuBlocks();
-        }
-        if (boxNum === 0) {
-            if (this.#checkIfDisplayed(this.perfWindow)) {
-                this.#hideWindow(this.perfWindow)
-            }
-            else {
-                this.#hideAllWindows()
-                this.#showWindow(this.perfWindow)
-            }
-        }
-        else if (boxNum === 1) {
-            if (this.#checkIfDisplayed(this.shapeWindow)) {
-                this.#hideWindow(this.shapeWindow)
-            }
-            else {
-                this.#hideAllWindows()
-                this.#showWindow(this.shapeWindow)
-            }
-        }
-    }
-    onHover(x, y) {
-        const boxNum = Math.floor(y / this.boxSize);
-        if(boxNum<this.options.length){
-            clear(ctx, width, height)
-            drawFilledRect(0, this.boxSize * boxNum, width, this.boxSize, "#ABB0B8", ctx);
-            this.drawMenuBlocks();
-        }
-    }
-    refresh(canvasProp) {
-        clear(canvasProp.ctx, canvasProp.width, canvasProp.height);
-        this.drawMenuBlocks();
+    refresh(el) {
+        el.style.backgroundColor = "rgb(180, 171, 171)";
     }
 }
 
-const menu = new dropMenu([{ text: "Perfect Shapes", options: ["square", "cirlce", "rect", "triange"] }, { text: "Shapes", options: getShapes() }, { text: "World Settings" }, { text: "Debugging" }])
-menu.drawMenuBlocks()
 
-menuCanvas.onmousedown = (e) => menu.onClick(e.offsetX, e.offsetY);
-menuCanvas.onmouseup = (e) => menu.refresh(menuProps)
-menuCanvas.onmousemove = (e) => menu.onHover(e.offsetX, e.offsetY);
-menuCanvas.onmouseout = (e) => menu.refresh(menuProps)
+const baseMenu = new dropMenu
+    (
+        [{ text: "Perfect Shapes" }, { text: "Shapes" }, { text: "World Settings" }, { text: "Debugging" }],//menu text
+
+        document.getElementById("menuHolder"), //
+        false, //hidden?
+        0, //xoffset
+        0, //yoffset
+        60, //buttonWidth
+        30, //buttonheight
+        12, //textSize
+    )
+const perfShapesMenu = new dropMenu
+    (
+        [{ text: "Square" }, { text: "Cirlce" }, { text: "Rect" }, { text: "Triange" }], //menu text
+        document.getElementById("Perfect Shapes"), //
+        true, //hidden?
+        100, //xoffset
+        0,  ///yoffset
+        50, //buttonWidth
+        10, //buttonheight
+        10, //textSize
+
+    )
+
+baseMenu.child = perfShapesMenu;
