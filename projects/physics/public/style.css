@@ -4,6 +4,8 @@ canvas {
 }
 
 #menuHolder {
+  width: 0px;
+  height: 0px;
   user-select: none; 
   background-color: rgb(187, 185, 185);
   display: inline-block;

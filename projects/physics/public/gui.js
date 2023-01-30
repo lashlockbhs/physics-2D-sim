@@ -5,13 +5,13 @@ const varToString = varObj => Object.keys(varObj)[0]
 
 
 class dropMenu {
-    constructor(options, menuHolder, hidden, xOffset, yOffset, boxWidth, boxHeight, textSize, child) {
-        this.child = child;
+    constructor(options, menuHolder, hidden, xOffset, yOffset, boxWidth, boxHeight, textSize) {
+        this.childs = [];
         this.options = options;
         this.boxWidth = boxWidth;
         this.boxHeight = boxHeight;
         this.textSize = textSize;
-        this.menuHolder = menuHolder
+        this.menuHolder = menuHolder;
         this.currentWindows = [];
         this.hidden = hidden;
         this.xOffset = xOffset;
@@ -30,8 +30,7 @@ class dropMenu {
             div.style.position = "relative";
             div.style.left = this.xOffset + "px";
             div.style.top = this.yOffset + "px";
-
-            //this.hidden ? div.style.display="none" : div.style.display="grid"
+            this.hidden ? div.style.display="none" : div.style.display="grid"
 
 
             div.onmousedown = (e) => { this.onClick(div); e.stopPropagation() };
@@ -44,10 +43,10 @@ class dropMenu {
 
         }
     }
-    #showAllEl() {
+    showAllEl() {
         this.elArray.forEach(e => this.#showEl(e));
     }
-    #hideAllEl() {
+    hideAllEl() {
         this.elArray.forEach(e => this.#hideEl(e));
     }
     #hideEl(el) {
@@ -58,7 +57,18 @@ class dropMenu {
     }
     onClick(el) {
         el.style.backgroundColor = "rgb(105, 102, 102)";
-        this.child.hidden ? this.child.hidden = false : this.child.hidden = true;
+        const child = this.childs.find(e => e.button === el);
+        console.log(child.el.hidden);
+        if(child.el.hidden){
+            child.el.showAllEl();
+            child.el.hidden = false;
+
+        }
+        else{
+
+            child.el.hideAllEl();
+            child.el.hidden = true;
+        }
     }
     onHover(el) {
         el.style.backgroundColor = "rgb(155, 151, 151)";
@@ -79,19 +89,19 @@ const baseMenu = new dropMenu
         0, //yoffset
         60, //buttonWidth
         30, //buttonheight
-        12, //textSize
+        11, //textSize
     )
 const perfShapesMenu = new dropMenu
     (
         [{ text: "Square" }, { text: "Cirlce" }, { text: "Rect" }, { text: "Triange" }], //menu text
-        document.getElementById("Perfect Shapes"), //
-        true, //hidden?
-        100, //xoffset
-        0,  ///yoffset
+        document.getElementById("menuHolder"), //
+        false, //hidden?
+        70, //xoffset
+        -128,  ///yoffset
         50, //buttonWidth
         10, //buttonheight
         10, //textSize
 
     )
 
-baseMenu.child = perfShapesMenu;
+baseMenu.childs.push({el : perfShapesMenu, button : baseMenu.elArray.find(e => e.id === "Perfect Shapes")});
