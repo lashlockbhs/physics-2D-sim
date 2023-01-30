@@ -104,7 +104,7 @@ const drawPoints = (ar, color) => {
 }
 
 class Shape {
-  constructor(actingForces, vertices, mass) {
+  constructor(actingForces, vertices, mass, name) {
     this.vertices = vertices;
     this.vertBase = vertices;
     this.baseDifs = []//the pos of the verticies relitive to the center, in replacment of the "sides" athgorithm
@@ -185,10 +185,11 @@ registerOnKeyDown((k) => {
     if (paused) {
       const area = Math.abs(shapeArea(vertices));
       //objArray.push(new Shape([vector(0, 0)], vertices, area * parseInt(document.getElementById('density').value)));
-      objArray.push(new Shape([vector(0, 0)], vertices, 10));
+      objArray.push(new Shape([vector(0, 0)], vertices, 10, ("shape" + (objArray.indexOf(objArray[objArray.length - 1])+1))));
       objArray[objArray.length - 1].drawShape()
       drawFilledCircle(objArray[objArray.length - 1].center.x, objArray[objArray.length - 1].center.y, 2.5, "red", ctx)
       vertices = []
+
       paused = objArray.length >= 5 ? false : true
     }
   }
@@ -198,6 +199,7 @@ registerOnKeyDown((k) => {
 })
 canvas.onclick = (e) => onclick(e.offsetX, e.offsetY);
 
+const getShapes = () => objArray;
 
 let next = 0;
 let countFrame = 0;
@@ -210,11 +212,11 @@ const drawFrame = (time) => {
 
       //console.log(shape.vertices)
 
-      //shape.rotation = countFrame
+      shape.rotation = countFrame
 
-      //shape.center.x+=1
+      shape.center.x+=1
 
-      //shape.updateProperties();
+      shape.updateProperties();
 
       //const shapeBounds = shape.getBoundOfObject(1)
 
@@ -232,5 +234,5 @@ const drawFrame = (time) => {
 animate(drawFrame);
 
 export {
-
+  getShapes
 }
