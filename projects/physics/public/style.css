@@ -13,13 +13,6 @@ canvas {
   display: inline-flex;
   align-items: center;
 }
-
-div#triangle{
-  display: inline-flexbox;
-  transform: scale(0.5);
-  width: auto;
-  height: 10px;
-}
 #menuHolder div{ 
   position: relative;
   
