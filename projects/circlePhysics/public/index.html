@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+
+  <meta charset="utf-8">
+  <meta content="width=device-width,initial-scale=1" name="viewport">
+  <title>Simple animation</title>
+  <link href="style.css" rel="stylesheet" type="text/css">
+  <script src="script.js" type="module"></script>
+</head>
+
+<label for="density"> Density (constant), kg/pixel:</label>
+<input type="number" id="density" name="density" value="100" min="0">
+<!-- stolen from mdn xd trolled diots https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/number-->
+
+<label for="radius"> -- Radius for perfect shapes, constant --</label>
+<input type="number" id="radius" name="radius" min="0" max="500">
+<!-- ALSO stolen from mdn https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/number-->
+<label for="shape-select">-- Perfect Shapes (check README.md) --</label>
+
+<select name="shapes" id="shape-select">
+  <option value="line">Line</option>
+  <option value="circle">Circle</option>
+  <option value="60triangle">Equilateral triangle</option>
+  <option value="90triangle">Right triangle</option>
+  <option value="square">Square</option>
+  <option value="12Rect">1 to 2 rectangle</option>
+  <option value="23Rect">2 to 3 rectangle</option>
+  <option value="34Rect">3 to 4 rectangle</option>
+  <option value="60-120Rhombus">A rhombus with 2x 60° and 2x 120°</option>
+  <option value="pentagon">Pentagon with same angles</option>
+  <option value="hexagon">Hexagon with same angles</option>
+  <option value="septagon">Septagon (7 side) with same angles</option>
+  <option value="octagon">Octagon with same angles</option>
+  <option value="nonagon">Nonagon (9 side) with same angles</option>
+  <option value="decagon">Decagon (10 sides) with same angles</option>
+</select>
+<!--stolen mdn yee haw https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select-->
+<body>
+  <canvas id="screen" width="1000" height="600"></canvas>
+</body>
+
+</html>
