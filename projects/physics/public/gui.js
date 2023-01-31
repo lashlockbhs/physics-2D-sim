@@ -18,44 +18,25 @@ class dropMenu {
         this.yOffset = yOffset;
         this.elArray = [];
         this.headbar;
+        this.optionsHidden = hidden;
         this.#createElements()
     }
-    #createElements(){
+    #createElements() {
         this.headbar = document.createElement("div");
         this.headbar.setAttribute("id", "headbar");
         this.headbar.style.width = this.boxWidth + "px";
         this.headbar.style.height = 10 + "px";
         this.headbar.style.left = this.xOffset + "px";
         this.headbar.style.top = this.yOffset + "px";
-        //this.headbar.ondrag
-        this.menuHolder.append(this.headbar);
-
-        const triUp = "&#9650;";
-        const triDown = "&#9660;";
-        let state = "down";
-        const triangle = document.createElement("div")
-        triangle.setAttribute("id", "triangle")
-        triangle.innerHTML = (triDown);
-        this.headbar.append(triangle);
-
-        triangle.onclick = () => 
-        {
-            if(state === "up"){
-                triangle.innerHTML = triDown;
-                console.log(triangle.innerHTML + " down")
-                state = "down"
-                this.showAllEl();
-            }
-            else{
-                triangle.innerHTML = triUp;
-                console.log(triangle.innerHTML + " up")
-                state = "up"
-                this.hideAllEl();
+        this.headbar.onclick = (e) => {
+            if (e.target === this.headbar) {
+                console.log("clicked")
+                this.optionsHidden ? this.showAllEl() : this.hideAllEl()
+                console.log(this.optionsHidden)
             }
         };
-        
-        
 
+        this.menuHolder.append(this.headbar);
 
         //create button/option elements as divs
         for (let i = 0; i < this.options.length; i++) {
@@ -69,7 +50,7 @@ class dropMenu {
             div.style.top = 10 + "px";
             div.style.left = -1 + "px";
             this.hidden ? div.style.visibility = "hidden" : div.style.display = "grid";
-            
+
 
             div.onmousedown = (e) => { this.onClick(div); e.stopPropagation() };
             div.onmouseup = (e) => { this.refresh(div); e.stopPropagation() };
@@ -80,21 +61,24 @@ class dropMenu {
             this.headbar.append(div);
 
         }
-        console.log(this.elArray)
     }
     hideMenu() {
+
         this.headbar.style.visibility = "hidden";
         this.hideAllEl();
     }
     showMenu() {
         this.headbar.style.visibility = "visible";
-        //this.showAllEl();
+        this.showAllEl()
+
     }
     showAllEl() {
         this.elArray.forEach(e => this.#showEl(e));
+        this.optionsHidden = false;
     }
     hideAllEl() {
         this.elArray.forEach(e => this.#hideEl(e));
+        this.optionsHidden = true;
     }
     #hideEl(el) {
         el.style.visibility = "hidden"
@@ -108,10 +92,8 @@ class dropMenu {
         if (child.el.hidden) {
             child.el.showMenu();
             child.el.hidden = false;
-
         }
         else {
-
             child.el.hideMenu();
             child.el.hidden = true;
         }
@@ -125,7 +107,7 @@ class dropMenu {
     refresh(el) {
         el.style.backgroundColor = "rgb(180, 171, 171)";
     }
-    
+
 }
 
 
@@ -143,7 +125,7 @@ const baseMenu = new dropMenu
     )
 const perfShapesMenu = new dropMenu
     (
-        [{ text: "Square" }, { text: "Cirlce" }, { text: "Rect" }, { text: "Triange" }], //menu text
+        [{ text: "Square" }, { text: "Circle" }, { text: "Rect" }, { text: "Triangle" }], //menu text
         document.getElementById("menuHolder"), //
         false, //hidden?
         10, //xoffset
@@ -153,5 +135,80 @@ const perfShapesMenu = new dropMenu
         10, //textSize
 
     )
+const shapeMenu = new dropMenu
+    (
+        [{ text: "shape1" }, { text: "shape2" }, { text: "shape3" }, { text: "shape4" }], //menu text
+        document.getElementById("menuHolder"),
+        false, //hidden?
+        10, //xoffset
+        0,  ///yoffset
+        50, //buttonWidth
+        10, //buttonheight
+        10, //textSize
 
-baseMenu.childs.push({ el: perfShapesMenu, button: baseMenu.elArray.find(e => e.id === "Perfect Shapes") });
+    )
+    const shapeMenu = new dropMenu
+    (
+        [{ text: "shape1" }, { text: "shape2" }, { text: "shape3" }, { text: "shape4" }], //menu text
+        document.getElementById("menuHolder"),
+        false, //hidden?
+        10, //xoffset
+        0,  ///yoffset
+        50, //buttonWidth
+        10, //buttonheight
+        10, //textSize
+
+    )
+    const shapeMenu = new dropMenu
+    (
+        [{ text: "shape1" }, { text: "shape2" }, { text: "shape3" }, { text: "shape4" }], //menu text
+        document.getElementById("menuHolder"),
+        false, //hidden?
+        10, //xoffset
+        0,  ///yoffset
+        50, //buttonWidth
+        10, //buttonheight
+        10, //textSize
+
+    )
+    const shapeMenu = new dropMenu
+    (
+        [{ text: "shape1" }, { text: "shape2" }, { text: "shape3" }, { text: "shape4" }], //menu text
+        document.getElementById("menuHolder"),
+        false, //hidden?
+        10, //xoffset
+        0,  ///yoffset
+        50, //buttonWidth
+        10, //buttonheight
+        10, //textSize
+
+    )
+    const shapeMenu = new dropMenu
+    (
+        [{ text: "shape1" }, { text: "shape2" }, { text: "shape3" }, { text: "shape4" }], //menu text
+        document.getElementById("menuHolder"),
+        false, //hidden?
+        10, //xoffset
+        0,  ///yoffset
+        50, //buttonWidth
+        10, //buttonheight
+        10, //textSize
+
+    )
+    const shapeMenu = new dropMenu
+    (
+        [{ text: "shape1" }, { text: "shape2" }, { text: "shape3" }, { text: "shape4" }], //menu text
+        document.getElementById("menuHolder"),
+        false, //hidden?
+        10, //xoffset
+        0,  ///yoffset
+        50, //buttonWidth
+        10, //buttonheight
+        10, //textSize
+
+    )
+
+baseMenu.childs.push(
+    { el: perfShapesMenu, button: baseMenu.elArray.find(e => e.id === "Perfect Shapes") },
+    { el: shapeMenu, button: baseMenu.elArray.find(e => e.id === "Shapes") }
+);
