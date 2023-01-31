@@ -8,19 +8,34 @@ canvas {
   height: 0px;
   user-select: none; 
   background-color: rgb(187, 185, 185);
-  display: inline-block;
   position: absolute;
   margin-left: 10px;
+  display: inline-flex;
+  align-items: center;
 }
-#menuHolder div{  
-  text-align: center;
 
+div#triangle{
+  display: inline-flexbox;
+  transform: scale(0.5);
+  width: auto;
+  height: 10px;
+}
+#menuHolder div{ 
+  position: relative;
+  
+  display: grid;
+  place-items: center;
+  text-align: center;
   font-family: Arial, Helvetica, sans-serif;
   background-color: rgb(180, 171, 171);
   border-style:solid;
   border-width: 1px;
   border-color: rgb(105, 102, 102);
 
+}
+#headbar{
+  display: in;
+  align-items: center; 
 }
 #test{
 background-color: rgb(105, 102, 102);
