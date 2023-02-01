@@ -12,6 +12,7 @@ import {
   drawFilledRect, 
   drawLine,
   drawText,
+  drawCircle,
 } from './graphics.js';
 
 import { 
@@ -36,14 +37,16 @@ import {
 
 const canvas = document.getElementById('screen');
 setCanvas(canvas);
-//vector manipulation
+
 
 //global
 let Theme = {background: 'black', draw: 'white', accents: 'red'}
-let Density = 100 // measured in kg/pixel, redefine in REPL
+let Density = document.getElementById('density').value // measured in kg/pixel, redefine in REPL
 drawFilledRect(0, 0, width, height, Theme.background) 
 const ObjArray = []
 let CircleCoords = []
+let animateStart = false
+const secPerFrame = 3
 
 //object
 const evalCollisions = (object) =>{
@@ -57,11 +60,11 @@ const evalCollisions = (object) =>{
     }
     index++
   }
-  //console.log('collisions;',JSON.stringify(collisions))
+  console.log('collisions;',JSON.stringify(collisions))
   let col = 0
   for (const element of collisions){
-    returnObject.x = avg([object.x, element.source.x])
-    returnObject.y = avg([object.y, element.source.y])
+    returnObject.x = mean([object.x, element.source.x])
+    returnObject.y = mean([object.y, element.source.y])
     returnObject.area += element.source.area
     returnObject.radius = Math.sqrt(object.area)/Math.PI
     returnObject.force.concat(element.force)
@@ -92,7 +95,7 @@ const initDraw = (coordArray) => {
     const radius = Math.hypot(Math.abs(coordArray[0].x-coordArray[1].x),Math.abs(coordArray[0].y-coordArray[1].y))
     const force = [vector(
     twoPointAngle(coordArray[0], coordArray[2]),
-    twoPointDist(coordArray[0], coordArray[2])
+    Math.hypot(twoPointXYDif(coordArray[0], coordArray[2]).xDif, twoPointXYDif(coordArray[0], coordArray[2]).yDif)
     )]
     drawCircle(coordArray[0].x, coordArray[0].y, radius, Theme.draw)
     drawLine(coordArray[0].x, coordArray[0].y, coordArray[2].x, coordArray[2].y, 1, 'Theme.draw')
@@ -106,17 +109,33 @@ registerOnclick((x, y) => {
   CircleCoords.push({ x, y })
   initDraw(CircleCoords)
 })
+registerOnKeyDown((k) =>{
+  console.log(`'${k}'`)
+  if (k === 'Enter'){
+    animateStart = !animateStart
+  } else if (k === 'ArrowUp'){
+    //do things
+  }
+})
 
-const nextFrame = () =>{
+let next = 0
+let countFrame = 0
+const nextFrame = (time) =>{
+  if (time > next && animateStart) {
   CircleCoords = []
   clear()
   drawFilledRect(0, 0, width, height, Theme.background)
   let index = 0
   for (let element of ObjArray){
     ObjArray[index] = evalCollisions(element)
-    console.log('element', index, JSON.stringify(element))
     element.draw()
     index++
     element.force = addNumVectors(element.force)
   }
+  console.log(ObjArray)
+  time+= secPerFrame
+  countFrame++
+  }
 }
+
+animate(nextFrame)

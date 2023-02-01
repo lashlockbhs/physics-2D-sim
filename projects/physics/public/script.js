@@ -36,7 +36,7 @@ import {
 
 const canvas = document.getElementById('screen');
 setCanvas(canvas);
-const FPS = 12 // frames per second, consider changing to ms/frame
+const msPerFrame = 12 // frames per second, consider changing to ms/frame
 //returns points that are 1 or less pixels away from eachother
 const closePoints = (ar1, ar2) =>
   ar1.filter((e) => (ar2.find((e2) => distance(e, e2) <= 1) != undefined ? true : false));
@@ -205,7 +205,7 @@ const drawFrame = (time) => {
       shape.drawShape();
 
 
-      next += FPS;
+      next += msPerFrame;
       countFrame++;
     }
   }
