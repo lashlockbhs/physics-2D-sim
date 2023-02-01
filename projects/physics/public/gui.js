@@ -102,6 +102,12 @@ class Menu {
         this.headbar.onmousemove = whileDragging;
         this.menuHolder.append(this.headbar);
     }
+    createWindow(width, height, objects){
+        const window =  document.createElement("div");
+        window.setAttribute("id", "window");
+        this.headbar.append(window)
+
+    }
     #setTranslate(xPos, yPos, el) {
         el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
     }
@@ -154,6 +160,8 @@ class Menu {
 }
 
 
+const shapes = getShapes();
+
 const baseMenu = new Menu
     (
         [{ text: "Perfect Shapes" }, { text: "Shapes" }, { text: "World Settings" }, { text: "Debugging" }],//menu text
@@ -178,9 +186,10 @@ const perfShapesMenu = new Menu
         10, //textSize
 
     )
+    
 const shapeMenu = new Menu
     (
-        [{ text: getShapes }, { text: "shape2" }, { text: "shape3" }, { text: "shape4" }], //menu text
+        [{ text:  }, { text: "shape2" }, { text: "shape3" }, { text: "shape4" }], //menu text
         document.getElementById("menuHolder"),
         true, //hidden?
         -42, //xoffset
