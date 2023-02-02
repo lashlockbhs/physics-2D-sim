@@ -34,6 +34,12 @@ import {
   getDisplacement,
 } from './math.js';
 
+import {
+  drawEquilateralTriangle,
+  drawSquare,
+  drawPentagon
+} from './perfectShapes.js';
+
 const canvas = document.getElementById('screen');
 setCanvas(canvas);
 const FPS = 12 // frames per second, consider changing to ms/frame
@@ -100,7 +106,7 @@ class Shape {
     this.vertices = vertices;
     this.vertBase = vertices;
     this.baseDifs = []//the pos of the verticies relitive to the center, in replacment of the "sides" athgorithm
-    this.mass = mass
+    this.mass = Math.abs(Math.round(mass))
     this.centerBase = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y }
     this.center = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y }
     this.rotation = 0
@@ -164,6 +170,8 @@ const objArray = []
 let vertices = []
 
 let animateStart = false;
+objArray.push(drawSquare({x: 100, y: 100}, 50, [{angle: 1, magnitude: 45}]));
+objArray[0].drawShape;
 
 registerOnclick((x, y) => {
   if (!animateStart) {
@@ -216,5 +224,4 @@ animate(drawFrame);
 export {
   canvas,
   Shape
-}
-
+};
