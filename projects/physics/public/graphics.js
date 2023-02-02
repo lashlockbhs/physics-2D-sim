@@ -2,11 +2,11 @@ let ctx;
 let width;
 let height;
 
-let onclick = (x, y) => {};
-let onkeydown = (k) => {};
+let onclick = (x, y) => { };
+let onkeydown = (k) => { };
 
 document.onkeydown = (e) => {
-  onkeydown(e.key)
+  onkeydown(e.key);
 };
 
 const registerOnclick = (fn) => (onclick = fn);
@@ -82,7 +82,7 @@ const drawRoundedRect = (x, y, width, height, topLeft, topRight, bottomLeft, bot
   ctx.beginPath();
   ctx.roundRect(x, y, width, height, arrOfRadii);
   ctx.stroke();
-}
+};
 
 const drawFilledRoundedRect = (x, y, width, height, topLeft, topRight, bottomLeft, bottomRight, color) => {
   const arrOfRadii = [topLeft, topRight, bottomLeft, bottomRight];
@@ -91,7 +91,7 @@ const drawFilledRoundedRect = (x, y, width, height, topLeft, topRight, bottomLef
   ctx.roundRect(x, y, width, height, arrOfRadii);
   ctx.stroke();
   ctx.fill();
-}
+};
 
 const drawText = (text, x, y, color, size) => {
   ctx.font = `${size}px Lexend`;

@@ -19,13 +19,13 @@ import {
   registerOnKeyDown,
 } from './graphics.js';
 
-import {
-  Shape
-} from './script.js'
+import { 
+  Shape 
+} from './script.js';
 
-import {
-  shapeArea
-} from './math.js'
+import { 
+  shapeArea 
+} from './math.js';
 
 const drawPerfectCircle = (o1, radius, vector) => {
   drawCircle(o1.x, o1.y, radius, 'black', 1);
