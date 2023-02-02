@@ -6,7 +6,7 @@ let onclick = (x, y) => {};
 let onkeydown = (k) => {};
 
 document.onkeydown = (e) => {
-  onkeydown(e.key)
+  onkeydown(e.key);
 };
 
 const registerOnclick = (fn) => (onclick = fn);
