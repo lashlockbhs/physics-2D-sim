@@ -1,42 +1,41 @@
-
-import { 
-  setCanvas, 
-  drawFilledCircle, 
-  clear, 
-  width, 
-  height, 
-  animate, 
+import {
+  setCanvas,
+  drawFilledCircle,
+  clear,
+  width,
+  height,
+  animate,
   now,
-  registerOnKeyDown, 
-  registerOnclick, 
-  drawFilledRect, 
+  registerOnKeyDown,
+  registerOnclick,
+  drawFilledRect,
   drawLine,
   drawText,
 } from './graphics.js';
 
-import { 
-  add2Vectors, 
-  vectorMultiply, 
-  addNumVectors, 
-  sigma, 
-  pi, 
-  degToRad, 
-  radToDeg, 
-  mean, 
-  geoMean, 
-  twoPointAngle, 
-  distance, 
+import {
+  add2Vectors,
+  vectorMultiply,
+  addNumVectors,
+  sigma,
+  pi,
+  degToRad,
+  radToDeg,
+  mean,
+  geoMean,
+  twoPointAngle,
+  distance,
   shapeArea,
-  getAcceleration, 
-  getVelocity, 
-  vector, 
+  getAcceleration,
+  getVelocity,
+  vector,
   twoPointXYDif,
   getDisplacement,
 } from './math.js';
 
 const canvas = document.getElementById('screen');
 setCanvas(canvas);
-const FPS = 12 // frames per second, consider changing to ms/frame
+const FPS = 12; // frames per second, consider changing to ms/frame
 //returns points that are 1 or less pixels away from eachother
 const closePoints = (ar1, ar2) =>
   ar1.filter((e) => (ar2.find((e2) => distance(e, e2) <= 1) != undefined ? true : false));
@@ -53,12 +52,12 @@ const collisions = (shapes) => {
     }
   }
   return collisions;
-}
+};
 
 const getBoundCenter = (arr) => {
   const findCentroid = (points) => {
     const pts = points.concat(points[0]);
-    const area = shapeArea(pts)
+    const area = shapeArea(pts);
     const x =
       sigma(
         0,
@@ -91,77 +90,99 @@ const rotate = (cx, cy, x, y, angle) => {
 
 const drawPoints = (ar, color) => {
   for (const point of ar) {
-    drawLine(point.x, point.y, point.x + 1, point.y + 1, color, 1)
+    drawLine(point.x, point.y, point.x + 1, point.y + 1, color, 1);
   }
-}
+};
 
 class Shape {
   constructor(actingForces, vertices, mass) {
     this.vertices = vertices;
     this.vertBase = vertices;
-    this.baseDifs = []//the pos of the verticies relitive to the center, in replacment of the "sides" athgorithm
-    this.mass = mass
-    this.centerBase = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y }
-    this.center = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y }
-    this.rotation = 0
-    this.lastRotation = 0
-    this.actingForce = [addNumVectors(actingForces)]
+    this.baseDifs = []; //the pos of the verticies relitive to the center, in replacment of the "sides" athgorithm
+    this.mass = mass;
+    this.centerBase = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y };
+    this.center = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y };
+    this.rotation = 0;
+    this.lastRotation = 0;
+    this.actingForce = [addNumVectors(actingForces)];
     for (const vert of this.vertices) {
-      this.baseDifs.push(twoPointXYDif(vert, { x: this.centerBase.x, y: this.centerBase.y }))
+      this.baseDifs.push(twoPointXYDif(vert, { x: this.centerBase.x, y: this.centerBase.y }));
     }
   }
   #getVertDifs() {
-    this.vertDifs = this.baseDifs.map(e => {
-      const rotateCords = rotate(this.centerBase.x, this.centerBase.y, this.centerBase.x + e.xDif, this.centerBase.y + e.yDif, this.rotation)
-      return { xDif: rotateCords[0] - this.centerBase.x, yDif: rotateCords[1] - this.centerBase.y, rotation: this.rotation }
-    })
+    this.vertDifs = this.baseDifs.map((e) => {
+      const rotateCords = rotate(
+        this.centerBase.x,
+        this.centerBase.y,
+        this.centerBase.x + e.xDif,
+        this.centerBase.y + e.yDif,
+        this.rotation,
+      );
+      return {
+        xDif: rotateCords[0] - this.centerBase.x,
+        yDif: rotateCords[1] - this.centerBase.y,
+        rotation: this.rotation,
+      };
+    });
   }
   //should be called everytime you update this opjects varibles outside of the class
   updateProperties() {
-
     //rotate vertDifs
-    this.#getVertDifs()
+    this.#getVertDifs();
     //calc vertices pos based on centroid
     const newVertPos = this.vertices.map((e, i) => {
-      return { x: this.center.x + this.vertDifs[i].xDif, y: this.center.y + this.vertDifs[i].yDif }
+      return { x: this.center.x + this.vertDifs[i].xDif, y: this.center.y + this.vertDifs[i].yDif };
     });
     this.vertices = newVertPos;
   }
 
   drawShape() {
-    drawText("mass " + this.mass, this.center.x, this.center.y, "black", 10)
+    drawText('mass ' + this.mass, this.center.x, this.center.y, 'black', 10);
     for (let i = 0; i < this.vertices.length; i++) {
       if (i + 1 === this.vertices.length) {
-        drawLine(this.vertices[i].x, this.vertices[i].y, this.vertices[0].x, this.vertices[0].y, 'black', 1)
-      }
-      else {
-        drawLine(this.vertices[i].x, this.vertices[i].y, this.vertices[i + 1].x, this.vertices[i + 1].y, 'black', 1)
+        drawLine(
+          this.vertices[i].x,
+          this.vertices[i].y,
+          this.vertices[0].x,
+          this.vertices[0].y,
+          'black',
+          1,
+        );
+      } else {
+        drawLine(
+          this.vertices[i].x,
+          this.vertices[i].y,
+          this.vertices[i + 1].x,
+          this.vertices[i + 1].y,
+          'black',
+          1,
+        );
       }
     }
   }
   //if detail = 2 then num points 2x
   getBoundOfObject(detail) {
-    let array = []
+    let array = [];
     for (let i = 0; i < this.vertices.length; i++) {
-      let xAdd, yAdd, dist, numPoints
+      let xAdd, yAdd, dist, numPoints;
       //set j to 0 for last side to go to orgin point
-      const j = i + 1 === this.vertices.length ? 0 : i + 1
+      const j = i + 1 === this.vertices.length ? 0 : i + 1;
 
       dist = distance(this.vertices[i], this.vertices[j]);
-      numPoints = dist * detail
+      numPoints = dist * detail;
       xAdd = (this.vertices[j].x - this.vertices[i].x) / numPoints;
       yAdd = (this.vertices[j].y - this.vertices[i].y) / numPoints;
 
       for (let j = 0; j < Math.floor(numPoints); j++) {
-        array.push({ x: this.vertices[i].x + (xAdd * j), y: this.vertices[i].y + (yAdd * j) })
+        array.push({ x: this.vertices[i].x + xAdd * j, y: this.vertices[i].y + yAdd * j });
       }
     }
     return array;
   }
 }
 
-const objArray = []
-let vertices = []
+const objArray = [];
+let vertices = [];
 
 let animateStart = false;
 
@@ -173,18 +194,34 @@ registerOnclick((x, y) => {
 });
 
 registerOnKeyDown((k) => {
-  if (k === " ") {
+  if (k === ' ') {
     console.log(`'${k}'`);
     if (!animateStart) {
-      const area = sigma(0, vertices.length - 2, (i) => vertices[i].x * vertices[i + 1].y - vertices[i + 1].x * vertices[i].y) / 2;
-      objArray.push(new Shape([vector(0, 0)], vertices, area * parseInt(document.getElementById('density').value)));
-      objArray[objArray.length - 1].drawShape()
-      drawFilledCircle(objArray[objArray.length - 1].center.x, objArray[objArray.length - 1].center.y, 2.5, "red")
-      vertices = []
-      animateStart = objArray.length >= 5 ? true : false
+      const area =
+        sigma(
+          0,
+          vertices.length - 2,
+          (i) => vertices[i].x * vertices[i + 1].y - vertices[i + 1].x * vertices[i].y,
+        ) / 2;
+      objArray.push(
+        new Shape(
+          [vector(0, 0)],
+          vertices,
+          area * parseInt(document.getElementById('density').value),
+        ),
+      );
+      objArray[objArray.length - 1].drawShape();
+      drawFilledCircle(
+        objArray[objArray.length - 1].center.x,
+        objArray[objArray.length - 1].center.y,
+        2.5,
+        'red',
+      );
+      vertices = [];
+      animateStart = objArray.length >= 5 ? true : false;
     }
   }
-})
+});
 
 let next = 0;
 let countFrame = 0;
@@ -194,16 +231,15 @@ const drawFrame = (time) => {
     for (const shape of objArray) {
       //shape.center.x += 10
       //shape.center.y += 10
-      shape.rotation = countFrame
+      shape.rotation = countFrame;
 
       shape.updateProperties();
 
-      const shapeBounds = shape.getBoundOfObject(1)
+      const shapeBounds = shape.getBoundOfObject(1);
 
-      drawFilledCircle(shape.center.x, shape.center.y, 2.5, "red")
+      drawFilledCircle(shape.center.x, shape.center.y, 2.5, 'red');
 
       shape.drawShape();
-
 
       next += FPS;
       countFrame++;
@@ -213,8 +249,4 @@ const drawFrame = (time) => {
 
 animate(drawFrame);
 
-export {
-  canvas,
-  Shape
-}
-
+export { canvas, Shape };
