@@ -60,11 +60,7 @@ const evalCollisions = (object) => {
   if (collisions.length > 0) console.log(collisions)
   let col = 0
   for (const element of collisions) {
-    returnObject.x = mean([object.x, element.source.x])
-    returnObject.y = mean([object.y, element.source.y])
-    returnObject.area += element.source.area
-    returnObject.radius = Math.sqrt(object.area) / Math.PI
-    returnObject.force = [add2Vectors(element.force, returnObject.force)]
+    returnObject.force = [addNumVectors([element.force, returnObject.force])]
     col++
   }
   return returnObject
@@ -95,8 +91,9 @@ class Shape {
     return this.getAcceleration(addNumVectors(this.force).magnitude, this.mass, appliedTime) * secPerFrame;
   }
 
+   //displacement behaves differently, we have no need to save its' value
   getDisplacement(appliedTime) {
-    const h = this.getVelocity(addNumVectors(this.force).magnitude, this.mass, appliedTime, secPerFrame) * secPerFrame
+    const h = this.currVelocity+this.getVelocity(addNumVectors(this.force).magnitude, this.mass, appliedTime, secPerFrame) * secPerFrame
     const p = Math.sin(addNumVectors(this.force).angle) * h
     const b = Math.sqrt(h ** 2 - p ** 2)
     return { xChange: Math.round(b), yChange: Math.round(p) }
