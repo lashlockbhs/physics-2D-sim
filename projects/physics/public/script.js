@@ -104,7 +104,7 @@ class Shape {
   constructor(actingForces, vertices, mass) {
     this.vertices = vertices;
     this.vertBase = vertices;
-    this.baseDifs = []//the pos of the verticies relitive to the center, in replacment of the "sides" athgorithm
+    this.baseDifs = [];//the pos of the verticies relitive to the center, in replacment of the "sides" athgorithm
     this.mass = Math.abs(Math.round(mass));
     this.centerBase = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y };
     this.center = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y };
@@ -191,8 +191,8 @@ const objArray = [];
 let vertices = [];
 
 let animateStart = false;
-objArray.push(drawSquare({x: 100, y: 100}, 50, [{angle: 1, magnitude: 45}]));
-objArray[0].drawShape;
+//objArray.push(drawSquare({x: 100, y: 100}, 50, [{angle: 1, magnitude: 45}]));
+//objArray[0].drawShape;
 
 registerOnclick((x, y) => {
   if (!animateStart) {
