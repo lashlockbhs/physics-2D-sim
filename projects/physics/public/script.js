@@ -34,9 +34,7 @@ import {
 } from './math.js';
 
 import {
-  drawEquilateralTriangle,
-  drawSquare,
-  drawPentagon
+  makeNSidedPolygon
 } from './perfectShapes.js';
 
 const canvas = document.getElementById('screen');
@@ -191,8 +189,8 @@ const objArray = [];
 let vertices = [];
 
 let animateStart = false;
-//objArray.push(drawSquare({x: 100, y: 100}, 50, [{angle: 1, magnitude: 45}]));
-//objArray[0].drawShape;
+objArray.push(makeNSidedPolygon (7, {x: 150, y: 100}, 50, [{angle: 1, magnitude: 45}]));
+objArray[0].drawShape;
 
 registerOnclick((x, y) => {
   if (!animateStart) {
