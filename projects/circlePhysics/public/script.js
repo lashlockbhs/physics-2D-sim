@@ -38,12 +38,12 @@ setCanvas(canvas);
 
 //global
 let Theme = { background: 'black', draw: 'white', accents: 'red' }
-let Density = document.getElementById('density').value // measured in kg/pixel, redefine in REPL
+const Density = document.getElementById('density').value 
 drawFilledRect(0, 0, width, height, Theme.background)
 const ObjArray = []
 let CircleCoords = []
 let animateStart = false
-const secPerFrame = 2
+const secPerFrame = 0.5
 
 //object
 const evalCollisions = (object) => {
@@ -64,7 +64,7 @@ const evalCollisions = (object) => {
     returnObject.y = mean([object.y, element.source.y])
     returnObject.area += element.source.area
     returnObject.radius = Math.sqrt(object.area) / Math.PI
-    returnObject.force.concat(element.force, element.index - col)
+    returnObject.force = [add2Vectors(element.force, returnObject.force)]
     col++
   }
   return returnObject
@@ -92,13 +92,14 @@ class Shape {
   };
 
   getVelocity(appliedTime) {
-    this.getAcceleration(addNumVectors(this.force).magnitude, this.mass, appliedTime) * secPerFrame;
+    return this.getAcceleration(addNumVectors(this.force).magnitude, this.mass, appliedTime) * secPerFrame;
   }
+
   getDisplacement(appliedTime) {
     const h = this.getVelocity(addNumVectors(this.force).magnitude, this.mass, appliedTime, secPerFrame) * secPerFrame
     const p = Math.sin(addNumVectors(this.force).angle) * h
     const b = Math.sqrt(h ** 2 - p ** 2)
-    return { xChange: Math.round(b * 10) / 10, yChange: Math.round(p * 10) / 10 }
+    return { xChange: Math.round(b), yChange: Math.round(p) }
   }
 
 }
@@ -146,12 +147,12 @@ const nextFrame = (time) => {
     }
    
     for (const element of ObjArray){
-      //i don't know what apply time should be -- This is done after the 1st one so that all of the things can get the collisions
+      //i don't know what apply time should be
       element.force = [addNumVectors(element.force)]
       element.currAcc += element.getAcceleration(secPerFrame)
       element.currVelocity += element.getVelocity(secPerFrame)
-      element.x = element.getDisplacement(secPerFrame).x
-      element.y = element.getDisplacement(secPerFrame).y 
+      element.x += element.getDisplacement(secPerFrame).xChange
+      element.y += element.getDisplacement(secPerFrame).yChange
       element.draw()
       index++
     }
