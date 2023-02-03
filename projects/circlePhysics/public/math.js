@@ -74,7 +74,7 @@ const geoMean = (array) => {
   return pi(0, array.length - 1, (i) => array[i]) ** (1 / (array.length - 1));
 };
 
-//these next two take 2 objects with x and y
+//these next two take 2 coordinate objects {x: ..., y: ...}
 const twoPointAngle = (p1, p2) => {
   return Math.atan2(p2.y - p1.y, p2.x - p1.x);
 };
@@ -84,19 +84,7 @@ const distance = (p1, p2) => {
 };
 
 //time derivative(s)
-const getAcceleration = (force, mass, appliedTime) => {
-  return (force / mass) * appliedTime;
-};
 
-const getVelocity = (force, mass, appliedTime, fps) =>
-  getAcceleration(force, mass, appliedTime) * (1 / fps);
-
-const getDisplacement = (force, mass, appliedTime, fps, angle) =>{
-  const h = getVelocity(force, mass, appliedTime, fps) * 1/fps
-  const p = Math.cos(90 - angle) * h
-  const b = Math.sqrt(h**2 - p**2)
-  return {xChange: Math.round(b), yChange: Math.round(p)}
-}
 export {
   add2Vectors,
   vectorMultiply,
@@ -109,9 +97,6 @@ export {
   geoMean,
   twoPointAngle,
   distance,
-  getAcceleration,
-  getVelocity,
-  getDisplacement,
   vector,
   twoPointXYDif,
   shapeArea,
