@@ -25,7 +25,8 @@ canvas {
   border-color: rgb(105, 102, 102);
 
 }
-#headbar{
+#menuHolder #headbar{
+  background-color: rgb(85, 82, 82);
   position: relative;
   display: inline;
   align-items: center; 
@@ -33,4 +34,3 @@ canvas {
 #test{
 background-color: rgb(105, 102, 102);
 }
-

@@ -1,35 +1,40 @@
 
-import { 
-  setCanvas, 
-  drawFilledCircle, 
-  clear, 
-  animate, 
+import {
+  setCanvas,
+  drawFilledCircle,
+  clear,
+  animate,
   now,
-  drawFilledRect, 
+  drawFilledRect,
   drawLine,
   drawText,
   registerOnKeyDown,
 } from './graphics.js';
 
-import { 
-  add2Vectors, 
-  vectorMultiply, 
-  addNumVectors, 
-  sigma, 
-  pi, 
-  degToRad, 
-  radToDeg, 
-  mean, 
-  geoMean, 
-  twoPointAngle, 
-  distance, 
+import {
+  add2Vectors,
+  vectorMultiply,
+  addNumVectors,
+  sigma,
+  pi,
+  degToRad,
+  radToDeg,
+  mean,
+  geoMean,
+  twoPointAngle,
+  distance,
   shapeArea,
-  getAcceleration, 
-  getVelocity, 
-  vector, 
+  getAcceleration,
+  getVelocity,
+  vector,
   twoPointXYDif,
   getDisplacement,
 } from './math.js';
+
+import {
+  Menu,
+  shapeMenu
+} from './gui.js';
 
 const canvas = document.getElementById('screen');
 const canvasProps = setCanvas(canvas);
@@ -46,8 +51,7 @@ const ctx = canvasProps.ctx;
 const msPerFrame = 1 // frames per second, consider changing to ms/frame
 //returns points that are 1 or less pixels away from eachother
 
-const closePoints = (ar1, ar2) =>
-  ar1.filter((e) => (ar2.find((e2) => distance(e, e2) <= 1) != undefined ? true : false));
+const closePoints = (ar1, ar2) => ar1.filter((e) => (ar2.find((e2) => distance(e, e2) <= 1) != undefined ? true : false));
 
 //returns an array of objects that have a x, y point of collison and the shapes involved
 const collisions = (shapes) => {
@@ -105,6 +109,7 @@ const drawPoints = (ar, color) => {
 
 class Shape {
   constructor(actingForces, vertices, mass, name) {
+    this.name = name;
     this.vertices = vertices;
     this.vertBase = vertices;
     this.baseDifs = []//the pos of the verticies relitive to the center, in replacment of the "sides" athgorithm
@@ -166,7 +171,16 @@ class Shape {
     }
     return array;
   }
+  getShapeVars() {
+    const array2d = Object.entries(this); //returns 2d array, [key : value] for each class var
+
+    //converts a 2d array into array of objects
+    return array2d.map(([name, value]) => Object.assign({}, { "name": name, "value": value })); //THANKS chatgbt 
+
+  }
 }
+
+
 
 const objArray = []
 let vertices = []
@@ -184,16 +198,23 @@ registerOnKeyDown((k) => {
   if (k === "Enter") {
     if (paused) {
       const area = Math.abs(shapeArea(vertices));
-      //objArray.push(new Shape([vector(0, 0)], vertices, area * parseInt(document.getElementById('density').value)));
-      objArray.push(new Shape([vector(0, 0)], vertices, 10, ("shape" + (objArray.indexOf(objArray[objArray.length - 1])+1))));
+      //objArray.pu(new Shape([vector(0, 0)], vertices, area * parseInt(document.getElementById('density').value)));
+      objArray.push(new Shape([vector(0, 0)], vertices, 10, "shape " + (objArray.length+1)));
       objArray[objArray.length - 1].drawShape()
       drawFilledCircle(objArray[objArray.length - 1].center.x, objArray[objArray.length - 1].center.y, 2.5, "red", ctx)
-      vertices = []
+      vertices = [];
+
+      
 
       paused = objArray.length >= 5 ? false : true
+      if(!paused){
+        
+        createShapeMenu();
+        
+      }
     }
   }
-  else if (k === " "){
+  else if (k === " ") {
     paused = true;
   }
 })
@@ -201,24 +222,46 @@ canvas.onclick = (e) => onclick(e.offsetX, e.offsetY);
 
 const getShapes = () => objArray;
 
+const createShapeMenu = () => {
+  for (const shape of objArray) {
+    shapeMenu.options.push({ text: shape.name })
+
+    const shapeWindow = new Menu(
+      null,
+      document.getElementById("menuHolder"),
+      true,
+      0,
+      0,
+      300,
+      20,
+      10,
+    )
+    shapeMenu.updateMenu();
+
+    shapeMenu.childs.push({ el: shapeWindow, button: shapeMenu.elArray.find(e => e.id === shape.name) })
+    shapeWindow.createHeadbar();
+    shapeWindow.createWindow(
+      shape.getShapeVars(),
+      100,
+      100,
+    );
+  }
+  
+}
+
 let next = 0;
 let countFrame = 0;
 const drawFrame = (time) => {
   if (time > next && !paused) {
     clear(ctx, width, height);
     for (const shape of objArray) {
-      //shape.center.x += 10
-      //shape.center.y += 10
 
-      //console.log(shape.vertices)
 
       shape.rotation = countFrame
 
-      shape.center.x+=1
+      shape.center.x += 1
 
       shape.updateProperties();
-
-      //const shapeBounds = shape.getBoundOfObject(1)
 
       drawFilledCircle(shape.center.x, shape.center.y, 2.5, "red", ctx)
 
@@ -235,4 +278,4 @@ animate(drawFrame);
 
 export {
   getShapes
-}
+};
