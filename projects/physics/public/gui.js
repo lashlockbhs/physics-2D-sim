@@ -189,7 +189,7 @@ const perfShapesMenu = new Menu
     
 const shapeMenu = new Menu
     (
-        [{ text:  }, { text: "shape2" }, { text: "shape3" }, { text: "shape4" }], //menu text
+        [{ text:  "shape1"}, { text: "shape2" }, { text: "shape3" }, { text: "shape4" }], //menu text
         document.getElementById("menuHolder"),
         true, //hidden?
         -42, //xoffset
