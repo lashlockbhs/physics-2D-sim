@@ -33,6 +33,10 @@ import {
   getDisplacement,
 } from './math.js';
 
+import {
+  makeNSidedPolygon
+} from './perfectShapes.js';
+
 const canvas = document.getElementById('screen');
 setCanvas(canvas);
 const FPS = 12; // frames per second, consider changing to ms/frame
@@ -98,8 +102,8 @@ class Shape {
   constructor(actingForces, vertices, mass) {
     this.vertices = vertices;
     this.vertBase = vertices;
-    this.baseDifs = []; //the pos of the verticies relitive to the center, in replacment of the "sides" athgorithm
-    this.mass = mass;
+    this.baseDifs = [];//the pos of the verticies relitive to the center, in replacment of the "sides" athgorithm
+    this.mass = Math.abs(Math.round(mass));
     this.centerBase = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y };
     this.center = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y };
     this.rotation = 0;
@@ -249,4 +253,7 @@ const drawFrame = (time) => {
 
 animate(drawFrame);
 
-export {};
+export {
+  canvas,
+  Shape
+};

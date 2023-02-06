@@ -2,8 +2,8 @@ let ctx;
 let width;
 let height;
 
-let onclick = (x, y) => {};
-let onkeydown = (k) => {};
+let onclick = (x, y) => { };
+let onkeydown = (k) => { };
 
 document.onkeydown = (e) => {
   onkeydown(e.key);
@@ -75,8 +75,26 @@ const drawFilledTriangle = (x1, y1, x2, y2, x3, y3, color) => {
   ctx.fill();
 };
 
+//topLeft, topRight, bottomLeft, bottomRight are all radii for circles in those corners, only positive integer values
+const drawRoundedRect = (x, y, width, height, topLeft, topRight, bottomLeft, bottomRight, color) => {
+  const arrOfRadii = [topLeft, topRight, bottomLeft, bottomRight];
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.roundRect(x, y, width, height, arrOfRadii);
+  ctx.stroke();
+};
+
+const drawFilledRoundedRect = (x, y, width, height, topLeft, topRight, bottomLeft, bottomRight, color) => {
+  const arrOfRadii = [topLeft, topRight, bottomLeft, bottomRight];
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.roundRect(x, y, width, height, arrOfRadii);
+  ctx.stroke();
+  ctx.fill();
+};
+
 const drawText = (text, x, y, color, size) => {
-  ctx.font = `${size}px sans-serif`;
+  ctx.font = `${size}px Lexend`;
   ctx.fillStyle = color;
   ctx.fillText(text, x, y);
 };
@@ -122,6 +140,8 @@ export {
   drawFilledCircle,
   drawFilledRect,
   drawFilledTriangle,
+  drawRoundedRect,
+  drawFilledRoundedRect,
   drawText,
   clear,
   width,
