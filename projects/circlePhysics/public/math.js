@@ -79,10 +79,11 @@ const twoPointAngle = (p1, p2) => {
   return Math.atan2(p2.y - p1.y, p2.x - p1.x);
 };
 
-const distance = (p1, p2) => {
+const twoPointDistance = (p1, p2) => {
   return Math.hypot(Math.abs(p1.x - p2.x), Math.abs(p1.y - p2.y));
 };
 
+const twoShapeGrav = (o1, o2) => (6.6743 * 10 ** -11)  * o1.mass * o2.mass / distance(o1, o2) ** 2
 //time derivative(s)
 
 export {
@@ -96,10 +97,11 @@ export {
   mean,
   geoMean,
   twoPointAngle,
-  distance,
+  twoPointDistance,
   vector,
   twoPointXYDif,
   shapeArea,
+  twoShapeGrav,
 };
 
 //Verlet Integration, don't worry about this for now (I gotta take Calc BC now xD)

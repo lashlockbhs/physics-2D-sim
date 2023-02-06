@@ -26,10 +26,11 @@ import {
   mean,
   geoMean,
   twoPointAngle,
-  distance,
+  twoPointDistance,
   shapeArea,
   vector,
   twoPointXYDif,
+  twoShapeGrav, 
 } from './math.js';
 
 const canvas = document.getElementById('screen');
@@ -46,22 +47,24 @@ let animateStart = false
 const secPerFrame = 0.5
 
 //object
+const evalGrav = (object) =>{
+  const returnObject = object
+  const effects = [];
+}
 const evalCollisions = (object) => {
   const returnObject = object;
   const collisions = [];
   let index = 0;
   for (const element of ObjArray) {
-    const distance = Math.hypot(Math.abs(object.x - element.x), Math.abs(object.y - element.y))
-    if ((object.radius + element.radius > distance) && (distance != 0)) {
+    const distance = twoPointDistance(object, element)
+    if ((object.radius + element.radius < distance) && (distance != 0)) {
       collisions.push({ source: element, index: index, angle: twoPointAngle(element, object) })
     }
     index++
   }
   if (collisions.length > 0) console.log('collsions', collisions)
-  let col = 0
   for (const element of collisions) {
-    returnObject.force =  returnObject.force.concat(element.source.force)
-    col++
+    returnObject.force = returnObject.force.concat(element.source.force)
   }
   return returnObject
 }
