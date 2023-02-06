@@ -189,8 +189,6 @@ const objArray = [];
 let vertices = [];
 
 let animateStart = false;
-objArray.push(makeNSidedPolygon (7, {x: 150, y: 100}, 50, [{angle: 1, magnitude: 45}]));
-objArray[0].drawShape;
 
 registerOnclick((x, y) => {
   if (!animateStart) {
