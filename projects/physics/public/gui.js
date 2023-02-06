@@ -4,46 +4,25 @@ const varToString = varObj => Object.keys(varObj)[0]
 
 
 class Menu {
-    constructor(options, menuHolder, hidden, xOffset, yOffset, boxWidth, boxHeight, textSize) {
+    constructor(options, menuHolder, hidden) {
         this.childs = [];
-        this.options = options;
-        this.boxWidth = boxWidth;
-        this.boxHeight = boxHeight;
-        this.textSize = textSize;
-        this.menuHolder = menuHolder;
         this.currentWindows = [];
-        this.hidden = hidden;
-        this.xOffset = xOffset;
-        this.yOffset = yOffset;
         this.elArray = [];
-        this.headbar;
-        this.optionsHidden = hidden;
-        this.windowObject;
-        this.window;
+        this.options = options;
+        this.menuHolder = menuHolder;
+        this.headbar, this.window, this.windowObject;
+        this.optionsHidden, this.hidden = hidden;
     }
     #createButton(displayTxt) {
         const div = document.createElement("div");
         div.setAttribute("id", displayTxt);
-
-
-        div.style.width = this.boxWidth + "px";//rm
-        div.style.height = this.boxHeight + "px";//rm
-        div.style.top = 10 + "px"; //rm
-        div.style.left = -1 + "px";//rm
-
-
-        let text = document.createTextNode(displayTxt);
-        div.append(text);
-        div.style.fontSize = this.textSize + "px";
-
-        this.hidden ? div.style.visibility = "hidden" : div.style.display = "grid";
-
-
+        div.setAttribute("class", "menu-option");
+        div.append(document.createTextNode(displayTxt));
+        this.hidden ? div.style.visibility = "hidden" : div.style.visibility = "visible";
         div.onmousedown = (e) => { this.onClick(div); e.stopPropagation() };
         div.onmouseup = (e) => { this.refresh(div); e.stopPropagation() };
         div.onmousemove = (e) => { this.onHover(div); e.stopPropagation() };
-        div.onmouseleave = (e) => { this.refresh(div); e.stopPropagation() }; //stoppropagation from chatgbt
-
+        div.onmouseleave = (e) => { this.refresh(div); e.stopPropagation() }; 
         this.elArray.push(div);
         this.headbar.append(div);
     }
@@ -56,15 +35,7 @@ class Menu {
     createHeadbar() {
         this.headbar = document.createElement("div");
         this.headbar.setAttribute("id", "headbar");
-        this.headbar.setAttribute("dragable", "true");
-
-
-        this.headbar.style.width = this.boxWidth + "px";//rm
-        this.headbar.style.left = this.xOffset + "px";//rm
-        this.headbar.style.top = this.yOffset + "px";//rm
-
-
-        this.hidden ? this.headbar.style.visibility = "hidden" : this.headbar.style.display = "grid";//review to make sure grid is correct
+        this.hidden ? this.headbar.style.visibility = "hidden" : this.headbar.style.visibility = "visible";
         this.headbar.onclick = (e) => {
             if (e.target === this.headbar && dragDone) {
                 this.optionsHidden ? this.showAllEl() : this.hideAllEl()
@@ -107,39 +78,23 @@ class Menu {
         this.menuHolder.append(this.headbar);
     }
     createWindow(objects, width, height) {
-        const window = document.createElement("div");
-        this.window = window;
 
-
-        window.style.top = 10 + "px";//rm
-        window.style.left = -1 + "px";//rm
-
-
-        window.style.visibility = "hidden";
-        window.setAttribute("id", "window");
         for (let i = 0; i < objects.length; i++) {
 
             const div = document.createElement("div");
             div.setAttribute("id", objects[i].name);
-
-
-            div.style.width = this.boxWidth + "px";//rm
-            div.style.height = this.boxHeight + "px";//rm
-            div.style.left = -1 + "px";//rm
-            div.style.fontSize = this.textSize + "px";//rm
-
+            div.setAttribute("class", "var-display");
 
             div.append(document.createTextNode(objects[i].name + ": " + JSON.stringify(objects[i].value)));
 
             this.elArray.push(div);
-            window.append(div);
+            this.headbar.append(div);
         }
-        this.headbar.append(window);
-
     }
     updateWindow(objects) {
-        const divs = this.window.children
+        const divs = this.headbar.children
         for (let i = 0; i < divs.length; i++) {
+            divs[i].setAttribute("class", "window");
             const object = objects.find(e => e.name === divs[i].id);
             const textNode = divs[i].firstChild;
             textNode.nodeValue = object.name + ": " + JSON.stringify(object.value);
@@ -148,10 +103,7 @@ class Menu {
     updateMenu() {
         for (let i = 0; i < this.options.length; i++) {
             try {
-                console.log("before: " + this.elArray[i].firstChild.nodeValue)
                 this.elArray[i].firstChild.nodeValue = this.options[i].text;
-                console.log("after: " + this.elArray[i].firstChild.nodeValue)
-                console.log("--------")
             }
             catch {
                 this.#createButton(this.options[i].text)
@@ -199,19 +151,12 @@ class Menu {
 
 }
 
-
-
 const baseMenu = new Menu
     (
         [{ text: "Perfect Shapes" }, { text: "Shapes" }, { text: "World Settings" }, { text: "Debugging" }],//menu text
 
         document.getElementById("menuHolder"), //
         false, //hidden?
-        0, //xoffset
-        0, //yoffset
-        60, //buttonWidth
-        30, //buttonheight
-        11, //textSize
     )
 baseMenu.createHeadbar();
 baseMenu.createElements();
@@ -220,12 +165,6 @@ const perfShapesMenu = new Menu
         [{ text: "Square" }, { text: "Circle" }, { text: "Rect" }, { text: "Triangle" }], //menu text
         document.getElementById("menuHolder"), //
         true, //hidden?
-        10, //xoffset
-        0,  ///yoffset
-        50, //buttonWidth
-        10, //buttonheight
-        10, //textSize
-
     )
 
 perfShapesMenu.createHeadbar();
@@ -236,26 +175,10 @@ const shapeMenu = new Menu
         [], //menu text
         document.getElementById("menuHolder"),
         true, //hidden?
-        -42, //xoffset
-        0,  ///yoffset
-        50, //buttonWidth
-        10, //buttonheight
-        10, //textSize
-
     )
 
 shapeMenu.createHeadbar();
 shapeMenu.createElements();
-const shape1 = new Menu(
-    null,
-    document.getElementById("menuHolder"),
-    true,
-    0,
-    0,
-    200,
-    10,
-    10,
-)
 baseMenu.childs.push(
     { el: perfShapesMenu, button: baseMenu.elArray.find(e => e.id === "Perfect Shapes") },
     { el: shapeMenu, button: baseMenu.elArray.find(e => e.id === "Shapes") }

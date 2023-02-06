@@ -207,7 +207,7 @@ registerOnKeyDown((k) => {
 
       
 
-      paused = objArray.length >= 5 ? false : true
+      paused = objArray.length >= 5;
       if(!paused){
         
         createShapeMenu();
