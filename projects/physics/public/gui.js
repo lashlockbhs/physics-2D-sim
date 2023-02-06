@@ -123,11 +123,12 @@ class Menu {
 
     }
     updateWindow(objects) {
-        const divs = this.window.children()
+        const divs = this.window.children
         for (let i = 0; i < divs.length; i++) {
+            console.log(objects)
             const object = objects.find(e => e.name === divs[i].id);
             const textNode = divs[i].firstChild;
-            textNode.nodeValue = object.value;
+            textNode.nodeValue = object.name + ": " + JSON.stringify(object.value);
         }
     }
     updateMenu() {

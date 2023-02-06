@@ -119,6 +119,7 @@ class Shape {
     this.rotation = 0
     this.lastRotation = 0
     this.actingForce = [addNumVectors(actingForces)]
+    this.menu;
     for (const vert of this.vertices) {
       this.baseDifs.push(twoPointXYDif(vert, { x: this.centerBase.x, y: this.centerBase.y }))
     }
@@ -237,6 +238,7 @@ const createShapeMenu = () => {
       10,
     )
     shapeMenu.updateMenu();
+    shape.menu = shapeWindow;
 
     shapeMenu.childs.push({ el: shapeWindow, button: shapeMenu.elArray.find(e => e.id === shape.name) })
     shapeWindow.createHeadbar();
@@ -256,6 +258,7 @@ const drawFrame = (time) => {
     clear(ctx, width, height);
     for (const shape of objArray) {
 
+      shape.menu.updateWindow(shape.getShapeVars());
 
       shape.rotation = countFrame
 
