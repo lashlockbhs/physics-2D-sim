@@ -57,10 +57,10 @@ const evalCollisions = (object) => {
     }
     index++
   }
-  if (collisions.length > 0) console.log(collisions)
+  if (collisions.length > 0) console.log('collsions', collisions)
   let col = 0
   for (const element of collisions) {
-    returnObject.force = [addNumVectors([element.force, returnObject.force])]
+    returnObject.force =  returnObject.force.concat(element.source.force)
     col++
   }
   return returnObject
@@ -125,8 +125,10 @@ registerOnKeyDown((k) => {
   console.log(k)
   if (k === 'Enter') {
     animateStart = !animateStart
-  } else if (k === 'c') {
+  } else if (k == 'K') {
+    //kill
     ObjArray = []
+    animateStart = false
   }
 })
 
@@ -141,6 +143,7 @@ const nextFrame = (time) => {
     //console.log(ObjArray)
     for (let element of ObjArray) {
       ObjArray[index] = evalCollisions(element)
+      index++
     }
    
     for (const element of ObjArray){
@@ -151,7 +154,6 @@ const nextFrame = (time) => {
       element.x += element.getDisplacement(secPerFrame).xChange
       element.y += element.getDisplacement(secPerFrame).yChange
       element.draw()
-      index++
     }
     console.log(ObjArray)
     time += secPerFrame
