@@ -26,10 +26,14 @@ canvas {
 
 }
 #menuHolder #headbar{
+  height: 10px;
   background-color: rgb(85, 82, 82);
   position: relative;
   display: inline;
   align-items: center; 
+}
+#window div{
+
 }
 #test{
 background-color: rgb(105, 102, 102);

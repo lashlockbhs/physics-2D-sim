@@ -24,13 +24,18 @@ class Menu {
     #createButton(displayTxt) {
         const div = document.createElement("div");
         div.setAttribute("id", displayTxt);
-        div.style.width = this.boxWidth + "px";
-        div.style.height = this.boxHeight + "px";
+
+
+        div.style.width = this.boxWidth + "px";//rm
+        div.style.height = this.boxHeight + "px";//rm
+        div.style.top = 10 + "px"; //rm
+        div.style.left = -1 + "px";//rm
+
+
         let text = document.createTextNode(displayTxt);
         div.append(text);
         div.style.fontSize = this.textSize + "px";
-        div.style.top = 10 + "px";
-        div.style.left = -1 + "px";
+
         this.hidden ? div.style.visibility = "hidden" : div.style.display = "grid";
 
 
@@ -52,11 +57,14 @@ class Menu {
         this.headbar = document.createElement("div");
         this.headbar.setAttribute("id", "headbar");
         this.headbar.setAttribute("dragable", "true");
-        this.headbar.style.width = this.boxWidth + "px";
-        this.headbar.style.height = 10 + "px";
-        this.headbar.style.left = this.xOffset + "px";
-        this.headbar.style.top = this.yOffset + "px";
-        this.hidden ? this.headbar.style.visibility = "hidden" : this.headbar.style.display = "grid";
+
+
+        this.headbar.style.width = this.boxWidth + "px";//rm
+        this.headbar.style.left = this.xOffset + "px";//rm
+        this.headbar.style.top = this.yOffset + "px";//rm
+
+
+        this.hidden ? this.headbar.style.visibility = "hidden" : this.headbar.style.display = "grid";//review to make sure grid is correct
         this.headbar.onclick = (e) => {
             if (e.target === this.headbar && dragDone) {
                 this.optionsHidden ? this.showAllEl() : this.hideAllEl()
@@ -101,19 +109,26 @@ class Menu {
     createWindow(objects, width, height) {
         const window = document.createElement("div");
         this.window = window;
-        window.style.top = 10 + "px";
-        window.style.left = -1 + "px";
+
+
+        window.style.top = 10 + "px";//rm
+        window.style.left = -1 + "px";//rm
+
+
         window.style.visibility = "hidden";
         window.setAttribute("id", "window");
         for (let i = 0; i < objects.length; i++) {
 
             const div = document.createElement("div");
             div.setAttribute("id", objects[i].name);
-            div.style.width = this.boxWidth + "px";
-            div.style.height = this.boxHeight + "px";
-            div.style.left = -1 + "px";
 
-            div.style.fontSize = this.textSize + "px";
+
+            div.style.width = this.boxWidth + "px";//rm
+            div.style.height = this.boxHeight + "px";//rm
+            div.style.left = -1 + "px";//rm
+            div.style.fontSize = this.textSize + "px";//rm
+
+
             div.append(document.createTextNode(objects[i].name + ": " + JSON.stringify(objects[i].value)));
 
             this.elArray.push(div);
@@ -125,7 +140,6 @@ class Menu {
     updateWindow(objects) {
         const divs = this.window.children
         for (let i = 0; i < divs.length; i++) {
-            console.log(objects)
             const object = objects.find(e => e.name === divs[i].id);
             const textNode = divs[i].firstChild;
             textNode.nodeValue = object.name + ": " + JSON.stringify(object.value);
@@ -157,18 +171,12 @@ class Menu {
 
     }
     showAllEl() {
-        this.elArray.forEach(e => this.#showEl(e));
+        this.elArray.forEach(e => e.style.visibility = "visible");
         this.optionsHidden = false;
     }
     hideAllEl() {
-        this.elArray.forEach(e => this.#hideEl(e));
+        this.elArray.forEach(e => e.style.visibility = "hidden");
         this.optionsHidden = true;
-    }
-    #hideEl(el) {
-        el.style.visibility = "hidden"
-    }
-    #showEl(el) {
-        el.style.visibility = "visible"
     }
     onClick(el) {
         el.style.backgroundColor = "rgb(105, 102, 102)";
