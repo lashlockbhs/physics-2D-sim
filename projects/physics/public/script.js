@@ -200,25 +200,26 @@ registerOnKeyDown((k) => {
     if (paused) {
       const area = Math.abs(shapeArea(vertices));
       //objArray.pu(new Shape([vector(0, 0)], vertices, area * parseInt(document.getElementById('density').value)));
-      objArray.push(new Shape([vector(0, 0)], vertices, 10, "shape " + (objArray.length+1)));
+      objArray.push(new Shape([vector(0, 0)], vertices, 10, "shape " + (objArray.length + 1)));
       objArray[objArray.length - 1].drawShape()
       drawFilledCircle(objArray[objArray.length - 1].center.x, objArray[objArray.length - 1].center.y, 2.5, "red", ctx)
       vertices = [];
 
-      
 
-      paused = objArray.length >= 5;
-      if(!paused){
-        
+
+      paused = objArray.length <= 5;
+      if (!paused) {
+
         createShapeMenu();
-        
+
       }
     }
-  }
+  } 
   else if (k === " ") {
     paused = true;
   }
 })
+
 canvas.onclick = (e) => onclick(e.offsetX, e.offsetY);
 
 const getShapes = () => objArray;
@@ -248,7 +249,7 @@ const createShapeMenu = () => {
       100,
     );
   }
-  
+
 }
 
 let next = 0;

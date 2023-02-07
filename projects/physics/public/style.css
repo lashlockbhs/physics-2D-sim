@@ -4,8 +4,6 @@ canvas {
 }
 
 #menuHolder {
-  width: 0px;
-  height: 0px;
   user-select: none; 
   position: absolute;
   margin-left: 10px;
@@ -23,7 +21,7 @@ canvas {
   border-style:solid;
   border-width: 1px;
   border-color: rgb(131, 128, 128);
-  background-color: rgb(187, 185, 185);
+  background-color: rgb(200, 192, 192);
 }
 .menu-option{ 
   height: 40px;
