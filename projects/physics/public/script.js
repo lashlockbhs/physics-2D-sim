@@ -1,4 +1,3 @@
-
 import {
   setCanvas,
   drawFilledCircle,
@@ -33,7 +32,8 @@ import {
 
 import {
   Menu,
-  shapeMenu
+  shapeMenu,
+  makeNSidedPolygon
 } from './gui.js';
 
 const canvas = document.getElementById('screen');
@@ -49,6 +49,7 @@ const ctx = canvasProps.ctx;
 
 
 const msPerFrame = 1 // frames per second, consider changing to ms/frame
+
 //returns points that are 1 or less pixels away from eachother
 
 const closePoints = (ar1, ar2) => ar1.filter((e) => (ar2.find((e2) => distance(e, e2) <= 1) != undefined ? true : false));
@@ -65,12 +66,12 @@ const collisions = (shapes) => {
     }
   }
   return collisions;
-}
+};
 
 const getBoundCenter = (arr) => {
   const findCentroid = (points) => {
     const pts = points.concat(points[0]);
-    const area = shapeArea(pts)
+    const area = shapeArea(pts);
     const x =
       sigma(
         0,
@@ -103,9 +104,9 @@ const rotate = (cx, cy, x, y, angle) => {
 
 const drawPoints = (ar, color) => {
   for (const point of ar) {
-    drawLine(point.x, point.y, point.x + 1, point.y + 1, color, 1)
+    drawLine(point.x, point.y, point.x + 1, point.y + 1, color, 1);
   }
-}
+};
 
 class Shape {
   constructor(actingForces, vertices, mass, name) {
@@ -120,54 +121,77 @@ class Shape {
     this.lastRotation = 0
     this.actingForce = [addNumVectors(actingForces)]
     this.menu;
+
     for (const vert of this.vertices) {
-      this.baseDifs.push(twoPointXYDif(vert, { x: this.centerBase.x, y: this.centerBase.y }))
+      this.baseDifs.push(twoPointXYDif(vert, { x: this.centerBase.x, y: this.centerBase.y }));
     }
   }
   #getVertDifs() {
-    this.vertDifs = this.baseDifs.map(e => {
-      const rotateCords = rotate(this.centerBase.x, this.centerBase.y, this.centerBase.x + e.xDif, this.centerBase.y + e.yDif, this.rotation)
-      return { xDif: rotateCords[0] - this.centerBase.x, yDif: rotateCords[1] - this.centerBase.y, rotation: this.rotation }
-    })
+    this.vertDifs = this.baseDifs.map((e) => {
+      const rotateCords = rotate(
+        this.centerBase.x,
+        this.centerBase.y,
+        this.centerBase.x + e.xDif,
+        this.centerBase.y + e.yDif,
+        this.rotation,
+      );
+      return {
+        xDif: rotateCords[0] - this.centerBase.x,
+        yDif: rotateCords[1] - this.centerBase.y,
+        rotation: this.rotation,
+      };
+    });
   }
   //should be called everytime you update this opjects varibles outside of the class
   updateProperties() {
-
     //rotate vertDifs
-    this.#getVertDifs()
+    this.#getVertDifs();
     //calc vertices pos based on centroid
     const newVertPos = this.vertices.map((e, i) => {
-      return { x: this.center.x + this.vertDifs[i].xDif, y: this.center.y + this.vertDifs[i].yDif }
+      return { x: this.center.x + this.vertDifs[i].xDif, y: this.center.y + this.vertDifs[i].yDif };
     });
     this.vertices = newVertPos;
   }
 
   drawShape() {
-    drawText("mass " + this.mass, this.center.x, this.center.y, "black", 10, ctx)
+    drawText('mass ' + this.mass, this.center.x, this.center.y, 'black', 10);
     for (let i = 0; i < this.vertices.length; i++) {
       if (i + 1 === this.vertices.length) {
-        drawLine(this.vertices[i].x, this.vertices[i].y, this.vertices[0].x, this.vertices[0].y, 'black', 1, ctx)
-      }
-      else {
-        drawLine(this.vertices[i].x, this.vertices[i].y, this.vertices[i + 1].x, this.vertices[i + 1].y, 'black', 1, ctx)
+        drawLine(
+          this.vertices[i].x,
+          this.vertices[i].y,
+          this.vertices[0].x,
+          this.vertices[0].y,
+          'black',
+          1,
+        );
+      } else {
+        drawLine(
+          this.vertices[i].x,
+          this.vertices[i].y,
+          this.vertices[i + 1].x,
+          this.vertices[i + 1].y,
+          'black',
+          1,
+        );
       }
     }
   }
   //if detail = 2 then num points 2x
   getBoundOfObject(detail) {
-    let array = []
+    let array = [];
     for (let i = 0; i < this.vertices.length; i++) {
-      let xAdd, yAdd, dist, numPoints
+      let xAdd, yAdd, dist, numPoints;
       //set j to 0 for last side to go to orgin point
-      const j = i + 1 === this.vertices.length ? 0 : i + 1
+      const j = i + 1 === this.vertices.length ? 0 : i + 1;
 
       dist = distance(this.vertices[i], this.vertices[j]);
-      numPoints = dist * detail
+      numPoints = dist * detail;
       xAdd = (this.vertices[j].x - this.vertices[i].x) / numPoints;
       yAdd = (this.vertices[j].y - this.vertices[i].y) / numPoints;
 
       for (let j = 0; j < Math.floor(numPoints); j++) {
-        array.push({ x: this.vertices[i].x + (xAdd * j), y: this.vertices[i].y + (yAdd * j) })
+        array.push({ x: this.vertices[i].x + xAdd * j, y: this.vertices[i].y + yAdd * j });
       }
     }
     return array;
@@ -185,6 +209,7 @@ class Shape {
 
 const objArray = []
 let vertices = []
+
 
 let paused = true;
 
@@ -218,7 +243,7 @@ registerOnKeyDown((k) => {
   else if (k === " ") {
     paused = true;
   }
-})
+});
 
 canvas.onclick = (e) => onclick(e.offsetX, e.offsetY);
 
@@ -263,6 +288,7 @@ const drawFrame = (time) => {
 
       shape.rotation = countFrame
 
+
       shape.center.x += 1
 
       shape.updateProperties();
@@ -271,8 +297,8 @@ const drawFrame = (time) => {
 
       shape.drawShape();
 
-
       next += msPerFrame;
+
       countFrame++;
     }
   }
@@ -281,5 +307,7 @@ const drawFrame = (time) => {
 animate(drawFrame);
 
 export {
-  getShapes
+  getShapes,
+  canvas,
+  Shape
 };

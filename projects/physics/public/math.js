@@ -1,6 +1,6 @@
 //vector manipulation, stored in radians
 const shapeArea = (vertices) => {
-  const verticeArray = vertices.concat(vertices[0])
+  const verticeArray = vertices.concat(vertices[0]);
   return sigma(0, verticeArray.length - 2, (i) => verticeArray[i].x * verticeArray[i + 1].y - verticeArray[i + 1].x * verticeArray[i].y) / 2;
 }
 
@@ -39,8 +39,8 @@ const overRange = (start, end, funct, startValue) => {
 };
 */
 
-const twoPointXYDif = (p1, p2) =>{ 
-  return { xDif: (p1.x - p2.x), yDif: (p1.y - p2.y) }; 
+const twoPointXYDif = (p1, p2) => {
+  return { xDif: p1.x - p2.x, yDif: p1.y - p2.y };
 };
 
 const sigma = (start, end, funct) => {
@@ -85,19 +85,21 @@ const distance = (p1, p2) => {
 };
 
 //time derivative(s)
-const getAcceleration = (force, mass, appliedTime) => {
-  return (force / mass) * appliedTime;
+const getAcceleration = (forceVector, mass, appliedTime) => {
+  return (forceVector.magnitude / mass) * appliedTime;
 };
 
-const getVelocity = (force, mass, appliedTime, fps) =>
-  getAcceleration(force, mass, appliedTime) * (1 / fps);
+const getVelocity = (forceVector, mass, appliedTime, fps) => {
+  getAcceleration(forceVector.magnitude, mass, appliedTime) * (1 / fps);
+};
 
-const getDisplacement = (force, mass, appliedTime, fps, angle) =>{
-  const h = getVelocity(force, mass, appliedTime, fps) * 1/fps
-  const p = Math.cos(90 - angle) * h
-  const b = Math.sqrt(h**2 - p**2)
-  return {xChange: Math.round(b), yChange: Math.round(p)}
-}
+const getDisplacement = (forceVector, mass, appliedTime, fps) => {
+  const h = (getVelocity(forceVector.magnitude, mass, appliedTime, fps) * 1) / fps;
+  const p = Math.cos(Math.PI / 2 - forceVector.angle) * h;
+  const b = Math.sqrt(h ** 2 - p ** 2);
+  return { xChange: Math.round(b), yChange: Math.round(p) };
+};
+
 export {
   add2Vectors,
   vectorMultiply,

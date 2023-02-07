@@ -1,0 +1,64 @@
+#!/bin/bash
+
+set -euo pipefail
+
+root="https://intro.gigamonkeys.com/starter-kits"
+
+function usage {
+    echo "Resets the current project with code from a different starter kit."
+    echo ""
+    echo "  $0 <kit name>"
+    echo ""
+    echo "To list the available kits:"
+    echo ""
+    echo "  $0 --list"
+    exit 1
+}
+
+if (($# < 1)); then usage; fi
+
+if [ "$1" == "--list" ]; then
+    curl "$root/kits.txt"
+    exit 0
+fi
+
+proj=$(git branch --show-current)
+
+if [[ "$proj" != projects/* ]]; then
+    echo "Must be on a project branch to reset."
+    exit 1
+fi
+
+if ! git diff-index --quiet HEAD -- "$proj"; then
+    echo "Can't reset project when you have uncommitted changes."
+    exit 1
+fi
+
+n="${proj#projects/}"
+
+if [ -z "$n" ]; then
+    echo "No project name."
+    exit 1;
+fi
+
+if [[ ! -e "$proj" ]]; then
+    echo "Project directory $proj doesn't exist!"
+    exit 1
+fi
+
+kit="$1"
+
+git rm -r "$proj"
+
+# Download the starter code
+cd "$proj"
+tmp=$(mktemp)
+curl --fail "$root/$kit.tgz" > "$tmp"
+tar xzf "$tmp"
+
+# Install the libraries
+npm install
+
+# Commit initial code
+git add .
+git commit -m "Resetting project $proj with starter code from $kit."
