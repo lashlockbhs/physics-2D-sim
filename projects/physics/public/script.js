@@ -216,7 +216,7 @@ registerOnKeyDown((k) => {
     if (paused) {
       const area = Math.abs(shapeArea(vertices));
       //objArray.pu(new Shape([vector(0, 0)], vertices, area * parseInt(document.getElementById('density').value)));
-      objArray.push(new Shape([vector(0, 0)], vertices, 10, 'shape ' + (objArray.length + 1)));
+      objArray.push(new Shape([vector(0, 0)], vertices, area * parseInt(document.getElementById('density').value), 'shape ' + (objArray.length + 1)));
       objArray[objArray.length - 1].drawShape();
       drawFilledCircle(
         objArray[objArray.length - 1].center.x,
