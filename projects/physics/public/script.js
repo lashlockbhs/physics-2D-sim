@@ -33,8 +33,11 @@ import {
 import {
   Menu,
   shapeMenu,
-  makeNSidedPolygon
+  
 } from './gui.js';
+import {
+  makeNSidedPolygon
+}from "./perfectShapes.js"
 
 const canvas = document.getElementById('screen');
 const canvasProps = setCanvas(canvas);
@@ -154,7 +157,7 @@ class Shape {
   }
 
   drawShape() {
-    drawText('mass ' + this.mass, this.center.x, this.center.y, 'black', 10);
+    drawText('mass ' + this.mass, this.center.x, this.center.y, 'black', 10, ctx);
     for (let i = 0; i < this.vertices.length; i++) {
       if (i + 1 === this.vertices.length) {
         drawLine(
@@ -164,6 +167,7 @@ class Shape {
           this.vertices[0].y,
           'black',
           1,
+          ctx,
         );
       } else {
         drawLine(
@@ -173,6 +177,7 @@ class Shape {
           this.vertices[i + 1].y,
           'black',
           1,
+          ctx,
         );
       }
     }

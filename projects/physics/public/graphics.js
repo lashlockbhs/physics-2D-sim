@@ -90,7 +90,7 @@ const drawFilledRoundedRect = (x, y, width, height, topLeft, topRight, bottomLef
 };
 
 const drawText = (text, x, y, color, size, ctx) => {
-  ctx.font = `${size}px Lexend`;
+  //ctx.font = `${size}px Lexend`;
   ctx.fillStyle = color;
   ctx.fillText(text, x, y);
 };
