@@ -30,14 +30,8 @@ import {
   getDisplacement,
 } from './math.js';
 
-import {
-  Menu,
-  shapeMenu,
-  
-} from './gui.js';
-import {
-  makeNSidedPolygon
-}from "./perfectShapes.js"
+import { Menu, shapeMenu } from './gui.js';
+import { makeNSidedPolygon } from './perfectShapes.js';
 
 const canvas = document.getElementById('screen');
 const canvasProps = setCanvas(canvas);
@@ -46,16 +40,12 @@ const width = canvasProps.width;
 const height = canvasProps.height;
 const ctx = canvasProps.ctx;
 
-
-
-
-
-
-const msPerFrame = 1 // frames per second, consider changing to ms/frame
+const msPerFrame = 1; // frames per second, consider changing to ms/frame
 
 //returns points that are 1 or less pixels away from eachother
 
-const closePoints = (ar1, ar2) => ar1.filter((e) => (ar2.find((e2) => distance(e, e2) <= 1) != undefined ? true : false));
+const closePoints = (ar1, ar2) =>
+  ar1.filter((e) => (ar2.find((e2) => distance(e, e2) <= 1) != undefined ? true : false));
 
 //returns an array of objects that have a x, y point of collison and the shapes involved
 const collisions = (shapes) => {
@@ -116,13 +106,13 @@ class Shape {
     this.name = name;
     this.vertices = vertices;
     this.vertBase = vertices;
-    this.baseDifs = []//the pos of the verticies relitive to the center, in replacment of the "sides" athgorithm
-    this.mass = mass
-    this.centerBase = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y }
-    this.center = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y }
-    this.rotation = 0
-    this.lastRotation = 0
-    this.actingForce = [addNumVectors(actingForces)]
+    this.baseDifs = []; //the pos of the verticies relitive to the center, in replacment of the "sides" athgorithm
+    this.mass = mass;
+    this.centerBase = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y };
+    this.center = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y };
+    this.rotation = 0;
+    this.lastRotation = 0;
+    this.actingForce = [addNumVectors(actingForces)];
     this.menu;
 
     for (const vert of this.vertices) {
@@ -205,16 +195,12 @@ class Shape {
     const array2d = Object.entries(this); //returns 2d array, [key : value] for each class var
 
     //converts a 2d array into array of objects
-    return array2d.map(([name, value]) => Object.assign({}, { "name": name, "value": value })); //THANKS chatgbt 
-
+    return array2d.map(([name, value]) => Object.assign({}, { name: name, value: value })); //THANKS chatgbt
   }
 }
 
-
-
-const objArray = []
-let vertices = []
-
+const objArray = [];
+let vertices = [];
 
 let paused = true;
 
@@ -226,26 +212,27 @@ const onclick = (x, y) => {
 };
 
 registerOnKeyDown((k) => {
-  if (k === "Enter") {
+  if (k === 'Enter') {
     if (paused) {
       const area = Math.abs(shapeArea(vertices));
       //objArray.pu(new Shape([vector(0, 0)], vertices, area * parseInt(document.getElementById('density').value)));
-      objArray.push(new Shape([vector(0, 0)], vertices, 10, "shape " + (objArray.length + 1)));
-      objArray[objArray.length - 1].drawShape()
-      drawFilledCircle(objArray[objArray.length - 1].center.x, objArray[objArray.length - 1].center.y, 2.5, "red", ctx)
+      objArray.push(new Shape([vector(0, 0)], vertices, 10, 'shape ' + (objArray.length + 1)));
+      objArray[objArray.length - 1].drawShape();
+      drawFilledCircle(
+        objArray[objArray.length - 1].center.x,
+        objArray[objArray.length - 1].center.y,
+        2.5,
+        'red',
+        ctx,
+      );
       vertices = [];
-
-
 
       paused = objArray.length <= 5;
       if (!paused) {
-
         createShapeMenu();
-
       }
     }
-  } 
-  else if (k === " ") {
+  } else if (k === ' ') {
     paused = true;
   }
 });
@@ -256,31 +243,29 @@ const getShapes = () => objArray;
 
 const createShapeMenu = () => {
   for (const shape of objArray) {
-    shapeMenu.options.push({ text: shape.name })
+    shapeMenu.options.push({ text: shape.name });
 
     const shapeWindow = new Menu(
       null,
-      document.getElementById("menuHolder"),
+      document.getElementById('menuHolder'),
       true,
       0,
       0,
       300,
       20,
       10,
-    )
+    );
     shapeMenu.updateMenu();
     shape.menu = shapeWindow;
 
-    shapeMenu.childs.push({ el: shapeWindow, button: shapeMenu.elArray.find(e => e.id === shape.name) })
+    shapeMenu.childs.push({
+      el: shapeWindow,
+      button: shapeMenu.elArray.find((e) => e.id === shape.name),
+    });
     shapeWindow.createHeadbar();
-    shapeWindow.createWindow(
-      shape.getShapeVars(),
-      100,
-      100,
-    );
+    shapeWindow.createWindow(shape.getShapeVars(), 100, 100);
   }
-
-}
+};
 
 let next = 0;
 let countFrame = 0;
@@ -288,17 +273,15 @@ const drawFrame = (time) => {
   if (time > next && !paused) {
     clear(ctx, width, height);
     for (const shape of objArray) {
-
       shape.menu.updateWindow(shape.getShapeVars());
 
-      shape.rotation = countFrame
+      shape.rotation = countFrame;
 
-
-      shape.center.x += 1
+      shape.center.x += 1;
 
       shape.updateProperties();
 
-      drawFilledCircle(shape.center.x, shape.center.y, 2.5, "red", ctx)
+      drawFilledCircle(shape.center.x, shape.center.y, 2.5, 'red', ctx);
 
       shape.drawShape();
 
@@ -311,8 +294,4 @@ const drawFrame = (time) => {
 
 animate(drawFrame);
 
-export {
-  getShapes,
-  canvas,
-  Shape
-};
+export { getShapes, canvas, Shape };

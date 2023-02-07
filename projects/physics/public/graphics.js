@@ -12,7 +12,7 @@ const setCanvas = (canvas) => {
   const ctx = canvas.getContext('2d');
   const width = canvas.width;
   const height = canvas.height;
-  return {ctx, width, height};
+  return { ctx, width, height };
 };
 
 const drawLine = (x1, y1, x2, y2, color, width, ctx) => {
@@ -72,7 +72,17 @@ const drawFilledTriangle = (x1, y1, x2, y2, x3, y3, color, ctx) => {
 };
 
 //topLeft, topRight, bottomLeft, bottomRight are all radii for circles in those corners, only positive integer values
-const drawRoundedRect = (x, y, width, height, topLeft, topRight, bottomLeft, bottomRight, color) => {
+const drawRoundedRect = (
+  x,
+  y,
+  width,
+  height,
+  topLeft,
+  topRight,
+  bottomLeft,
+  bottomRight,
+  color,
+) => {
   const arrOfRadii = [topLeft, topRight, bottomLeft, bottomRight];
   ctx.fillStyle = color;
   ctx.beginPath();
@@ -80,7 +90,17 @@ const drawRoundedRect = (x, y, width, height, topLeft, topRight, bottomLeft, bot
   ctx.stroke();
 };
 
-const drawFilledRoundedRect = (x, y, width, height, topLeft, topRight, bottomLeft, bottomRight, color) => {
+const drawFilledRoundedRect = (
+  x,
+  y,
+  width,
+  height,
+  topLeft,
+  topRight,
+  bottomLeft,
+  bottomRight,
+  color,
+) => {
   const arrOfRadii = [topLeft, topRight, bottomLeft, bottomRight];
   ctx.fillStyle = color;
   ctx.beginPath();
