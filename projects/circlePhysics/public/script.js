@@ -47,10 +47,11 @@ let animateStart = false
 const secPerFrame = 0.5
 
 //object
-const evalGrav = (object) =>{
+const evalGravity = (object) =>{
   const returnObject = object
   const effects = [];
 }
+
 const evalCollisions = (object) => {
   const returnObject = object;
   const collisions = [];
@@ -64,20 +65,20 @@ const evalCollisions = (object) => {
   }
   if (collisions.length > 0) console.log('collsions', collisions)
   for (const element of collisions) {
-    returnObject.force = returnObject.force.concat(element.source.force)
+
   }
   return returnObject
 }
 
 class Shape {
-  constructor(radius, activeForce, x, y) {
+  constructor(radius, activeVelocity, x, y) {
     this.area = (Math.PI * radius) ** 2
     this.mass = this.area * Density
     this.x = x
     this.y = y
-    this.force = activeForce
-    this.currAcc = this.getAcceleration(secPerFrame)
-    this.currVelocity = this.getVelocity(secPerFrame)
+    this.force = [vector(0,0)]
+    this.currAcc = [vector(0,0)]
+    this.currVelocity = activeVelocity
     this.radius = radius
   }
 
@@ -113,7 +114,6 @@ const initDraw = (coordArray) => {
     )]
     drawCircle(coordArray[0].x, coordArray[0].y, radius, Theme.draw)
     drawLine(coordArray[0].x, coordArray[0].y, coordArray[2].x, coordArray[2].y, 1, 'Theme.draw')
-    drawText((2 * Math.PI * radius).toString(), coordArray[0].x, coordArray[0].y - 7 - 2 * Math.PI * radius, 'black', 10)
     ObjArray.push(new Shape(radius, force, CircleCoords[0].x, CircleCoords[0].y))
     CircleCoords = []
   }
