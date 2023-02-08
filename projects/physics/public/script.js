@@ -113,7 +113,7 @@ class Shape {
     this.rotation = 0;
     this.lastRotation = 0;
     this.actingForce = [addNumVectors(actingForces)];
-    this.menu;
+    this.menu
 
     for (const vert of this.vertices) {
       this.baseDifs.push(twoPointXYDif(vert, { x: this.centerBase.x, y: this.centerBase.y }));
@@ -216,7 +216,7 @@ registerOnKeyDown((k) => {
     if (paused) {
       const area = Math.abs(shapeArea(vertices));
       //objArray.pu(new Shape([vector(0, 0)], vertices, area * parseInt(document.getElementById('density').value)));
-      objArray.push(new Shape([vector(0, 0)], vertices, area * parseInt(document.getElementById('density').value), 'shape ' + (objArray.length + 1)));
+      objArray.push(new Shape([vector(0, 0)], vertices, 10, 'shape ' + (objArray.length + 1)));
       objArray[objArray.length - 1].drawShape();
       drawFilledCircle(
         objArray[objArray.length - 1].center.x,
@@ -228,9 +228,9 @@ registerOnKeyDown((k) => {
       vertices = [];
 
       paused = objArray.length <= 5;
-      if (!paused) {
-        createShapeMenu();
-      }
+      
+      addShapeWindow(objArray[objArray.length - 1]);
+      
     }
   } else if (k === ' ') {
     paused = true;
@@ -241,31 +241,41 @@ canvas.onclick = (e) => onclick(e.offsetX, e.offsetY);
 
 const getShapes = () => objArray;
 
-const createShapeMenu = () => {
-  for (const shape of objArray) {
-    shapeMenu.options.push({ text: shape.name });
+const addShapeWindow = (shape) => {
+  shapeMenu.options.push({ text: shape.name });
+  const thisShapeMenu = new Menu(
+    [{text : "Shape Class"},{text : "Quick Info"}, {text : "Modifiables"}],
+    document.getElementById('menuHolder'),
+    true,
+    shape.name
+  )
+  thisShapeMenu.createHeadbar();
+  thisShapeMenu.createElements();
 
-    const shapeWindow = new Menu(
-      null,
-      document.getElementById('menuHolder'),
-      true,
-      0,
-      0,
-      300,
-      20,
-      10,
-    );
-    shapeMenu.updateMenu();
-    shape.menu = shapeWindow;
+  console.log(thisShapeMenu)
 
-    shapeMenu.childs.push({
-      el: shapeWindow,
-      button: shapeMenu.elArray.find((e) => e.id === shape.name),
-    });
-    shapeWindow.createHeadbar();
-    shapeWindow.createWindow(shape.getShapeVars(), 100, 100);
-  }
+  const shapeClassDisplay= new Menu(
+    null,
+    document.getElementById('menuHolder'),
+    true,
+    shape.name
+  );
+  shapeMenu.updateMenu();
+  shape.menu = shapeClassDisplay;
+  
+  shapeMenu.childs.push({
+    el: thisShapeMenu,
+    button: shapeMenu.elArray.find((e) => e.id === shape.name),
+  });
+  thisShapeMenu.childs.push(
+    {el: shapeClassDisplay, button: thisShapeMenu.elArray.find((e) => e.id === "Shape Class")},
+    {},
+  )
+
+  shapeClassDisplay.createHeadbar();
+  shapeClassDisplay.createWindow(shape.getShapeVars(), 100, 100);
 };
+
 
 let next = 0;
 let countFrame = 0;

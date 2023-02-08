@@ -2,7 +2,7 @@
 const varToString = (varObj) => Object.keys(varObj)[0];
 
 class Menu {
-  constructor(options, menuHolder, hidden) {
+  constructor(options, menuHolder, hidden, name) {
     this.childs = [];
     this.currentWindows = [];
     this.elArray = [];
@@ -10,6 +10,7 @@ class Menu {
     this.menuHolder = menuHolder;
     this.headbar, this.window, this.windowObject;
     this.optionsHidden, (this.hidden = hidden);
+    this.name = name;
   }
   #createButton(displayTxt) {
     const div = document.createElement('div');
@@ -45,6 +46,9 @@ class Menu {
   createHeadbar() {
     this.headbar = document.createElement('div');
     this.headbar.setAttribute('id', 'headbar');
+
+    this.headbar.append(document.createTextNode(this.name))
+
     this.hidden
       ? (this.headbar.style.visibility = 'hidden')
       : (this.headbar.style.visibility = 'visible');
@@ -166,17 +170,18 @@ const baseMenu = new Menu(
     { text: 'Shapes' },
     { text: 'World Settings' },
     { text: 'Debugging' },
-  ], //menu text
-
-  document.getElementById('menuHolder'), //
-  false, //hidden?
+  ],
+  document.getElementById('menuHolder'), 
+  false,
+  "Base Menu"
 );
 baseMenu.createHeadbar();
 baseMenu.createElements();
 const perfShapesMenu = new Menu(
   [{ text: 'Square' }, { text: 'Circle' }, { text: 'Rect' }, { text: 'Triangle' }], //menu text
   document.getElementById('menuHolder'), //
-  true, //hidden?
+  true,
+  "Perfect Shapes"
 );
 
 perfShapesMenu.createHeadbar();
@@ -185,7 +190,8 @@ perfShapesMenu.createElements();
 const shapeMenu = new Menu(
   [], //menu text
   document.getElementById('menuHolder'),
-  true, //hidden?
+  true,
+  "Shape Menu"
 );
 
 shapeMenu.createHeadbar();
