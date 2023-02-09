@@ -11,6 +11,7 @@ class Menu {
     this.headbar, this.window, this.windowObject;
     this.optionsHidden, (this.hidden = hidden);
     this.name = name;
+
   }
   #createButton(displayTxt) {
     const div = document.createElement('div');
@@ -37,6 +38,7 @@ class Menu {
     this.elArray.push(div);
     this.headbar.append(div);
   }
+  
   createElements() {
     //create button/option elements as divs
     for (let i = 0; i < this.options.length; i++) {
@@ -45,7 +47,7 @@ class Menu {
   }
   createHeadbar() {
     this.headbar = document.createElement('div');
-    this.headbar.setAttribute('id', 'headbar');
+    this.headbar.setAttribute('class', 'headbar');
 
     this.headbar.append(document.createTextNode(this.name))
 
@@ -65,7 +67,7 @@ class Menu {
         currentY = e.clientY - initialY; //scrap the rest cause it didnt work with what I wanted to do
         xOffset = currentX;
         yOffset = currentY;
-        this.#setTranslate(currentX, currentY, this.headbar);
+        this.setTranslate(currentX, currentY);
         dragDone = false;
       } else {
         dragDone = true;
@@ -111,7 +113,7 @@ class Menu {
   updateWindow(objects) {
     const divs = this.headbar.children;
     for (let i = 0; i < divs.length; i++) {
-      divs[i].setAttribute('class', 'window');
+      divs[i].setAttribute('class', 'var-display');
       const object = objects.find((e) => e.name === divs[i].id);
       const textNode = divs[i].firstChild;
       textNode.nodeValue = object.name + ': ' + JSON.stringify(object.value);
@@ -126,8 +128,12 @@ class Menu {
       }
     }
   }
-  #setTranslate(xPos, yPos, el) {
-    el.style.transform = 'translate3d(' + xPos + 'px, ' + yPos + 'px, 0)';
+  setTranslate(xPos, yPos) {
+    this.headbar.style.transform = 'translate3d(' + xPos + 'px, ' + yPos + 'px, 0)';
+  }
+  setPos(xPos, yPos){
+    this.headbar.style.left = xPos+"px";
+    this.headbar.style.top = yPos+"px";
   }
   hideMenu() {
     this.headbar.style.visibility = 'hidden';
