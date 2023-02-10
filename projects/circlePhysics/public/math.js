@@ -86,6 +86,24 @@ const twoPointDistance = (p1, p2) => {
 const twoShapeGrav = (o1, o2) => (6.6743 * 10 ** -11)  * o1.mass * o2.mass / distance(o1, o2) ** 2
 //time derivative(s)
 
+const findDerivative = (coefficients) => {
+  let largestDegree = 0
+  for (let i = 0; i < coefficients.length; i++) {
+    if (coefficients[i].degree > largestDegree) {
+      largestDegree = coefficients[i].degree
+    };
+  };
+  const derivativeCoefficients = [];
+  for (let i = 0; i < largestDegree; i++) {
+    if (coefficients[i].degree === i) {
+      derivativeCoefficients.push({ constant: coefficients[i + 1].constant * (i + 1), degree: i});
+    } else {
+      derivativeCoefficients.push({ constant: 0, degree: i});
+    };
+  };
+  return derivativeCoefficients;
+};
+
 export {
   add2Vectors,
   vectorMultiply,
@@ -102,6 +120,7 @@ export {
   twoPointXYDif,
   shapeArea,
   twoShapeGrav,
+  findDerivative,
 };
 
 //Verlet Integration, don't worry about this for now (I gotta take Calc BC now xD)
