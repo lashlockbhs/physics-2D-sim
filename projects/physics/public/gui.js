@@ -101,7 +101,12 @@ class Menu {
       const div = document.createElement('div');
       div.setAttribute('id', objects[i].name);
       div.setAttribute('class', 'var-display');
-
+      if(objects[i].modify){
+        const input = document.createElement("input");
+        input.setAttribute("class", "density")
+        input.setAttribute("id", this.name + " density")
+        div.append(document.createTextNode(objects[i].name+": "), input)
+      }
       div.append(
         document.createTextNode(objects[i].name + ': ' + JSON.stringify(objects[i].value)),
       );
@@ -170,6 +175,77 @@ class Menu {
   }
 }
 
+const addShapeWindow = (shape) => {
+  shapeMenu.options.push({ text: shape.name });
+  const thisShapeMenu = new Menu(
+    [{ text: "Shape Class" }, { text: "Quick Info" }, { text: "Modifiables" }],
+    document.getElementById('menuHolder'),
+    true,
+    shape.name,
+  )
+  thisShapeMenu.createHeadbar();
+  thisShapeMenu.createElements();
+
+  console.log(thisShapeMenu)
+
+  const classDisplay = new Menu(
+    null,
+    document.getElementById('menuHolder'),
+    true,
+    shape.name,
+  );
+  const info = new Menu(
+    null,
+    document.getElementById('menuHolder'),
+    true,
+    shape.name,
+  )
+  const modifiables = new Menu(
+    null,
+    document.getElementById('menuHolder'),
+    false,
+    shape.name,
+  )
+  
+  shapeMenu.updateMenu();
+  shape.menu = classDisplay;
+
+  shapeMenu.childs.push({
+    el: thisShapeMenu,
+    button: shapeMenu.elArray.find((e) => e.id === shape.name),
+  });
+  thisShapeMenu.childs.push(
+    { el: classDisplay, button: thisShapeMenu.elArray.find((e) => e.id === "Shape Class") },
+    { el: info, button: thisShapeMenu.elArray.find((e) => e.id === "Quick Info") },
+    { el: modifiables, button: thisShapeMenu.elArray.find((e) => e.id === "Modifiables") },
+  )
+
+  classDisplay.createHeadbar();
+  classDisplay.createWindow(shape.getShapeVars(), 100, 100);
+
+  info.createHeadbar();
+  info.createWindow(
+    [
+      { name: "Verticies", value: shape.vertices, modify: false },
+      { name: "X, Y", value: shape.center, modify: false },
+    ],
+    100,
+    100,
+  );
+
+  modifiables.createHeadbar();
+  modifiables.createWindow(
+    [
+      { name: "Density", value: shape.density, modify: true, shape: shape },
+      { name: "X, Y", value: shape.center, modify: true, shape: shape },
+    ],
+    100,
+    100,
+  );
+  modifiables.setPos(0, 0)
+
+};
+
 const baseMenu = new Menu(
   [
     { text: 'Perfect Shapes' },
@@ -207,4 +283,4 @@ baseMenu.childs.push(
   { el: shapeMenu, button: baseMenu.elArray.find((e) => e.id === 'Shapes') },
 );
 
-export { Menu, shapeMenu };
+export { Menu, shapeMenu, addShapeWindow };

@@ -30,7 +30,7 @@ import {
   getDisplacement,
 } from './math.js';
 
-import { Menu, shapeMenu } from './gui.js';
+import { Menu, shapeMenu, addShapeWindow } from './gui.js';
 import { makeNSidedPolygon } from './perfectShapes.js';
 
 const canvas = document.getElementById('screen');
@@ -102,12 +102,13 @@ const drawPoints = (ar, color) => {
 };
 
 class Shape {
-  constructor(actingForces, vertices, mass, name) {
+  constructor(actingForces, vertices, density, name) {
     this.name = name;
     this.vertices = vertices;
     this.vertBase = vertices;
     this.baseDifs = []; //the pos of the verticies relitive to the center, in replacment of the "sides" athgorithm
-    this.mass = mass;
+    this.density = density;
+    this.mass = Math.abs(shapeArea(vertices)) * this.density;
     this.centerBase = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y };
     this.center = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y };
     this.rotation = 0;
@@ -137,6 +138,7 @@ class Shape {
   }
   //should be called everytime you update this opjects varibles outside of the class
   updateProperties() {
+    this.mass = Math.abs(shapeArea(this.vertBase)) * parseInt(this.density);
     //rotate vertDifs
     this.#getVertDifs();
     //calc vertices pos based on centroid
@@ -147,7 +149,6 @@ class Shape {
   }
 
   drawShape() {
-    drawText('mass ' + this.mass, this.center.x, this.center.y, 'black', 10, ctx);
     for (let i = 0; i < this.vertices.length; i++) {
       if (i + 1 === this.vertices.length) {
         drawLine(
@@ -215,7 +216,6 @@ registerOnKeyDown((k) => {
   if (k === 'Enter') {
     if (paused) {
       const area = Math.abs(shapeArea(vertices));
-      //objArray.pu(new Shape([vector(0, 0)], vertices, area * parseInt(document.getElementById('density').value)));
       objArray.push(new Shape([vector(0, 0)], vertices, 10, 'Shape ' + (objArray.length + 1)));
       objArray[objArray.length - 1].drawShape();
       drawFilledCircle(
@@ -241,79 +241,6 @@ registerOnKeyDown((k) => {
 
 canvas.onclick = (e) => onclick(e.offsetX, e.offsetY);
 
-const getShapes = () => objArray;
-
-const addShapeWindow = (shape) => {
-  shapeMenu.options.push({ text: shape.name });
-  const thisShapeMenu = new Menu(
-    [{ text: "Shape Class" }, { text: "Quick Info" }, { text: "Modifiables" }],
-    document.getElementById('menuHolder'),
-    true,
-    shape.name,
-  )
-  thisShapeMenu.createHeadbar();
-  thisShapeMenu.createElements();
-
-  console.log(thisShapeMenu)
-
-  const classDisplay = new Menu(
-    null,
-    document.getElementById('menuHolder'),
-    true,
-    shape.name,
-  );
-  const info = new Menu(
-    null,
-    document.getElementById('menuHolder'),
-    true,
-    shape.name,
-  )
-  const modifiables = new Menu(
-    null,
-    document.getElementById('menuHolder'),
-    false,
-    shape.name,
-  )
-  
-  shapeMenu.updateMenu();
-  shape.menu = classDisplay;
-
-  shapeMenu.childs.push({
-    el: thisShapeMenu,
-    button: shapeMenu.elArray.find((e) => e.id === shape.name),
-  });
-  thisShapeMenu.childs.push(
-    { el: classDisplay, button: thisShapeMenu.elArray.find((e) => e.id === "Shape Class") },
-    { el: info, button: thisShapeMenu.elArray.find((e) => e.id === "Quick Info") },
-    { el: modifiables, button: thisShapeMenu.elArray.find((e) => e.id === "Modifiables") },
-  )
-
-  classDisplay.createHeadbar();
-  classDisplay.createWindow(shape.getShapeVars(), 100, 100);
-
-  info.createHeadbar();
-  info.createWindow(
-    [
-      { name: "Verticies", value: shape.vertices, modify: false },
-      { name: "X, Y", value: shape.center, modify: false },
-    ],
-    100,
-    100,
-  );
-
-  modifiables.createHeadbar();
-  modifiables.createWindow(
-    [
-      { name: "Density", value: shape.density, modify: true, shape: shape },
-      { name: "X, Y", value: shape.center, modify: true, shape: shape },
-    ],
-    100,
-    100,
-  );
-  modifiables.setPos(0, 0)
-
-};
-
 
 let next = 0;
 let countFrame = 0;
@@ -321,6 +248,9 @@ const drawFrame = (time) => {
   if (time > next && !paused) {
     clear(ctx, width, height);
     for (const shape of objArray) {
+      const density = parseInt(document.getElementById(shape.menu.name + " density").value)
+      shape.density = density === null || density === "" ? 10 : density;
+
       shape.menu.updateWindow(shape.getShapeVars());
 
       shape.rotation = countFrame;
@@ -342,4 +272,4 @@ const drawFrame = (time) => {
 
 animate(drawFrame);
 
-export { getShapes, canvas, Shape };
+export {canvas, Shape, };
