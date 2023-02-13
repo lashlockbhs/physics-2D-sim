@@ -80,19 +80,22 @@ class Shape {
     const collisions = [];
     let index = 0;
     for (const element of ObjArray) {
-      const distance = twoPointDistance(this, element)
-      if ((this.radius + element.radius < distance) && (distance != 0)) {
+      const dist = twoPointDistance({ x: this.x, y: this.y }, { x: element.x, y: element.y })
+      console.log('distance:', dist)
+      if ((this.radius + element.radius < dist) && (dist != 0)) {
         collisions.push({ source: element, index: index, angle: twoPointAngle({ x: this.x, y: this.y }, { x: element.x, y: element.y }) })
       }
       index++
     }
-    const totalForce = [this.force]
+    console.log('collisions:', collisions)
+    const totalForce = [vector(0,0)]
     if (collisions.length > 0) console.log('collsions', collisions)
     for (const element of collisions) {
-      const elementMomentum = vector(element.angle, element.source.mass* element.source.velocity)
-      totalForce.push(vectorMultiply(elementMomentum, -1))
+      const elementMomentum = vector(element.angle, element.source.mass * element.source.velocity)
+      totalForce.push(elementMomentum)
     }
-    this.force = totalForce
+    console.log(totalForce)
+    this.force = addNumVectors(totalForce)
   }
 
   applyGrav() {
@@ -153,6 +156,7 @@ registerOnKeyDown((k) => {
     animateStart = !animateStart
   } else if (k === 'k') {
     //kill
+    drawFilledRect(0, 0, width, height, Theme.background)
     clear()
     ObjArray = []
     animateStart = false
@@ -166,22 +170,21 @@ const nextFrame = (time) => {
     CircleCoords = []
     clear()
     drawFilledRect(0, 0, width, height, Theme.background)
-    /*
-    for (let element of ObjArray) {
-      element.evalCollisions()
-    }*/
+    for (const element of ObjArray) {
+      element.applyCollisions()
+    }
     let index = 0
     for (const element of ObjArray) {
-      if ((element.x + element.radius < 0 || element.x - element.radius > width) || (element.y + element.radius < 0 || element.y - element.radius > height)) {
+      /*if ((element.x + element.radius < 0 || element.x - element.radius > width) || (element.y + element.radius < 0 || element.y - element.radius > height)) {
         ObjArray.splice(index, 1)
-        index++
-      }
+      }*/
       element.applyGrav()
-      console.log('curracc:', element.currAcc, 'force:', element.force)
+      //console.log('curracc:', element.currAcc, 'force:', element.force)
       element.updateAccelfromForce()
       element.currVelocity = add2Vectors(element.currVelocity, vector(element.currAcc.angle, element.currAcc.magnitude / msecPerFrame / 1000))
       element.updatePosition()
       element.draw()
+      index++
     }
     console.log(ObjArray)
     next += msecPerFrame
