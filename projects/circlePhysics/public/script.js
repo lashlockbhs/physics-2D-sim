@@ -45,16 +45,16 @@ drawFilledRect(0, 0, width, height, Theme.background)
 let ObjArray = []
 let CircleCoords = []
 let animateStart = false
-const secPerFrame = 1
+const msecPerFrame = 1000
 
 //object
 const evalGravity = (object) => {
   const effects = [];
   let index = 0;
   for (const element of ObjArray) {
-    const distance = twoPointDistance({ x: object.x, y: object.y }, { x: element.x, y: element.y })
-    if ((object.radius + element.radius < distance) && (distance != 0)) {
-      effects.push({ source: element, index: index, distance, angle: twoPointAngle({ x: object.x, y: object.y }, { x: element.x, y: element.y }) })
+    const dist = twoPointDistance({ x: object.x, y: object.y }, { x: element.x, y: element.y })
+    if ((object.radius + element.radius < dist) && (dist != 0)) {
+      effects.push({ source: element, index: index, dist, angle: twoPointAngle({ x: object.x, y: object.y }, { x: element.x, y: element.y }) })
     }
     index++
   }
@@ -73,7 +73,7 @@ const evalCollisions = (object) => {
   for (const element of ObjArray) {
     const distance = twoPointDistance(object, element)
     if ((object.radius + element.radius < distance) && (distance != 0)) {
-      collisions.push({ source: element, index: index, angle: twoPointAngle(element, object) })
+      collisions.push({ source: element, index: index, angle: twoPointAngle({ x: object.x, y: object.y }, { x: element.x, y: element.y }) })
     }
     index++
   }
@@ -99,31 +99,31 @@ class Shape {
   draw() {
     drawCircle(this.x, this.y, this.radius, Theme.draw, 1)
     drawFilledCircle(this.x, this.y, 2, Theme.accents)
-    drawText(this.mass.toString(), this.x, this.y - 7 - this.radius, 'black', 10)
   }
 
+  /*
+    getAccelfromVelo() {
+      const angle = this.currVelocity.angle;
+      const currVeloMagnitude = this.currVelocity.magnitude;
+      const lastVeloMagnitude = this.lastVelocity.magnitude;
+      if (currVeloMagnitude !== lastVeloMagnitude) {
+        const derivative = findDerivative([{ constant: Math.abs(lastVeloMagnitude - currVeloMagnitude), degree: 1 }]);
+        return { angle, magnitude: derivative * msecPerFrame };
+      } else {
+        return { angle, magnitude: 0 };
+      };
+    }
+  */
 
-/*
-  getAccelfromVelo() {
-    const angle = this.currVelocity.angle;
-    const currVeloMagnitude = this.currVelocity.magnitude;
-    const lastVeloMagnitude = this.lastVelocity.magnitude;
-    if (currVeloMagnitude !== lastVeloMagnitude) {
-      const derivative = findDerivative([{ constant: Math.abs(lastVeloMagnitude - currVeloMagnitude), degree: 1 }]);
-      return { angle, magnitude: derivative * secPerFrame };
-    } else {
-      return { angle, magnitude: 0 };
-    };
-  }
-*/
   getAccelfromForce() {
-    return vector(this.actingForce[0].angle, (this.actingForce[0].magnitude / this.mass) * secPerFrame);
+    return vector(this.actingForce[0].angle, (this.actingForce[0].magnitude / this.mass) * msecPerFrame);
   };
 
   getDisplacement() {
-    const magnitude = this.currVelocity.magnitude * secPerFrame
+    const magnitude = this.currVelocity.magnitude * msecPerFrame
     const xChange = Math.cos(this.currVelocity.angle) * magnitude;
     const yChange = Math.sin(this.currVelocity.angle) * magnitude;
+    console.log(magnitude, xChange, yChange)
     return { xChange, yChange };
   };
 
@@ -131,11 +131,12 @@ class Shape {
 
 const initDraw = (coordArray) => {
   if (coordArray.length === 3) {
-    const radius = Math.hypot(Math.abs(coordArray[0].x - coordArray[1].x), Math.abs(coordArray[0].y - coordArray[1].y))
-    const velocity = [vector(
+    const radius = twoPointDistance(coordArray[0], coordArray[1])
+    const velocity = vector(
       twoPointAngle(coordArray[0], coordArray[2]),
       twoPointDistance(coordArray[0], coordArray[2]),
-    )]
+    )
+    console.log(velocity)
     drawCircle(coordArray[0].x, coordArray[0].y, radius, Theme.draw)
     drawLine(coordArray[0].x, coordArray[0].y, coordArray[2].x, coordArray[2].y, 1, 'Theme.draw')
     console.log(CircleCoords)
@@ -168,26 +169,27 @@ const nextFrame = (time) => {
     CircleCoords = []
     clear()
     drawFilledRect(0, 0, width, height, Theme.background)
-    let index = 0
+    /*let index = 0
     //console.log(ObjArray)
     for (let element of ObjArray) {
       ObjArray[index] = evalCollisions(element)
       index++
-    }
+    }*/
 
     for (const element of ObjArray) {
-      element.force = [evalGravity(element)]
+      //element.force = [evalGravity(element)]
       element.force = [addNumVectors(element.force)]
+      console.log('curracc: ', element.currAcc, 'force:', element.force)
       element.currAcc = add2Vectors(element.getAccelfromForce, element.currAcc)
-      element.currVelocity = add2Vectors(element.currVelocity, vector(element.currAcc.angle, element.currAcc/secPerFrame))
+      element.currVelocity = add2Vectors(element.currVelocity, vector(element.currAcc.angle, element.currAcc.magnitude / msecPerFrame))
       element.x += element.getDisplacement().xChange
       element.y += element.getDisplacement().yChange
       element.draw()
     }
     console.log(ObjArray)
-    time += secPerFrame
+    next += msecPerFrame
     countFrame++
   }
 }
 
-animate(nextFrame)
+animate(nextFrame);
