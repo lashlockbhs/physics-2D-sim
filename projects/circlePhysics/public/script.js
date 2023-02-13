@@ -90,7 +90,7 @@ class Shape {
     const totalForce = [vector(0,0)]
     if (collisions.length > 0) console.log('collsions', collisions)
     for (const element of collisions) {
-      const elementMomentum = vector(element.angle, element.source.mass * element.source.velocity)
+      const elementMomentum = vector(element.angle, element.source.mass * element.source.velocity.magnitude)
       totalForce.push(elementMomentum)
     }
     console.log(totalForce)
@@ -112,7 +112,7 @@ class Shape {
     for (const element of affecting) {
       totalForce.push(vector(element.angle, twoShapeGrav(this, element.source)))
     }
-    return addNumVectors(totalForce)
+    this.force = addNumVectors(totalForce)
   }
 
   updateAccelfromForce() {
