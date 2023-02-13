@@ -3,8 +3,8 @@ const shapeArea = (vArray) => {
   return sigma(0, vArray.length - 2, (i) => vArray[i].x * vArray[i + 1].y - vArray[i + 1].x * vArray[i].y) / 2;
 }
 
-const vector = (degrees, magnitude) => {
-  return { angle: (degrees * Math.PI) / 180, magnitude };
+const vector = (radians, magnitude) => {
+  return { angle: radians, magnitude };
 };
 
 const add2Vectors = (v1, v2) => {
@@ -84,7 +84,7 @@ const geoMean = (array) => {
 
 //these next two take 2 coordinate objects {x: ..., y: ...}
 const twoPointAngle = (p1, p2) => {
-  return Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;;
+  return Math.atan2(p2.y - p1.y, p2.x - p1.x);
 };
 
 const twoPointDistance = (p1, p2) => {
