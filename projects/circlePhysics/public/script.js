@@ -87,14 +87,19 @@ class Shape {
       }
       index++
     }
-    const totalForce = [vector(0,0)]
-    if (collisions.length > 0) console.log('collsions', collisions)
+    const totalForce = [this.force]
+    if (collisions.length > 0) {
+      console.log('collsions', collisions)
+      this.currVelocity = vectorMultiply(this.currVelocity, -1)
+    }
+    /*
     for (const element of collisions) {
-      const elementMomentum = vector(element.angle, element.source.mass * element.source.velocity.magnitude)
+      const elementMomentum = vector(element.angle, element.source.mass * element.source.currVelocity.magnitude)
       totalForce.push(elementMomentum)
     }
     console.log(totalForce)
     this.force = addNumVectors(totalForce)
+    */
   }
 
   applyGrav() {
@@ -119,6 +124,10 @@ class Shape {
     const decForce = vector(this.force.angle, (this.force.magnitude / this.mass) * msecPerFrame / 1000);
     this.currAcc = add2Vectors(this.currAcc, decForce)
   };
+
+  updateVelocity(){
+    this.currVelocity = add2Vectors(this.currVelocity, vector(this.currAcc.angle, this.currAcc.magnitude / msecPerFrame / 1000))
+  }
 
   updatePosition() {
     const magnitude = this.currVelocity.magnitude * msecPerFrame / 1000
@@ -149,14 +158,15 @@ registerOnclick((x, y) => {
   CircleCoords.push({ x, y })
   initDraw(CircleCoords)
 })
+
 registerOnKeyDown((k) => {
   console.log(k)
   if (k === 'Enter') {
     animateStart = !animateStart
   } else if (k === 'k') {
     //kill
-    drawFilledRect(0, 0, width, height, Theme.background)
     clear()
+    drawFilledRect(0, 0, width, height, Theme.background)
     ObjArray = []
     animateStart = false
   }
@@ -174,13 +184,10 @@ const nextFrame = (time) => {
     }
     let index = 0
     for (const element of ObjArray) {
-      /*if ((element.x + element.radius < 0 || element.x - element.radius > width) || (element.y + element.radius < 0 || element.y - element.radius > height)) {
-        ObjArray.splice(index, 1)
-      }*/
       element.applyGrav()
       //console.log('curracc:', element.currAcc, 'force:', element.force)
       element.updateAccelfromForce()
-      element.currVelocity = add2Vectors(element.currVelocity, vector(element.currAcc.angle, element.currAcc.magnitude / msecPerFrame / 1000))
+      element.updateVelocity()
       element.updatePosition()
       element.draw()
       index++
