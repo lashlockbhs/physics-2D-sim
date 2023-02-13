@@ -121,7 +121,7 @@ class Shape {
   }
 
   updateAccelfromForce() {
-    const decForce = vector(this.force.angle, (this.force.magnitude / this.mass) * msecPerFrame / 1000);
+    const decForce = vector(this.force.angle, (this.force.magnitude / this.mass));
     this.currAcc = add2Vectors(this.currAcc, decForce)
   };
 
