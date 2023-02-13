@@ -81,13 +81,12 @@ class Shape {
     let index = 0;
     for (const element of ObjArray) {
       const dist = twoPointDistance({ x: this.x, y: this.y }, { x: element.x, y: element.y })
-      console.log('distance:', dist)
-      if ((this.radius + element.radius < dist) && (dist != 0)) {
+      //if (dist > 0) console.log('distance:', dist)
+      if ((this.radius + element.radius >= dist) && (dist != 0)) {
         collisions.push({ source: element, index: index, angle: twoPointAngle({ x: this.x, y: this.y }, { x: element.x, y: element.y }) })
       }
       index++
     }
-    console.log('collisions:', collisions)
     const totalForce = [vector(0,0)]
     if (collisions.length > 0) console.log('collsions', collisions)
     for (const element of collisions) {
