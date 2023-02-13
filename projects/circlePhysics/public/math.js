@@ -8,7 +8,6 @@ const vector = (degrees, magnitude) => {
 };
 
 const add2Vectors = (v1, v2) => {
-
   const x1 = Math.cos(v1.angle) * v1.magnitude;
   const x2 = Math.cos(v2.angle) * v2.magnitude;
   const y1 = Math.sin(v1.angle) * v1.magnitude;
@@ -92,7 +91,7 @@ const twoPointDistance = (p1, p2) => {
   return Math.hypot(Math.abs(p1.x - p2.x), Math.abs(p1.y - p2.y));
 };
 
-const twoShapeGrav = (o1, o2) => (6.6743 * 10 ** -11) * o1.mass * o2.mass / distance(o1, o2) ** 2
+const twoShapeGrav = (o1, o2) => (6.6743 * 10 ** -11) * o1.mass * o2.mass / twoPointDistance(o1, o2) ** 2
 //time derivative(s)
 
 const findDerivative = (coefficients) => {

@@ -44,44 +44,7 @@ drawFilledRect(0, 0, width, height, Theme.background)
 let ObjArray = []
 let CircleCoords = []
 let animateStart = false
-const msecPerFrame = 100
-
-//object
-const evalGravity = (object) => {
-  const effects = [];
-  let index = 0;
-  for (const element of ObjArray) {
-    const dist = twoPointDistance({ x: object.x, y: object.y }, { x: element.x, y: element.y })
-    if ((object.radius + element.radius < dist) && (dist != 0)) {
-      effects.push({ source: element, index: index, dist, angle: twoPointAngle({ x: object.x, y: object.y }, { x: element.x, y: element.y }) })
-    }
-    index++
-  }
-
-  const totalForce = object.force
-  for (const element of effects) {
-    totalForce.push(vector(element.angle, twoShapeGrav(object, element)))
-  }
-  return addNumVectors(object.force.concat(totalForce))
-}
-
-const evalCollisions = (object) => {
-  const returnObject = object;
-  const collisions = [];
-  let index = 0;
-  for (const element of ObjArray) {
-    const distance = twoPointDistance(object, element)
-    if ((object.radius + element.radius < distance) && (distance != 0)) {
-      collisions.push({ source: element, index: index, angle: twoPointAngle({ x: object.x, y: object.y }, { x: element.x, y: element.y }) })
-    }
-    index++
-  }
-  if (collisions.length > 0) console.log('collsions', collisions)
-  for (const element of collisions) {
-    // help!
-  }
-  return returnObject
-}
+const msecPerFrame = 10
 
 class Shape {
   constructor(radius, activeVelocity, x, y) {
@@ -89,7 +52,7 @@ class Shape {
     this.mass = this.area * document.getElementById('density').value
     this.x = x
     this.y = y
-    this.force = [vector(0, 0)]
+    this.force = vector(0, 0)
     this.currAcc = vector(0, 0)
     this.currVelocity = activeVelocity
     this.radius = radius
@@ -100,7 +63,7 @@ class Shape {
     drawFilledCircle(this.x, this.y, 2, Theme.accents)
   }
 
-  /*
+  /* // sorry sze ting i wont be using this for the time being
     getAccelfromVelo() {
       const angle = this.currVelocity.angle;
       const currVeloMagnitude = this.currVelocity.magnitude;
@@ -113,14 +76,50 @@ class Shape {
       };
     }
   */
+  applyCollisions() {
+    const collisions = [];
+    let index = 0;
+    for (const element of ObjArray) {
+      const distance = twoPointDistance(this, element)
+      if ((this.radius + element.radius < distance) && (distance != 0)) {
+        collisions.push({ source: element, index: index, angle: twoPointAngle({ x: this.x, y: this.y }, { x: element.x, y: element.y }) })
+      }
+      index++
+    }
+    const totalForce = [this.force]
+    if (collisions.length > 0) console.log('collsions', collisions)
+    for (const element of collisions) {
+      const elementMomentum = vector(element.angle, element.source.mass* element.source.velocity)
+      totalForce.push(vectorMultiply(elementMomentum, -1))
+    }
+    this.force = totalForce
+  }
+
+  applyGrav() {
+    const affecting = [];
+    let index = 0;
+    for (const element of ObjArray) {
+      const dist = twoPointDistance({ x: this.x, y: this.y }, { x: element.x, y: element.y })
+      if (dist != 0) {
+        affecting.push({ source: element, index: index, dist, angle: twoPointAngle({ x: this.x, y: this.y }, { x: element.x, y: element.y }) })
+      }
+      index++
+    }
+
+    const totalForce = [this.force]
+    for (const element of affecting) {
+      totalForce.push(vector(element.angle, twoShapeGrav(this, element.source)))
+    }
+    return addNumVectors(totalForce)
+  }
 
   updateAccelfromForce() {
-    const decForce = vector(this.force[0].angle, (this.force[0].magnitude / this.mass) * msecPerFrame/1000);
+    const decForce = vector(this.force.angle, (this.force.magnitude / this.mass) * msecPerFrame / 1000);
     this.currAcc = add2Vectors(this.currAcc, decForce)
   };
 
   getDisplacement() {
-    const magnitude = this.currVelocity.magnitude * msecPerFrame /1000
+    const magnitude = this.currVelocity.magnitude * msecPerFrame / 1000
     const xChange = Math.cos(this.currVelocity.angle) * magnitude;
     const yChange = Math.sin(this.currVelocity.angle) * magnitude;
     return { xChange, yChange };
@@ -133,7 +132,7 @@ const initDraw = (coordArray) => {
     const radius = twoPointDistance(coordArray[0], coordArray[1])
     const velocity = vector(
       twoPointAngle(coordArray[0], coordArray[2]),
-      twoPointDistance(coordArray[0], coordArray[2])/2,
+      twoPointDistance(coordArray[0], coordArray[2]) / 2,
     )
     console.log(velocity)
     drawCircle(coordArray[0].x, coordArray[0].y, radius, Theme.draw)
@@ -174,15 +173,14 @@ const nextFrame = (time) => {
     }*/
     let index = 0
     for (const element of ObjArray) {
-      if ((element.x + element.radius < 0 || element.x - element.radius > width) || (element.y +element.radius < 0 || element.y -element.radius > height)){
+      if ((element.x + element.radius < 0 || element.x - element.radius > width) || (element.y + element.radius < 0 || element.y - element.radius > height)) {
         ObjArray.splice(index, 1)
         index++
       }
-      //element.force = [evalGravity(element)]
-      element.force = [addNumVectors(element.force)]
+      element.applyGrav()
       console.log('curracc:', element.currAcc, 'force:', element.force)
       element.updateAccelfromForce()
-      element.currVelocity = add2Vectors(element.currVelocity, vector(element.currAcc.angle, element.currAcc.magnitude / msecPerFrame/1000))
+      element.currVelocity = add2Vectors(element.currVelocity, vector(element.currAcc.angle, element.currAcc.magnitude / msecPerFrame / 1000))
       element.x += element.getDisplacement().xChange
       element.y += element.getDisplacement().yChange
       element.draw()
