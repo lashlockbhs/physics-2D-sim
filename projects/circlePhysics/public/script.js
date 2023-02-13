@@ -118,11 +118,10 @@ class Shape {
     this.currAcc = add2Vectors(this.currAcc, decForce)
   };
 
-  getDisplacement() {
+  updatePosition() {
     const magnitude = this.currVelocity.magnitude * msecPerFrame / 1000
-    const xChange = Math.cos(this.currVelocity.angle) * magnitude;
-    const yChange = Math.sin(this.currVelocity.angle) * magnitude;
-    return { xChange, yChange };
+    this.x += Math.cos(this.currVelocity.angle) * magnitude;
+    this.y += Math.sin(this.currVelocity.angle) * magnitude;
   };
 
 };
@@ -181,8 +180,7 @@ const nextFrame = (time) => {
       console.log('curracc:', element.currAcc, 'force:', element.force)
       element.updateAccelfromForce()
       element.currVelocity = add2Vectors(element.currVelocity, vector(element.currAcc.angle, element.currAcc.magnitude / msecPerFrame / 1000))
-      element.x += element.getDisplacement().xChange
-      element.y += element.getDisplacement().yChange
+      element.updatePosition()
       element.draw()
     }
     console.log(ObjArray)
