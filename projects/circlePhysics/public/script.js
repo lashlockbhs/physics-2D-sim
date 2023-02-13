@@ -40,12 +40,11 @@ setCanvas(canvas);
 
 //global
 let Theme = { background: 'black', draw: 'white', accents: 'red' }
-const Density = document.getElementById('density').value
 drawFilledRect(0, 0, width, height, Theme.background)
 let ObjArray = []
 let CircleCoords = []
 let animateStart = false
-const msecPerFrame = 1000
+const msecPerFrame = 100
 
 //object
 const evalGravity = (object) => {
@@ -87,7 +86,7 @@ const evalCollisions = (object) => {
 class Shape {
   constructor(radius, activeVelocity, x, y) {
     this.area = (Math.PI * radius) ** 2
-    this.mass = this.area * Density
+    this.mass = this.area * document.getElementById('density').value
     this.x = x
     this.y = y
     this.force = [vector(0, 0)]
@@ -115,15 +114,15 @@ class Shape {
     }
   */
 
-  getAccelfromForce() {
-    return vector(this.actingForce[0].angle, (this.actingForce[0].magnitude / this.mass) * msecPerFrame);
+  updateAccelfromForce() {
+    const decForce = vector(this.force[0].angle, (this.force[0].magnitude / this.mass) * msecPerFrame/1000);
+    this.currAcc = add2Vectors(this.currAcc, decForce)
   };
 
   getDisplacement() {
-    const magnitude = this.currVelocity.magnitude * msecPerFrame
+    const magnitude = this.currVelocity.magnitude * msecPerFrame /1000
     const xChange = Math.cos(this.currVelocity.angle) * magnitude;
     const yChange = Math.sin(this.currVelocity.angle) * magnitude;
-    console.log(magnitude, xChange, yChange)
     return { xChange, yChange };
   };
 
@@ -134,7 +133,7 @@ const initDraw = (coordArray) => {
     const radius = twoPointDistance(coordArray[0], coordArray[1])
     const velocity = vector(
       twoPointAngle(coordArray[0], coordArray[2]),
-      twoPointDistance(coordArray[0], coordArray[2]),
+      twoPointDistance(coordArray[0], coordArray[2])/2,
     )
     console.log(velocity)
     drawCircle(coordArray[0].x, coordArray[0].y, radius, Theme.draw)
@@ -169,19 +168,21 @@ const nextFrame = (time) => {
     CircleCoords = []
     clear()
     drawFilledRect(0, 0, width, height, Theme.background)
-    /*let index = 0
-    //console.log(ObjArray)
+    /*
     for (let element of ObjArray) {
-      ObjArray[index] = evalCollisions(element)
-      index++
+      element.evalCollisions()
     }*/
-
+    let index = 0
     for (const element of ObjArray) {
+      if ((element.x + element.radius < 0 || element.x - element.radius > width) || (element.y +element.radius < 0 || element.y -element.radius > height)){
+        ObjArray.splice(index, 1)
+        index++
+      }
       //element.force = [evalGravity(element)]
       element.force = [addNumVectors(element.force)]
-      console.log('curracc: ', element.currAcc, 'force:', element.force)
-      element.currAcc = add2Vectors(element.getAccelfromForce, element.currAcc)
-      element.currVelocity = add2Vectors(element.currVelocity, vector(element.currAcc.angle, element.currAcc.magnitude / msecPerFrame))
+      console.log('curracc:', element.currAcc, 'force:', element.force)
+      element.updateAccelfromForce()
+      element.currVelocity = add2Vectors(element.currVelocity, vector(element.currAcc.angle, element.currAcc.magnitude / msecPerFrame/1000))
       element.x += element.getDisplacement().xChange
       element.y += element.getDisplacement().yChange
       element.draw()

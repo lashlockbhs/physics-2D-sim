@@ -8,13 +8,18 @@ const vector = (degrees, magnitude) => {
 };
 
 const add2Vectors = (v1, v2) => {
+
   const x1 = Math.cos(v1.angle) * v1.magnitude;
   const x2 = Math.cos(v2.angle) * v2.magnitude;
   const y1 = Math.sin(v1.angle) * v1.magnitude;
   const y2 = Math.sin(v2.angle) * v2.magnitude;
   const angle = Math.atan2(y1 + y2, x1 + x2);
   const magnitude = Math.hypot(x1 - x2, y1 - y2);
-  return { angle, magnitude };
+  if (magnitude === 0) {
+    return vector(0, 0)
+  } else {
+    return { angle, magnitude };
+  }
 };
 
 const vectorMultiply = (vector, n) => {
@@ -26,7 +31,11 @@ const vectorMultiply = (vector, n) => {
 };
 
 const addNumVectors = (vectors) => {
-  return vectors.reduce((acc, x) => add2Vectors(acc, x), vector(0, 0));
+  if (vectors.length === 1) {
+    return vectors[0]
+  } else {
+    return vectors.reduce((acc, x) => add2Vectors(acc, x), vector(0, 0));
+  }
 };
 
 //general math functions
@@ -38,8 +47,8 @@ const overRange = (start, end, funct, startValue) => {
 };
 */
 
-const twoPointXYDif = (p1, p2) =>{ 
-  return { xDif: (p1.x - p2.x), yDif: (p1.y - p2.y) }; 
+const twoPointXYDif = (p1, p2) => {
+  return { xDif: (p1.x - p2.x), yDif: (p1.y - p2.y) };
 };
 
 const sigma = (start, end, funct) => {
@@ -83,7 +92,7 @@ const twoPointDistance = (p1, p2) => {
   return Math.hypot(Math.abs(p1.x - p2.x), Math.abs(p1.y - p2.y));
 };
 
-const twoShapeGrav = (o1, o2) => (6.6743 * 10 ** -11)  * o1.mass * o2.mass / distance(o1, o2) ** 2
+const twoShapeGrav = (o1, o2) => (6.6743 * 10 ** -11) * o1.mass * o2.mass / distance(o1, o2) ** 2
 //time derivative(s)
 
 const findDerivative = (coefficients) => {
@@ -96,9 +105,9 @@ const findDerivative = (coefficients) => {
   const derivativeCoefficients = [];
   for (let i = 0; i < largestDegree; i++) {
     if (coefficients[i].degree === i) {
-      derivativeCoefficients.push({ constant: coefficients[i + 1].constant * (i + 1), degree: i});
+      derivativeCoefficients.push({ constant: coefficients[i + 1].constant * (i + 1), degree: i });
     } else {
-      derivativeCoefficients.push({ constant: 0, degree: i});
+      derivativeCoefficients.push({ constant: 0, degree: i });
     };
   };
   return derivativeCoefficients;
