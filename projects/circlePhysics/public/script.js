@@ -145,12 +145,12 @@ class Shape {
       this.currVelocity = vectorMultiply(this.currVelocity, -1)
     this.currAcc.angle -= this.currAcc.angle * 2
       this.currAcc = vectorMultiply(this.currAcc, -1)
-     /* this.force.angle -= this.force.angle * 2
-      this.force = vectorMultiply(this.force, -1)*/
+      this.force.angle -= this.force.angle * 2
+      this.force = vectorMultiply(this.force, -1)
     } else if (((this.y + this.radius > height) || (this.y - this.radius < 0))) {
       this.currVelocity.angle -= this.currVelocity.angle * 2
       this.currAcc.angle -= this.currAcc.angle * 2
-      //this.force.angle -= this.force.angle * 2
+      this.force.angle -= this.force.angle * 2
     }
   }
 };
