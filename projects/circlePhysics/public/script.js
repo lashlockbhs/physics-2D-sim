@@ -56,6 +56,7 @@ const msecPerFrame = 15
 
 class Shape {
   constructor(radius, activeVelocity, x, y) {
+    this.colliedLast = false;
     this.area = (Math.PI * radius) ** 2
     this.mass = this.area * document.getElementById('density').value
     this.x = x
@@ -154,16 +155,18 @@ class Shape {
   handleSides(){
     if ((this.x + this.radius > width) || (this.x - this.radius < 0)) {
       // this can be done with remainders but id rather not
-      this.currVelocity.angle -= this.currVelocity.angle * 2
+      this.currVelocity.angle = -this.currVelocity.angle
       this.currVelocity = vectorMultiply(this.currVelocity, -1)
-    this.currAcc.angle -= this.currAcc.angle * 2
+      this.currAcc.angle = -this.currAcc.angle
       this.currAcc = vectorMultiply(this.currAcc, -1)
-      this.force.angle -= this.force.angle * 2
+      this.force.angle = -this.force.angle
       this.force = vectorMultiply(this.force, -1)
-    } else if (((this.y + this.radius > height) || (this.y - this.radius < 0))) {
-      this.currVelocity.angle -= this.currVelocity.angle * 2
-      this.currAcc.angle -= this.currAcc.angle * 2
-      this.force.angle -= this.force.angle * 2
+      return true;
+    }else if (((this.y + this.radius > height) || (this.y - this.radius < 0))) {
+      this.currVelocity.angle = -this.currVelocity.angle
+      this.currAcc.angle = -this.currAcc.angle
+      this.force.angle = -this.force.angle
+      return true;
     }
   }
 };
@@ -216,7 +219,9 @@ const nextFrame = (time) => {
     }
 
     for (const element of ObjArray) {
-      element.handleSides()
+      const sideCollison = element.colliedLast ? false : element.handleSides();
+      element.colliedLast = sideCollison;
+
       //console.log('curracc:', element.currAcc, 'force:', element.force)
       element.updateAccelfromForce()
       element.updateVelocity()
@@ -225,6 +230,8 @@ const nextFrame = (time) => {
       element.drawVector(element.force, "white", 5);
       element.drawVector(element.currAcc, "green", 2);
       element.drawVector(element.currVelocity, "blue", 1);
+
+      
     }
     console.log(ObjArray)
     next += msecPerFrame
