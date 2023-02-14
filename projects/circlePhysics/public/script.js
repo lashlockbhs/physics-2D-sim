@@ -88,18 +88,19 @@ class Shape {
       index++
     }
     const totalForce = [this.force]
-    if (collisions.length > 0) {
+    /*if (collisions.length > 0) {
       console.log('collsions', collisions)
       this.currVelocity = vectorMultiply(this.currVelocity, -1)
-    }
-    /*
+    }*/
+
     for (const element of collisions) {
-      const elementMomentum = vector(element.angle, element.source.mass * element.source.currVelocity.magnitude)
-      totalForce.push(elementMomentum)
+      const elementMomentum = vector(element.angle, element.source.mass * element.source.currVelocity.magnitude * 10)
+      totalForce.push(vectorMultiply(elementMomentum, 1))
     }
     console.log(totalForce)
     this.force = addNumVectors(totalForce)
-    */
+
+
   }
 
   applyGrav() {
@@ -125,12 +126,12 @@ class Shape {
     this.currAcc = add2Vectors(this.currAcc, decForce)
   };
 
-  updateVelocity(){
-    this.currVelocity = add2Vectors(this.currVelocity, vector(this.currAcc.angle, this.currAcc.magnitude / msecPerFrame / 1000))
+  updateVelocity() {
+    this.currVelocity = add2Vectors(this.currVelocity, vector(this.currAcc.angle, this.currAcc.magnitude / (msecPerFrame)))
   }
 
   updatePosition() {
-    const magnitude = this.currVelocity.magnitude * msecPerFrame / 1000
+    const magnitude = this.currVelocity.magnitude * (msecPerFrame / 1000)
     this.x += Math.cos(this.currVelocity.angle) * magnitude;
     this.y += Math.sin(this.currVelocity.angle) * magnitude;
   };
@@ -181,16 +182,22 @@ const nextFrame = (time) => {
     drawFilledRect(0, 0, width, height, Theme.background)
     for (const element of ObjArray) {
       element.applyCollisions()
-    }
-    let index = 0
-    for (const element of ObjArray) {
       element.applyGrav()
+    }
+    
+    for (const element of ObjArray) {
+      if ((element.x + element.radius > width) || (element.x - element.radius < 0)) {
+        // this can be done with remainders but id rather not
+        element.currVelocity.angle -= element.currVelocity.angle * 2
+        element.currVelocity = vectorMultiply(element.currVelocity, -1)
+      } else if (((element.y + element.radius > height) || (element.y - element.radius < 0))) {
+        element.currVelocity.angle -= element.currVelocity.angle * 2
+      }
       //console.log('curracc:', element.currAcc, 'force:', element.force)
       element.updateAccelfromForce()
       element.updateVelocity()
       element.updatePosition()
       element.draw()
-      index++
     }
     console.log(ObjArray)
     next += msecPerFrame
