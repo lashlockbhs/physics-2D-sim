@@ -166,9 +166,9 @@ class Shape {
     } else if (((this.y + this.radius > height) || (this.y - this.radius < 0))) {
       if (this.y + this.radius > height) this.y = height-this.radius
       else if (this.y - this.radius < 0) this.y = this.radius
-      this.currVelocity.angle -= this.currVelocity.angle * 2
-      this.currAcc.angle -= this.currAcc.angle * 2
-      this.force.angle -= this.force.angle * 2
+      this.currVelocity.angle = -this.currVelocity.angle 
+      this.currAcc.angle = -this.currAcc.angle
+      this.force.angle = -this.force.angle
     }
   }
 };
