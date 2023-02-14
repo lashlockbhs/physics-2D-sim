@@ -37,6 +37,14 @@ import {
 const canvas = document.getElementById('screen');
 setCanvas(canvas);
 
+const rotate = (cx, cy, x, y, angle) => {
+  let radians = (Math.PI / 180) * angle,
+    cos = Math.cos(radians),
+    sin = Math.sin(radians),
+    nx = cos * (x - cx) + sin * (y - cy) + cx,
+    ny = cos * (y - cy) - sin * (x - cx) + cy;
+  return [nx, ny];
+};
 
 //global
 let Theme = { background: 'black', draw: 'white', accents: 'red' }
@@ -48,6 +56,7 @@ const msecPerFrame = 15
 
 class Shape {
   constructor(radius, activeVelocity, x, y) {
+    this.colliedLast = false;
     this.area = (Math.PI * radius) ** 2
     this.mass = this.area * document.getElementById('density').value
     this.x = x
@@ -61,6 +70,11 @@ class Shape {
   draw() {
     drawCircle(this.x, this.y, this.radius, Theme.draw, 1)
     drawFilledCircle(this.x, this.y, 2, Theme.accents)
+  }
+  
+  drawVector(vector, color, width){
+    const point = rotate(this.x, this.y, (this.x+vector.magnitude), this.y, radToDeg(-vector.angle));
+    drawLine(this.x, this.y, point[0], point[1], color, width);
   }
 
   /* // sorry sze ting i wont be using this for the time being
@@ -143,11 +157,11 @@ class Shape {
       // this can be done with remainders but id rather not
       if (this.x + this.radius > width) this.x = width-this.radius
       else if (this.x - this.radius < 0) this.x = this.radius
-      this.currVelocity.angle -= this.currVelocity.angle * 2
+      this.currVelocity.angle = -this.currVelocity.angle
       this.currVelocity = vectorMultiply(this.currVelocity, -1)
-      this.currAcc.angle -= this.currAcc.angle * 2
+      this.currAcc.angle = -this.currAcc.angle
       this.currAcc = vectorMultiply(this.currAcc, -1)
-      this.force.angle -= this.force.angle * 2
+      this.force.angle = -this.force.angle
       this.force = vectorMultiply(this.force, -1)
     } else if (((this.y + this.radius > height) || (this.y - this.radius < 0))) {
       if (this.y + this.radius > height) this.y = height-this.radius
@@ -207,12 +221,19 @@ const nextFrame = (time) => {
     }
 
     for (const element of ObjArray) {
-      element.handleSides()
+      const sideCollison = element.colliedLast ? false : element.handleSides();
+      element.colliedLast = sideCollison;
+
       //console.log('curracc:', element.currAcc, 'force:', element.force)
       element.updateAccelfromForce()
       element.updateVelocity()
       element.updatePosition()
-      element.draw()
+      element.draw()   
+      element.drawVector(element.force, "white", 5);
+      element.drawVector(element.currAcc, "green", 2);
+      element.drawVector(element.currVelocity, "blue", 1);
+
+      
     }
     console.log(ObjArray)
     next += msecPerFrame
