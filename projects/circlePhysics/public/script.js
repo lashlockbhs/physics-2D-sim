@@ -87,7 +87,7 @@ class Shape {
       }
       index++
     }
-    const totalForce = [vectorMultiply(this.force, -1)]
+    const totalForce = []
     /*if (collisions.length > 0) {
       console.log('collsions', collisions)
       this.currVelocity = vectorMultiply(this.currVelocity, -1)
@@ -141,13 +141,17 @@ class Shape {
   handleSides(){
     if ((this.x + this.radius > width) || (this.x - this.radius < 0)) {
       // this can be done with remainders but id rather not
+      if (this.x + this.radius > width) this.x = width-this.radius
+      else if (this.x - this.radius < 0) this.x = this.radius
       this.currVelocity.angle -= this.currVelocity.angle * 2
       this.currVelocity = vectorMultiply(this.currVelocity, -1)
-    this.currAcc.angle -= this.currAcc.angle * 2
+      this.currAcc.angle -= this.currAcc.angle * 2
       this.currAcc = vectorMultiply(this.currAcc, -1)
       this.force.angle -= this.force.angle * 2
       this.force = vectorMultiply(this.force, -1)
     } else if (((this.y + this.radius > height) || (this.y - this.radius < 0))) {
+      if (this.y + this.radius > height) this.y = height-this.radius
+      else if (this.y - this.radius < 0) this.y = this.radius
       this.currVelocity.angle -= this.currVelocity.angle * 2
       this.currAcc.angle -= this.currAcc.angle * 2
       this.force.angle -= this.force.angle * 2
