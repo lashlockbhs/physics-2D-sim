@@ -95,9 +95,12 @@ class Shape {
     let index = 0;
     for (const element of ObjArray) {
       const dist = twoPointDistance({ x: this.x, y: this.y }, { x: element.x, y: element.y })
+      const angle = twoPointAngle({ x: this.x, y: this.y }, { x: element.x, y: element.y })
       //if (dist > 0) console.log('distance:', dist)
       if ((this.radius + element.radius >= dist) && (dist != 0)) {
-        collisions.push({ source: element, index: index, angle: twoPointAngle({ x: this.x, y: this.y }, { x: element.x, y: element.y }) })
+        this.y += Math.cos(angle) * (dist - (this.radius + element.radius)) 
+        this.x += Math.sin(angle) * (dist - (this.radius + element.radius)) 
+        collisions.push({ source: element, index: index, angle })
       }
       index++
     }
@@ -112,9 +115,7 @@ class Shape {
       totalForce.push(elementMomentum)
     }
     console.log(totalForce)
-    this.force = vectorMultiply(addNumVectors(totalForce), -1)
-
-
+    this.force = vectorMultiply(addNumVectors(totalForce),1)
   }
 
   applyGrav() {
