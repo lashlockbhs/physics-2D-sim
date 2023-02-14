@@ -37,6 +37,14 @@ import {
 const canvas = document.getElementById('screen');
 setCanvas(canvas);
 
+const rotate = (cx, cy, x, y, angle) => {
+  let radians = (Math.PI / 180) * angle,
+    cos = Math.cos(radians),
+    sin = Math.sin(radians),
+    nx = cos * (x - cx) + sin * (y - cy) + cx,
+    ny = cos * (y - cy) - sin * (x - cx) + cy;
+  return [nx, ny];
+};
 
 //global
 let Theme = { background: 'black', draw: 'white', accents: 'red' }
@@ -61,6 +69,11 @@ class Shape {
   draw() {
     drawCircle(this.x, this.y, this.radius, Theme.draw, 1)
     drawFilledCircle(this.x, this.y, 2, Theme.accents)
+  }
+  
+  drawVector(vector, color, width){
+    const point = rotate(this.x, this.y, (this.x+vector.magnitude), this.y, radToDeg(-vector.angle));
+    drawLine(this.x, this.y, point[0], point[1], color, width);
   }
 
   /* // sorry sze ting i wont be using this for the time being
@@ -208,7 +221,10 @@ const nextFrame = (time) => {
       element.updateAccelfromForce()
       element.updateVelocity()
       element.updatePosition()
-      element.draw()
+      element.draw()   
+      element.drawVector(element.force, "white", 5);
+      element.drawVector(element.currAcc, "green", 2);
+      element.drawVector(element.currVelocity, "blue", 1);
     }
     console.log(ObjArray)
     next += msecPerFrame
