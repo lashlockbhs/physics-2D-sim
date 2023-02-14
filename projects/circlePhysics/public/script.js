@@ -44,7 +44,7 @@ drawFilledRect(0, 0, width, height, Theme.background)
 let ObjArray = []
 let CircleCoords = []
 let animateStart = false
-const msecPerFrame = 10
+const msecPerFrame = 15
 
 class Shape {
   constructor(radius, activeVelocity, x, y) {
@@ -87,7 +87,7 @@ class Shape {
       }
       index++
     }
-    const totalForce = [this.force]
+    const totalForce = [vectorMultiply(this.force, -1)]
     /*if (collisions.length > 0) {
       console.log('collsions', collisions)
       this.currVelocity = vectorMultiply(this.currVelocity, -1)
@@ -95,10 +95,10 @@ class Shape {
 
     for (const element of collisions) {
       const elementMomentum = vector(element.angle, element.source.mass * element.source.currVelocity.magnitude * 10)
-      totalForce.push(vectorMultiply(elementMomentum, 1))
+      totalForce.push(elementMomentum)
     }
     console.log(totalForce)
-    this.force = addNumVectors(totalForce)
+    this.force = vectorMultiply(addNumVectors(totalForce), -1)
 
 
   }
@@ -124,10 +124,12 @@ class Shape {
   updateAccelfromForce() {
     const decForce = vector(this.force.angle, (this.force.magnitude / this.mass));
     this.currAcc = add2Vectors(this.currAcc, decForce)
+    this.force = vector(0, 0)
   };
 
   updateVelocity() {
     this.currVelocity = add2Vectors(this.currVelocity, vector(this.currAcc.angle, this.currAcc.magnitude / (msecPerFrame)))
+    this.currAcc.angle = (this.currAcc.angle + this.currVelocity.angle) / 2
   }
 
   updatePosition() {
@@ -136,6 +138,21 @@ class Shape {
     this.y += Math.sin(this.currVelocity.angle) * magnitude;
   };
 
+  handleSides(){
+    if ((this.x + this.radius > width) || (this.x - this.radius < 0)) {
+      // this can be done with remainders but id rather not
+      this.currVelocity.angle -= this.currVelocity.angle * 2
+      this.currVelocity = vectorMultiply(this.currVelocity, -1)
+    this.currAcc.angle -= this.currAcc.angle * 2
+      this.currAcc = vectorMultiply(this.currAcc, -1)
+     /* this.force.angle -= this.force.angle * 2
+      this.force = vectorMultiply(this.force, -1)*/
+    } else if (((this.y + this.radius > height) || (this.y - this.radius < 0))) {
+      this.currVelocity.angle -= this.currVelocity.angle * 2
+      this.currAcc.angle -= this.currAcc.angle * 2
+      //this.force.angle -= this.force.angle * 2
+    }
+  }
 };
 
 const initDraw = (coordArray) => {
@@ -143,7 +160,7 @@ const initDraw = (coordArray) => {
     const radius = twoPointDistance(coordArray[0], coordArray[1])
     const velocity = vector(
       twoPointAngle(coordArray[0], coordArray[2]),
-      twoPointDistance(coordArray[0], coordArray[2]) / 2,
+      twoPointDistance(coordArray[0], coordArray[2]),
     )
     console.log(velocity)
     drawCircle(coordArray[0].x, coordArray[0].y, radius, Theme.draw)
@@ -184,15 +201,9 @@ const nextFrame = (time) => {
       element.applyCollisions()
       element.applyGrav()
     }
-    
+
     for (const element of ObjArray) {
-      if ((element.x + element.radius > width) || (element.x - element.radius < 0)) {
-        // this can be done with remainders but id rather not
-        element.currVelocity.angle -= element.currVelocity.angle * 2
-        element.currVelocity = vectorMultiply(element.currVelocity, -1)
-      } else if (((element.y + element.radius > height) || (element.y - element.radius < 0))) {
-        element.currVelocity.angle -= element.currVelocity.angle * 2
-      }
+      element.handleSides()
       //console.log('curracc:', element.currAcc, 'force:', element.force)
       element.updateAccelfromForce()
       element.updateVelocity()
