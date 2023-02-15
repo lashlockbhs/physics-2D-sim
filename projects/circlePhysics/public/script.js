@@ -98,24 +98,26 @@ class Shape {
       const angle = twoPointAngle({ x: this.x, y: this.y }, { x: element.x, y: element.y })
       //if (dist > 0) console.log('distance:', dist)
       if ((this.radius + element.radius >= dist) && (dist != 0)) {
-        this.y += Math.cos(angle) * (dist - (this.radius + element.radius)) 
-        this.x += Math.sin(angle) * (dist - (this.radius + element.radius)) 
-        collisions.push({ source: element, index: index, angle })
+        collisions.push({ source: element, index: index, angle, dist })
       }
       index++
     }
-    const totalForce = []
-    /*if (collisions.length > 0) {
-      console.log('collsions', collisions)
-      this.currVelocity = vectorMultiply(this.currVelocity, -1)
-    }*/
+    const totalForce = [vector(0,0)]
 
     for (const element of collisions) {
       const elementMomentum = vector(element.angle, element.source.mass * element.source.currVelocity.magnitude * 10)
       totalForce.push(elementMomentum)
     }
     console.log(totalForce)
-    this.force = vectorMultiply(addNumVectors(totalForce),1)
+    this.force = vectorMultiply(addNumVectors(totalForce),-1)
+    return collisions
+  }
+
+  collPos(array){
+    for (const element of array){
+    this.y += Math.cos(element.angle) * (element.dist - (this.radius + element.source.radius)) *1.05
+    this.x += Math.sin(element.angle) * (element.dist - (this.radius + element.source.radius)) *1.05
+    }
   }
 
   applyGrav() {
@@ -216,15 +218,21 @@ const nextFrame = (time) => {
     CircleCoords = []
     clear()
     drawFilledRect(0, 0, width, height, Theme.background)
+    const collisionsSquared = []
     for (const element of ObjArray) {
-      element.applyCollisions()
+      collisionsSquared.push(element.applyCollisions())
       element.applyGrav()
     }
 
-    for (const element of ObjArray) {
-      const sideCollison = element.colliedLast ? false : element.handleSides();
-      element.colliedLast = sideCollison;
+    let index = 0
+    for (const element of ObjArray){
+      element.collPos(collisionsSquared[index])
+      index++
+    }
 
+    for (const element of ObjArray) {
+      element.handleSides();
+      //element.colliedLast = sideCollison;
       //console.log('curracc:', element.currAcc, 'force:', element.force)
       element.updateAccelfromForce()
       element.updateVelocity()
@@ -233,8 +241,6 @@ const nextFrame = (time) => {
       element.drawVector(element.force, "white", 5);
       element.drawVector(element.currAcc, "green", 2);
       element.drawVector(element.currVelocity, "blue", 1);
-
-      
     }
     console.log(ObjArray)
     next += msecPerFrame
