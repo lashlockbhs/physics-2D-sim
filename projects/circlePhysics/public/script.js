@@ -105,7 +105,7 @@ class Shape {
     const totalForce = [vector(0,0)]
 
     for (const element of collisions) {
-      const elementMomentum = vector(element.angle, element.source.mass * element.source.currVelocity.magnitude * 10)
+      const elementMomentum = vector(element.angle, element.source.mass * element.source.currVelocity.magnitude)
       totalForce.push(elementMomentum)
     }
     console.log(totalForce)
@@ -115,8 +115,8 @@ class Shape {
 
   collPos(array){
     for (const element of array){
-    this.y += Math.cos(element.angle) * (element.dist - (this.radius + element.source.radius)) *1.05
-    this.x += Math.sin(element.angle) * (element.dist - (this.radius + element.source.radius)) *1.05
+    this.y += Math.cos(element.angle) * (element.dist - (this.radius + element.source.radius)) 
+    this.x += Math.sin(element.angle) * (element.dist - (this.radius + element.source.radius)) 
     }
   }
 
