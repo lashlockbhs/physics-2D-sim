@@ -3,8 +3,8 @@ import {
   setCanvas,
   drawFilledCircle,
   clear,
-  width,
-  height,
+  //width,
+  //height,
   animate,
   now,
   registerOnKeyDown,
@@ -33,7 +33,8 @@ import {
   twoShapeGrav,
   findDerivative,
 } from './math.js';
-
+const width = 100;
+const height = 100;
 const canvas = document.getElementById('screen');
 setCanvas(canvas);
 
@@ -65,7 +66,7 @@ let CircleCoords = [];
 let animateStart = false
 const msecPerFrame = 10
 
-const grav = 3; //grav toward ground
+const grav = 0.005; //grav toward ground
 const f = 0.50; //multiplied by vel to mimick friction
 
 class Shape {
@@ -134,7 +135,7 @@ const collisons = () => {
       const angle = twoPointAngle(shape1.pCurr, shape2.pCurr);
       const angle2 = twoPointAngle(shape2.pCurr, shape1.pCurr);
 
-      if ((shape2.radius + shape1.radius > dist) && dist != 0) {
+      if ((shape2.radius + shape1.radius > dist) && shape1 != shape2) {
         const overLap = (shape2.radius + shape1.radius) / 2 - dist;
 
         //b1.radius + b2.radius - dist
@@ -147,7 +148,7 @@ const collisons = () => {
         shape1.pCurr.y += Math.sin(angle) * ((overLap +2) / 2) * (0.3);
         shape1.pCurr.x += Math.cos(angle) * ((overLap+2) / 2) * (0.3);
         shape2.pCurr.y += Math.sin(angle2) * ((overLap+2) / 2) * (0.3);
-        shape2.pCurr.x += Math.cos(angle2) * ((overLap+2) / 2) * (0.345);
+        shape2.pCurr.x += Math.cos(angle2) * ((overLap+2) / 2) * (0.3);
 
       }
     }
@@ -183,15 +184,16 @@ registerOnKeyDown((k) => {
 })
 
 let next = 0;
+let nextSpawn = 0;
+let spawnSpeed = 500;
 let countFrame = 0;
 const nextFrame = (time) => {
   if (time > next && animateStart) {
     clear();
     drawFilledRect(0, 0, width, height, Theme.background)
 
-
     for (const element of ObjArray) {
-      for (let i = 0; i < 8; i++) {
+      for (let i = 0; i < 2; i++) {
         collisons();
       }
       element.update();
@@ -199,6 +201,11 @@ const nextFrame = (time) => {
     }
     next += msecPerFrame;
     countFrame++;
+  }
+  if(time > nextSpawn && animateStart){
+    ObjArray.push(new Shape(3, twoPointXYDif({x : 0, y : Math.random()*100}, {x : 0, y : Math.random()*100}), Math.random()*50, height/2, "cirlce"))
+
+    nextSpawn += spawnSpeed;
   }
 }
 
