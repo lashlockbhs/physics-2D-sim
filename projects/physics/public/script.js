@@ -30,7 +30,7 @@ import {
   getDisplacement,
 } from './math.js';
 
-import { Menu, shapeMenu } from './gui.js';
+import { Menu, shapeMenu, addShapeWindow } from './gui.js';
 import { makeNSidedPolygon } from './perfectShapes.js';
 
 const canvas = document.getElementById('screen');
@@ -103,18 +103,19 @@ const drawPoints = (ar, color) => {
 };
 
 class Shape {
-  constructor(actingForces, vertices, mass, name) {
+  constructor(actingForces, vertices, density, name) {
     this.name = name;
     this.vertices = vertices;
     this.vertBase = vertices;
     this.baseDifs = []; //the pos of the verticies relitive to the center, in replacment of the "sides" athgorithm
-    this.mass = mass;
+    this.density = density;
+    this.mass = Math.abs(shapeArea(vertices)) * this.density;
     this.centerBase = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y };
     this.center = { x: getBoundCenter(vertices).x, y: getBoundCenter(vertices).y };
     this.rotation = 0;
     this.lastRotation = 0;
     this.actingForce = [addNumVectors(actingForces)];
-    this.menu;
+    this.menu
 
     for (const vert of this.vertices) {
       this.baseDifs.push(twoPointXYDif(vert, { x: this.centerBase.x, y: this.centerBase.y }));
@@ -138,6 +139,7 @@ class Shape {
   }
   //should be called everytime you update this opjects varibles outside of the class
   updateProperties() {
+    this.mass = Math.abs(shapeArea(this.vertBase)) * parseInt(this.density);
     //rotate vertDifs
     this.#getVertDifs();
     //calc vertices pos based on centroid
@@ -148,7 +150,6 @@ class Shape {
   }
 
   drawShape() {
-    drawText('mass ' + this.mass, this.center.x, this.center.y, 'black', 10, ctx);
     for (let i = 0; i < this.vertices.length; i++) {
       if (i + 1 === this.vertices.length) {
         drawLine(
@@ -216,8 +217,7 @@ registerOnKeyDown((k) => {
   if (k === 'Enter') {
     if (paused) {
       const area = Math.abs(shapeArea(vertices));
-      //objArray.pu(new Shape([vector(0, 0)], vertices, area * parseInt(document.getElementById('density').value)));
-      objArray.push(new Shape([vector(0, 0)], vertices, 10, 'shape ' + (objArray.length + 1)));
+      objArray.push(new Shape([vector(0, 0)], vertices, 10, 'Shape ' + (objArray.length + 1)));
       objArray[objArray.length - 1].drawShape();
       drawFilledCircle(
         objArray[objArray.length - 1].center.x,
@@ -228,45 +228,20 @@ registerOnKeyDown((k) => {
       );
       vertices = [];
 
+      addShapeWindow(objArray[objArray.length - 1]);
+
       paused = objArray.length <= 5;
-      if (!paused) {
-        createShapeMenu();
-      }
+
+
+
     }
   } else if (k === ' ') {
-    paused = true;
+    paused = !paused;
   }
 });
 
 canvas.onclick = (e) => onclick(e.offsetX, e.offsetY);
 
-const getShapes = () => objArray;
-
-const createShapeMenu = () => {
-  for (const shape of objArray) {
-    shapeMenu.options.push({ text: shape.name });
-
-    const shapeWindow = new Menu(
-      null,
-      document.getElementById('menuHolder'),
-      true,
-      0,
-      0,
-      300,
-      20,
-      10,
-    );
-    shapeMenu.updateMenu();
-    shape.menu = shapeWindow;
-
-    shapeMenu.childs.push({
-      el: shapeWindow,
-      button: shapeMenu.elArray.find((e) => e.id === shape.name),
-    });
-    shapeWindow.createHeadbar();
-    shapeWindow.createWindow(shape.getShapeVars(), 100, 100);
-  }
-};
 
 let next = 0;
 let countFrame = 0;
@@ -274,6 +249,9 @@ const drawFrame = (time) => {
   if (time > next && !paused) {
     clear(ctx, width, height);
     for (const shape of objArray) {
+      const density = parseInt(document.getElementById(shape.menu.name + " density").value)
+      shape.density = density === null || density === "" ? 10 : density;
+
       shape.menu.updateWindow(shape.getShapeVars());
 
       shape.rotation = countFrame;
@@ -295,4 +273,4 @@ const drawFrame = (time) => {
 
 animate(drawFrame);
 
-export { getShapes, canvas, Shape };
+export {canvas, Shape, };

@@ -2,7 +2,7 @@
 const varToString = (varObj) => Object.keys(varObj)[0];
 
 class Menu {
-  constructor(options, menuHolder, hidden) {
+  constructor(options, menuHolder, hidden, name) {
     this.childs = [];
     this.currentWindows = [];
     this.elArray = [];
@@ -10,6 +10,8 @@ class Menu {
     this.menuHolder = menuHolder;
     this.headbar, this.window, this.windowObject;
     this.optionsHidden, (this.hidden = hidden);
+    this.name = name;
+
   }
   #createButton(displayTxt) {
     const div = document.createElement('div');
@@ -36,6 +38,7 @@ class Menu {
     this.elArray.push(div);
     this.headbar.append(div);
   }
+  
   createElements() {
     //create button/option elements as divs
     for (let i = 0; i < this.options.length; i++) {
@@ -44,7 +47,10 @@ class Menu {
   }
   createHeadbar() {
     this.headbar = document.createElement('div');
-    this.headbar.setAttribute('id', 'headbar');
+    this.headbar.setAttribute('class', 'headbar');
+
+    this.headbar.append(document.createTextNode(this.name))
+
     this.hidden
       ? (this.headbar.style.visibility = 'hidden')
       : (this.headbar.style.visibility = 'visible');
@@ -61,7 +67,7 @@ class Menu {
         currentY = e.clientY - initialY; //scrap the rest cause it didnt work with what I wanted to do
         xOffset = currentX;
         yOffset = currentY;
-        this.#setTranslate(currentX, currentY, this.headbar);
+        this.setTranslate(currentX, currentY);
         dragDone = false;
       } else {
         dragDone = true;
@@ -95,7 +101,12 @@ class Menu {
       const div = document.createElement('div');
       div.setAttribute('id', objects[i].name);
       div.setAttribute('class', 'var-display');
-
+      if(objects[i].modify){
+        const input = document.createElement("input");
+        input.setAttribute("class", "density")
+        input.setAttribute("id", this.name + " density")
+        div.append(document.createTextNode(objects[i].name+": "), input)
+      }
       div.append(
         document.createTextNode(objects[i].name + ': ' + JSON.stringify(objects[i].value)),
       );
@@ -107,7 +118,7 @@ class Menu {
   updateWindow(objects) {
     const divs = this.headbar.children;
     for (let i = 0; i < divs.length; i++) {
-      divs[i].setAttribute('class', 'window');
+      divs[i].setAttribute('class', 'var-display');
       const object = objects.find((e) => e.name === divs[i].id);
       const textNode = divs[i].firstChild;
       textNode.nodeValue = object.name + ': ' + JSON.stringify(object.value);
@@ -122,8 +133,12 @@ class Menu {
       }
     }
   }
-  #setTranslate(xPos, yPos, el) {
-    el.style.transform = 'translate3d(' + xPos + 'px, ' + yPos + 'px, 0)';
+  setTranslate(xPos, yPos) {
+    this.headbar.style.transform = 'translate3d(' + xPos + 'px, ' + yPos + 'px, 0)';
+  }
+  setPos(xPos, yPos){
+    this.headbar.style.left = xPos+"px";
+    this.headbar.style.top = yPos+"px";
   }
   hideMenu() {
     this.headbar.style.visibility = 'hidden';
@@ -160,23 +175,95 @@ class Menu {
   }
 }
 
+const addShapeWindow = (shape) => {
+  shapeMenu.options.push({ text: shape.name });
+  const thisShapeMenu = new Menu(
+    [{ text: "Shape Class" }, { text: "Quick Info" }, { text: "Modifiables" }],
+    document.getElementById('menuHolder'),
+    true,
+    shape.name,
+  )
+  thisShapeMenu.createHeadbar();
+  thisShapeMenu.createElements();
+
+  console.log(thisShapeMenu)
+
+  const classDisplay = new Menu(
+    null,
+    document.getElementById('menuHolder'),
+    true,
+    shape.name,
+  );
+  const info = new Menu(
+    null,
+    document.getElementById('menuHolder'),
+    true,
+    shape.name,
+  )
+  const modifiables = new Menu(
+    null,
+    document.getElementById('menuHolder'),
+    false,
+    shape.name,
+  )
+  
+  shapeMenu.updateMenu();
+  shape.menu = classDisplay;
+
+  shapeMenu.childs.push({
+    el: thisShapeMenu,
+    button: shapeMenu.elArray.find((e) => e.id === shape.name),
+  });
+  thisShapeMenu.childs.push(
+    { el: classDisplay, button: thisShapeMenu.elArray.find((e) => e.id === "Shape Class") },
+    { el: info, button: thisShapeMenu.elArray.find((e) => e.id === "Quick Info") },
+    { el: modifiables, button: thisShapeMenu.elArray.find((e) => e.id === "Modifiables") },
+  )
+
+  classDisplay.createHeadbar();
+  classDisplay.createWindow(shape.getShapeVars(), 100, 100);
+
+  info.createHeadbar();
+  info.createWindow(
+    [
+      { name: "Verticies", value: shape.vertices, modify: false },
+      { name: "X, Y", value: shape.center, modify: false },
+    ],
+    100,
+    100,
+  );
+
+  modifiables.createHeadbar();
+  modifiables.createWindow(
+    [
+      { name: "Density", value: shape.density, modify: true, shape: shape },
+      { name: "X, Y", value: shape.center, modify: true, shape: shape },
+    ],
+    100,
+    100,
+  );
+  modifiables.setPos(0, 0)
+
+};
+
 const baseMenu = new Menu(
   [
     { text: 'Perfect Shapes' },
     { text: 'Shapes' },
     { text: 'World Settings' },
     { text: 'Debugging' },
-  ], //menu text
-
-  document.getElementById('menuHolder'), //
-  false, //hidden?
+  ],
+  document.getElementById('menuHolder'), 
+  false,
+  "Base Menu"
 );
 baseMenu.createHeadbar();
 baseMenu.createElements();
 const perfShapesMenu = new Menu(
   [{ text: 'Square' }, { text: 'Circle' }, { text: 'Rect' }, { text: 'Triangle' }], //menu text
   document.getElementById('menuHolder'), //
-  true, //hidden?
+  true,
+  "Perfect Shapes"
 );
 
 perfShapesMenu.createHeadbar();
@@ -185,7 +272,8 @@ perfShapesMenu.createElements();
 const shapeMenu = new Menu(
   [], //menu text
   document.getElementById('menuHolder'),
-  true, //hidden?
+  true,
+  "Shape Menu"
 );
 
 shapeMenu.createHeadbar();
@@ -195,4 +283,4 @@ baseMenu.childs.push(
   { el: shapeMenu, button: baseMenu.elArray.find((e) => e.id === 'Shapes') },
 );
 
-export { Menu, shapeMenu };
+export { Menu, shapeMenu, addShapeWindow };
