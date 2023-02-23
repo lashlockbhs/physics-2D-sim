@@ -36,7 +36,6 @@ const addNumVectors = (vectors) => {
     return vectors.reduce((acc, x) => add2Vectors(acc, x), vector(0, 0));
   }
 };
-
 //general math functions
 /* this part is not done, still can merge though
 const overRange = (start, end, funct, startValue) => {

@@ -46,148 +46,121 @@ const rotate = (cx, cy, x, y, angle) => {
   return [nx, ny];
 };
 
+const arSims = (a1, a2) => {
+  const newAr = [];
+  for (let i = 0; i < a1.length; i++) {
+    for (let j = 0; j < a2.length; j++) {
+      if (a1[i].source === a2[j].source) newAr.push(a1[i]);
+    }
+  }
+  return newAr;
+}
+
+
 //global
 let Theme = { background: 'black', draw: 'white', accents: 'red' }
 drawFilledRect(0, 0, width, height, Theme.background)
-let ObjArray = []
-let CircleCoords = []
+let ObjArray = [];
+let CircleCoords = [];
 let animateStart = false
-const msecPerFrame = 15
+const msecPerFrame = 10
+
+const grav = 3; //grav toward ground
+const f = 0.50; //multiplied by vel to mimick friction
 
 class Shape {
-  constructor(radius, activeVelocity, x, y) {
-    this.colliedLast = false;
-    this.area = (Math.PI * radius) ** 2
-    this.mass = this.area * document.getElementById('density').value
-    this.x = x
-    this.y = y
-    this.force = vector(0, 0)
-    this.currAcc = vector(0, 0)
-    this.currVelocity = activeVelocity
-    this.radius = radius
+  constructor(radius, push, x, y, name) {
+
+    this.area = (Math.PI * radius) ** 2;
+    this.mass = this.area * document.getElementById('density').value;
+    this.radius = radius;
+
+    this.pCurr = { x, y };
+    this.pOld = { x: x + push.xDif / 4, y: y + push.yDif / 4 };
   }
 
   draw() {
-    drawCircle(this.x, this.y, this.radius, Theme.draw, 1)
-    drawFilledCircle(this.x, this.y, 2, Theme.accents)
-  }
-  
-  drawVector(vector, color, width){
-    const point = rotate(this.x, this.y, (this.x+vector.magnitude), this.y, radToDeg(-vector.angle));
-    drawLine(this.x, this.y, point[0], point[1], color, width);
+    drawCircle(this.pCurr.x, this.pCurr.y, this.radius, Theme.draw, 1)
+    drawFilledCircle(this.pCurr.x, this.pCurr.y, 1, Theme.accents)
   }
 
-  /* // sorry sze ting i wont be using this for the time being
-    getAccelfromVelo() {
-      const angle = this.currVelocity.angle;
-      const currVeloMagnitude = this.currVelocity.magnitude;
-      const lastVeloMagnitude = this.lastVelocity.magnitude;
-      if (currVeloMagnitude !== lastVeloMagnitude) {
-        const derivative = findDerivative([{ constant: Math.abs(lastVeloMagnitude - currVeloMagnitude), degree: 1 }]);
-        return { angle, magnitude: derivative * msecPerFrame };
-      } else {
-        return { angle, magnitude: 0 };
-      };
-    }
-  */
-  applyCollisions() {
-    const collisions = [];
-    let index = 0;
-    for (const element of ObjArray) {
-      const dist = twoPointDistance({ x: this.x, y: this.y }, { x: element.x, y: element.y })
-      const angle = twoPointAngle({ x: this.x, y: this.y }, { x: element.x, y: element.y })
-      //if (dist > 0) console.log('distance:', dist)
-      if ((this.radius + element.radius >= dist) && (dist != 0)) {
-        collisions.push({ source: element, index: index, angle, dist })
-      }
-      index++
-    }
-    const totalForce = [vector(0,0)]
+  update() {
 
-    for (const element of collisions) {
-      const elementMomentum = vector(element.angle, element.source.mass * element.source.currVelocity.magnitude)
-      totalForce.push(elementMomentum)
+    const vx = (this.pCurr.x - this.pOld.x);
+    const vy = (this.pCurr.y - this.pOld.y);
+
+    this.pOld.x = this.pCurr.x;
+    this.pOld.y = this.pCurr.y;
+
+    this.pCurr.x += vx;
+    this.pCurr.y += vy;
+    this.pCurr.y += grav;
+
+    this.sides(vx, vy);
+
+
+
+  }
+  sides(vx, vy) {
+    const mvx = vx * f;
+    const mvy = vy * f;
+    if (this.pCurr.x + this.radius > width) {
+      this.pCurr.x = width - this.radius;
+      this.pOld.x = this.pCurr.x + mvx;
     }
-    console.log(totalForce)
-    this.force = vectorMultiply(addNumVectors(totalForce),-1)
-    return collisions
+    else if (this.pCurr.x - this.radius < 0) {
+      this.pCurr.x = this.radius;
+      this.pOld.x = this.pCurr.x + mvx;
+    }
+
+    if (this.pCurr.y + this.radius > height) {
+      this.pCurr.y = height - this.radius;
+      this.pOld.y = this.pCurr.y + mvy;
+    }
+    else if (this.pCurr.y - this.radius < 0) {
+      this.pCurr.y = this.radius;
+      this.pOld.y = this.pCurr.y + mvy;
+    }
+
   }
 
-  collPos(array){
-    for (const element of array){
-    this.y += Math.cos(element.angle) * (element.dist - (this.radius + element.source.radius)) 
-    this.x += Math.sin(element.angle) * (element.dist - (this.radius + element.source.radius)) 
-    }
-  }
-
-  applyGrav() {
-    const affecting = [];
-    let index = 0;
-    for (const element of ObjArray) {
-      const dist = twoPointDistance({ x: this.x, y: this.y }, { x: element.x, y: element.y })
-      if (dist != 0) {
-        affecting.push({ source: element, index: index, dist, angle: twoPointAngle({ x: this.x, y: this.y }, { x: element.x, y: element.y }) })
-      }
-      index++
-    }
-
-    const totalForce = [this.force]
-    for (const element of affecting) {
-      totalForce.push(vector(element.angle, twoShapeGrav(this, element.source)))
-    }
-    this.force = addNumVectors(totalForce)
-  }
-
-  updateAccelfromForce() {
-    const decForce = vector(this.force.angle, (this.force.magnitude / this.mass));
-    this.currAcc = add2Vectors(this.currAcc, decForce)
-    this.force = vector(0, 0)
-  };
-
-  updateVelocity() {
-    this.currVelocity = add2Vectors(this.currVelocity, vector(this.currAcc.angle, this.currAcc.magnitude / (msecPerFrame)))
-    this.currAcc.angle = (this.currAcc.angle + this.currVelocity.angle) / 2
-  }
-
-  updatePosition() {
-    const magnitude = this.currVelocity.magnitude * (msecPerFrame / 1000)
-    this.x += Math.cos(this.currVelocity.angle) * magnitude;
-    this.y += Math.sin(this.currVelocity.angle) * magnitude;
-  };
-
-  handleSides(){
-    if ((this.x + this.radius > width) || (this.x - this.radius < 0)) {
-      // this can be done with remainders but id rather not
-      if (this.x + this.radius > width) this.x = width-this.radius
-      else if (this.x - this.radius < 0) this.x = this.radius
-      this.currVelocity.angle = -this.currVelocity.angle
-      this.currVelocity = vectorMultiply(this.currVelocity, -1)
-      this.currAcc.angle = -this.currAcc.angle
-      this.currAcc = vectorMultiply(this.currAcc, -1)
-      this.force.angle = -this.force.angle
-      this.force = vectorMultiply(this.force, -1)
-    } else if (((this.y + this.radius > height) || (this.y - this.radius < 0))) {
-      if (this.y + this.radius > height) this.y = height-this.radius
-      else if (this.y - this.radius < 0) this.y = this.radius
-      this.currVelocity.angle = -this.currVelocity.angle 
-      this.currAcc.angle = -this.currAcc.angle
-      this.force.angle = -this.force.angle
-    }
-  }
 };
+const collisons = () => {
+  for (let k = 0; k < ObjArray.length; k++) {
+    const shape1 = ObjArray[k];
+    for (let i = 0; i < ObjArray.length; i++) {
+      const shape2 = ObjArray[i];
+      const dist = twoPointDistance(shape1.pCurr, shape2.pCurr);
+      const angle = twoPointAngle(shape1.pCurr, shape2.pCurr);
+      const angle2 = twoPointAngle(shape2.pCurr, shape1.pCurr);
+
+      if ((shape2.radius + shape1.radius > dist) && dist != 0) {
+        const overLap = (shape2.radius + shape1.radius) / 2 - dist;
+
+        //b1.radius + b2.radius - dist
+        shape1.pOld.x = shape1.pCurr.x;
+        shape1.pOld.y = shape1.pCurr.y;
+
+        shape2.pOld.x = shape2.pCurr.x;
+        shape2.pOld.y = shape2.pCurr.y;
+
+        shape1.pCurr.y += Math.sin(angle) * ((overLap +2) / 2) * (0.3);
+        shape1.pCurr.x += Math.cos(angle) * ((overLap+2) / 2) * (0.3);
+        shape2.pCurr.y += Math.sin(angle2) * ((overLap+2) / 2) * (0.3);
+        shape2.pCurr.x += Math.cos(angle2) * ((overLap+2) / 2) * (0.345);
+
+      }
+    }
+  }
+}
 
 const initDraw = (coordArray) => {
   if (coordArray.length === 3) {
-    const radius = twoPointDistance(coordArray[0], coordArray[1])
-    const velocity = vector(
-      twoPointAngle(coordArray[0], coordArray[2]),
-      twoPointDistance(coordArray[0], coordArray[2]),
-    )
-    console.log(velocity)
+    const radius = twoPointDistance(coordArray[0], coordArray[1]);
+    const push = twoPointXYDif(coordArray[0], coordArray[1]);
     drawCircle(coordArray[0].x, coordArray[0].y, radius, Theme.draw)
     drawLine(coordArray[0].x, coordArray[0].y, coordArray[2].x, coordArray[2].y, 1, 'Theme.draw')
-    console.log(CircleCoords)
-    ObjArray.push(new Shape(radius, velocity, CircleCoords[0].x, CircleCoords[0].y))
+    ObjArray.push(new Shape(radius, push, CircleCoords[0].x, CircleCoords[0].y, ObjArray.length))
     CircleCoords = []
   }
 }
@@ -199,52 +172,33 @@ registerOnclick((x, y) => {
 })
 
 registerOnKeyDown((k) => {
-  console.log(k)
   if (k === 'Enter') {
-    animateStart = !animateStart
+    animateStart = !animateStart;
   } else if (k === 'k') {
-    //kill
-    clear()
-    drawFilledRect(0, 0, width, height, Theme.background)
-    ObjArray = []
-    animateStart = false
+    clear();
+    drawFilledRect(0, 0, width, height, Theme.background);
+    ObjArray = [];
+    animateStart = false;
   }
 })
 
-let next = 0
-let countFrame = 0
+let next = 0;
+let countFrame = 0;
 const nextFrame = (time) => {
   if (time > next && animateStart) {
-    CircleCoords = []
-    clear()
+    clear();
     drawFilledRect(0, 0, width, height, Theme.background)
-    const collisionsSquared = []
-    for (const element of ObjArray) {
-      collisionsSquared.push(element.applyCollisions())
-      element.applyGrav()
-    }
 
-    let index = 0
-    for (const element of ObjArray){
-      element.collPos(collisionsSquared[index])
-      index++
-    }
 
     for (const element of ObjArray) {
-      element.handleSides();
-      //element.colliedLast = sideCollison;
-      //console.log('curracc:', element.currAcc, 'force:', element.force)
-      element.updateAccelfromForce()
-      element.updateVelocity()
-      element.updatePosition()
-      element.draw()   
-      element.drawVector(element.force, "white", 5);
-      element.drawVector(element.currAcc, "green", 2);
-      element.drawVector(element.currVelocity, "blue", 1);
+      for (let i = 0; i < 8; i++) {
+        collisons();
+      }
+      element.update();
+      element.draw();
     }
-    console.log(ObjArray)
-    next += msecPerFrame
-    countFrame++
+    next += msecPerFrame;
+    countFrame++;
   }
 }
 
