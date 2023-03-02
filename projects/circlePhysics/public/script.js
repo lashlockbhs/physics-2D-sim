@@ -132,63 +132,68 @@ class Shape {
 const collisons = () => {
   for (let k = 0; k < ObjArray.length; k++) {
     const shape1 = ObjArray[k];
-    for (let i = k+1; i < ObjArray.length; i++) {
+    for (let i = k; i < ObjArray.length; i++) {
       const shape2 = ObjArray[i];
       const dist = twoPointDistance(shape1.pCurr, shape2.pCurr);
 
-      if ((shape2.radius + shape1.radius > dist) && shape1 != shape2) {
+      if (((shape2.radius + shape1.radius) > dist) && shape1 != shape2) {
         const rSum = shape1.radius + shape2.radius;
-        const dif = twoPointXYDif(shape1.pCurr, shape2.pCurr);
         const angle = twoPointAngle(shape1.pCurr, shape2.pCurr);
-        const angle2 = twoPointAngle(shape2.pCurr, shape1.pCurr);
+        const overLap = (shape1.radius + shape2.radius) - dist;
 
-        const overLap = (shape1.radius + shape2.radius)/2 - dist;
+        drawLine(shape1.pCurr.x, shape1.pCurr.y, shape1.pCurr.x + Math.cos(angle) * dist, shape1.pCurr.y + Math.sin(angle) * dist, "pink", 2);
+        drawLine(shape1.pCurr.x, shape1.pCurr.y, shape1.pCurr.y - Math.cos(angle) * (overLap / 2 + 10), shape1.pCurr.x - Math.sin(angle) * (overLap / 2 + 10), "blue", 1)
 
         console.log("---")
         console.log("over: " + overLap + ', ' + overLap);
         console.log("dist: " + dist);
         console.log("sum radii:  " + (shape1.radius + shape2.radius));
-        
 
-        /*
-        const vx = shape1.pCurr.x - shape1.pOld.x;
-        const vy = shape1.pCurr.y - shape1.pOld.y;
-        const vx2 = shape2.pCurr.x - shape2.pOld.x;
-        const vy2 = shape2.pCurr.y - shape2.pOld.y;
+        for (let i = 0; i < 5; i++) {
+          const vx = shape1.pCurr.x - shape1.pOld.x;
+          const vy = shape1.pCurr.y - shape1.pOld.y;
+          const vx2 = shape2.pCurr.x - shape2.pOld.x;
+          const vy2 = shape2.pCurr.y - shape2.pOld.y;
 
-        const vx2A = (2*shape1.mass*vx)/(shape1.mass+shape2.mass)+((shape2.mass-shape1.mass)/(shape1.mass+shape2.mass))*vx2;
-        const vy2A = (2*shape1.mass*vy)/(shape1.mass+shape2.mass)+((shape2.mass-shape1.mass)/(shape1.mass+shape2.mass))*vy2;
-        
-        const vxA = vx2 + vx2A - vx;
-        const vyA = vy2 + vy2A - vy; 
-        */
-        shape1.pCurr.y += Math.cos(angle) * (overLap/2)+1;
-        shape1.pCurr.x += Math.sin(angle) * (overLap/2)+1;
-        shape2.pCurr.y -= Math.cos(angle) * (overLap/2)+1;
-        shape2.pCurr.x -= Math.sin(angle) * (overLap/2)+1;
+          const vx2A = (2 * shape1.mass * vx) / (shape1.mass + shape2.mass) + ((shape2.mass - shape1.mass) / (shape1.mass + shape2.mass)) * vx2;
+          const vy2A = (2 * shape1.mass * vy) / (shape1.mass + shape2.mass) + ((shape2.mass - shape1.mass) / (shape1.mass + shape2.mass)) * vy2;
 
-        console.log("s1 y add:  " + overLap/2);
-        console.log("s1 x add:  " + overLap/2);
-        console.log("s2 y add:  " + overLap/2);
-        console.log("s2 x add:  " + overLap/2);
-        shape2.pOld.x = shape2.pCurr.x;
-        shape2.pOld.y = shape2.pCurr.y;
+          const vxA = vx2 + vx2A - vx;
+          const vyA = vy2 + vy2A - vy;
 
-        shape1.pOld.x = shape1.pCurr.x;
-        shape1.pOld.y = shape1.pCurr.y;
+          shape2.pOld.x = shape2.pCurr.x;
+          shape2.pOld.y = shape2.pCurr.y;
 
-        shape1.draw("red");
-        shape2.draw("green");
-        console.log("---");
+          shape1.pOld.x = shape1.pCurr.x;
+          shape1.pOld.y = shape1.pCurr.y;
 
-        /*
-        shape2.pOld.x = shape2.pCurr.x - vx2A;
-        shape2.pOld.y = shape2.pCurr.y - vy2A;
+          const cos = Math.abs(Math.cos(angle) * (overLap / 2));
+          const sin = Math.abs(Math.sin(angle) * (overLap / 2));
+          console.log("cos: " + cos + ", sin: " + sin);
+          shape1.pCurr.y += cos;
+          shape1.pCurr.x += sin;
+          shape2.pCurr.y -= cos;
+          shape2.pCurr.x -= sin;
 
-        shape1.pOld.x = shape1.pCurr.x - vxA;
-        shape1.pOld.y = shape1.pCurr.y - vyA;
-        */
+          console.log("s1 y add:  " + (Math.sin(angle) * (overLap / 2)));
+          console.log("s1 x add:  " + (Math.cos(angle) * (overLap / 2)));
+          console.log("s2 y add:  " + (Math.sin(angle) * (overLap / 2)));
+          console.log("s2 x add:  " + (Math.cos(angle) * (overLap / 2)));
+
+
+          shape1.draw("red");
+          shape2.draw("green");
+          console.log("---");
+
+
+          shape2.pOld.x = shape2.pCurr.x - vx2A;
+          shape2.pOld.y = shape2.pCurr.y - vy2A;
+
+          shape1.pOld.x = shape1.pCurr.x - vxA;
+          shape1.pOld.y = shape1.pCurr.y - vyA;
+        }
         //return true;
+        animateStart = false;
       }
     }
   }
@@ -220,9 +225,9 @@ registerOnKeyDown((k) => {
     drawFilledRect(0, 0, width, height, Theme.background);
     ObjArray = [];
     animateStart = false;
-    
+
   }
-  else if (k === "e"){
+  else if (k === "e") {
     stopSpawn = !stopSpawn;
   }
 })
@@ -231,26 +236,28 @@ let next = 0;
 let nextSpawn = 0;
 let spawnSpeed = 100;
 let countFrame = 0;
-let justcollied =false;
+let justcollied = false;
 
-ObjArray.push(new Shape(10, twoPointXYDif({x : 0, y : 0}, {x : 0, y : 0}), 20, height/2, "cirlce"));
-ObjArray.push(new Shape(20, twoPointXYDif({x : 0, y : 0}, {x : 0, y : 0}), 49, height/2, "cirlce"));
+//ObjArray.push(new Shape(10, twoPointXYDif({x : 0, y : 0}, {x : 0, y : 0}), 20, height/2, "cirlce"));
+//ObjArray.push(new Shape(20, twoPointXYDif({x : 0, y : 0}, {x : 0, y : 0}), 49, height/2, "cirlce"));
 
 
 const nextFrame = (time) => {
   if (time > next && animateStart) {
+
     clear();
     drawFilledRect(0, 0, width, height, Theme.background)
+
 
     for (const element of ObjArray) {
       element.update();
 
-      for(let i = 0; i<5; i++){
-        collisons();
-      }
-      
-      
+
+
       element.draw("white");
+    }
+    for (let i = 0; i < 5; i++) {
+      collisons();
     }
     next += msecPerFrame;
     countFrame++;
