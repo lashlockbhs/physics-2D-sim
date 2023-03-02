@@ -69,7 +69,7 @@ let animateStart = false
 let stopSpawn = true;
 const msecPerFrame = 10
 
-const grav = 0; //grav toward ground
+const grav = 1.5; //grav toward ground
 const f = 0.50; //multiplied by vel to mimick friction
 
 class Shape {
@@ -138,18 +138,17 @@ const collisons = () => {
 
       if (((shape2.radius + shape1.radius) > dist) && shape1 != shape2) {
         const rSum = shape1.radius + shape2.radius;
-        const angle = twoPointAngle(shape1.pCurr, shape2.pCurr);
+        const angle = Math.abs(twoPointAngle(shape1.pCurr, shape2.pCurr)) !== twoPointAngle(shape1.pCurr, shape2.pCurr) ? twoPointAngle(shape1.pCurr, shape2.pCurr)+Math.PI*2 : twoPointAngle(shape1.pCurr, shape2.pCurr);
         const overLap = (shape1.radius + shape2.radius) - dist;
 
-        drawLine(shape1.pCurr.x, shape1.pCurr.y, shape1.pCurr.x + Math.cos(angle) * dist, shape1.pCurr.y + Math.sin(angle) * dist, "pink", 2);
-        drawLine(shape1.pCurr.x, shape1.pCurr.y, shape1.pCurr.y - Math.cos(angle) * (overLap / 2 + 10), shape1.pCurr.x - Math.sin(angle) * (overLap / 2 + 10), "blue", 1)
+        //drawLine(shape1.pCurr.x, shape1.pCurr.y, shape1.pCurr.x + Math.cos(angle) * dist, shape1.pCurr.y + Math.sin(angle) * dist, "pink", 2);
+        //drawLine(shape1.pCurr.x, shape1.pCurr.y, shape1.pCurr.x - Math.cos(angle) * (overLap / 2 + 10), shape1.pCurr.y - Math.sin(angle) * (overLap / 2 + 10), "blue", 1)
 
         console.log("---")
         console.log("over: " + overLap + ', ' + overLap);
         console.log("dist: " + dist);
         console.log("sum radii:  " + (shape1.radius + shape2.radius));
-
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 1; i++) {
           const vx = shape1.pCurr.x - shape1.pOld.x;
           const vy = shape1.pCurr.y - shape1.pOld.y;
           const vx2 = shape2.pCurr.x - shape2.pOld.x;
@@ -166,14 +165,15 @@ const collisons = () => {
 
           shape1.pOld.x = shape1.pCurr.x;
           shape1.pOld.y = shape1.pCurr.y;
+          console.log(angle)
+          const cos = Math.cos(angle) * (overLap / 2+2);
+          const sin = Math.sin(angle) * (overLap / 2+2);
 
-          const cos = Math.abs(Math.cos(angle) * (overLap / 2));
-          const sin = Math.abs(Math.sin(angle) * (overLap / 2));
           console.log("cos: " + cos + ", sin: " + sin);
-          shape1.pCurr.y += cos;
-          shape1.pCurr.x += sin;
-          shape2.pCurr.y -= cos;
-          shape2.pCurr.x -= sin;
+          shape1.pCurr.y -= sin;
+          shape1.pCurr.x -= cos;
+          shape2.pCurr.y += sin;
+          shape2.pCurr.x += cos;
 
           console.log("s1 y add:  " + (Math.sin(angle) * (overLap / 2)));
           console.log("s1 x add:  " + (Math.cos(angle) * (overLap / 2)));
@@ -181,8 +181,8 @@ const collisons = () => {
           console.log("s2 x add:  " + (Math.cos(angle) * (overLap / 2)));
 
 
-          shape1.draw("red");
-          shape2.draw("green");
+          //shape1.draw("red");
+          //shape2.draw("green");
           console.log("---");
 
 
@@ -193,7 +193,7 @@ const collisons = () => {
           shape1.pOld.y = shape1.pCurr.y - vyA;
         }
         //return true;
-        animateStart = false;
+        //animateStart = false;
       }
     }
   }
@@ -233,7 +233,7 @@ registerOnKeyDown((k) => {
 })
 
 let next = 0;
-let nextSpawn = 0;
+let nextSpawn = 1000;
 let spawnSpeed = 100;
 let countFrame = 0;
 let justcollied = false;
@@ -249,6 +249,9 @@ const nextFrame = (time) => {
     drawFilledRect(0, 0, width, height, Theme.background)
 
 
+    for (let i = 0; i < 10; i++) {
+      collisons();
+    }
     for (const element of ObjArray) {
       element.update();
 
@@ -256,8 +259,8 @@ const nextFrame = (time) => {
 
       element.draw("white");
     }
-    for (let i = 0; i < 5; i++) {
-      collisons();
+    if (time > nextSpawn && animateStart) {
+      ObjArray.push(new Shape(20, twoPointXYDif({x : width*Math.random(), y : height*Math.random()}, {x : width*Math.random()-Math.random(), y : height*Math.random()-Math.random()}), 49, height/2, "circle"));
     }
     next += msecPerFrame;
     countFrame++;
