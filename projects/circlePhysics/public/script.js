@@ -69,7 +69,7 @@ let animateStart = false
 let stopSpawn = true;
 const msecPerFrame = 10
 
-const grav = 1.5; //grav toward ground
+const grav = 0; //grav toward ground
 const f = 3; //multiplied by vel to mimick friction
 
 class Shape {
@@ -249,7 +249,7 @@ const nextFrame = (time) => {
     drawFilledRect(0, 0, width, height, Theme.background)
 
 
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 1; i++) {
       collisons();
     }
     for (const element of ObjArray) {
