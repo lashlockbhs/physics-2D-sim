@@ -3,8 +3,8 @@ import {
   setCanvas,
   drawFilledCircle,
   clear,
-  //width,
-  //height,
+  width,
+  height,
   animate,
   now,
   registerOnKeyDown,
@@ -35,8 +35,8 @@ import {
 } from './math.js';
 const canvas = document.getElementById('screen');
 
-const width = 500;
-const height = 500;
+//const width = 500;
+//const height = 500;
 
 setCanvas(canvas);
 
@@ -70,7 +70,7 @@ let stopSpawn = true;
 const msecPerFrame = 10
 
 const grav = 1.5; //grav toward ground
-const f = 0.50; //multiplied by vel to mimick friction
+const f = 3; //multiplied by vel to mimick friction
 
 class Shape {
   constructor(radius, push, x, y, name) {
@@ -106,24 +106,24 @@ class Shape {
 
   }
   sides(vx, vy) {
-    const mvx = vx * f;
-    const mvy = vy * f;
+    const mvx = vx;
+    const mvy = vy;
     if (this.pCurr.x + this.radius > width) {
       this.pCurr.x = width - this.radius;
-      this.pOld.x = this.pCurr.x + mvx;
+      this.pOld.x = this.pCurr.x + (mvx-f);
     }
     else if (this.pCurr.x - this.radius < 0) {
       this.pCurr.x = this.radius;
-      this.pOld.x = this.pCurr.x + mvx;
+      this.pOld.x = this.pCurr.x + (mvx+f);
     }
 
     if (this.pCurr.y + this.radius > height) {
       this.pCurr.y = height - this.radius;
-      this.pOld.y = this.pCurr.y + mvy;
+      this.pOld.y = this.pCurr.y + (mvy);
     }
     else if (this.pCurr.y - this.radius < 0) {
       this.pCurr.y = this.radius;
-      this.pOld.y = this.pCurr.y + mvy;
+      this.pOld.y = this.pCurr.y + (mvy);
     }
 
   }
@@ -141,8 +141,8 @@ const collisons = () => {
         const angle = Math.abs(twoPointAngle(shape1.pCurr, shape2.pCurr)) !== twoPointAngle(shape1.pCurr, shape2.pCurr) ? twoPointAngle(shape1.pCurr, shape2.pCurr)+Math.PI*2 : twoPointAngle(shape1.pCurr, shape2.pCurr);
         const overLap = (shape1.radius + shape2.radius) - dist;
 
-        //drawLine(shape1.pCurr.x, shape1.pCurr.y, shape1.pCurr.x + Math.cos(angle) * dist, shape1.pCurr.y + Math.sin(angle) * dist, "pink", 2);
-        //drawLine(shape1.pCurr.x, shape1.pCurr.y, shape1.pCurr.x - Math.cos(angle) * (overLap / 2 + 10), shape1.pCurr.y - Math.sin(angle) * (overLap / 2 + 10), "blue", 1)
+        drawLine(shape1.pCurr.x, shape1.pCurr.y, shape1.pCurr.x + Math.cos(angle) * dist, shape1.pCurr.y + Math.sin(angle) * dist, "pink", 2);
+        drawLine(shape1.pCurr.x, shape1.pCurr.y, shape1.pCurr.x - Math.cos(angle) * (overLap / 2 + 10), shape1.pCurr.y - Math.sin(angle) * (overLap / 2 + 10), "blue", 1)
 
         console.log("---")
         console.log("over: " + overLap + ', ' + overLap);
@@ -181,8 +181,8 @@ const collisons = () => {
           console.log("s2 x add:  " + (Math.cos(angle) * (overLap / 2)));
 
 
-          //shape1.draw("red");
-          //shape2.draw("green");
+          shape1.draw("red");
+          shape2.draw("green");
           console.log("---");
 
 
@@ -233,7 +233,7 @@ registerOnKeyDown((k) => {
 })
 
 let next = 0;
-let nextSpawn = 1000;
+let nextSpawn = 1000000;
 let spawnSpeed = 100;
 let countFrame = 0;
 let justcollied = false;
@@ -249,7 +249,7 @@ const nextFrame = (time) => {
     drawFilledRect(0, 0, width, height, Theme.background)
 
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 8; i++) {
       collisons();
     }
     for (const element of ObjArray) {
