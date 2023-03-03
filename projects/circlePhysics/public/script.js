@@ -69,8 +69,8 @@ let animateStart = false
 let stopSpawn = true;
 const msecPerFrame = 10
 
-const grav = 0; //grav toward ground
-const f = 3; //multiplied by vel to mimick friction
+const grav = 2; //grav toward ground
+const f = 0.5; //multiplied by vel to mimick friction
 
 class Shape {
   constructor(radius, push, x, y, name) {
@@ -110,11 +110,11 @@ class Shape {
     const mvy = vy;
     if (this.pCurr.x + this.radius > width) {
       this.pCurr.x = width - this.radius;
-      this.pOld.x = this.pCurr.x + (mvx-f);
+      this.pOld.x = this.pCurr.x + (mvx - f);
     }
     else if (this.pCurr.x - this.radius < 0) {
       this.pCurr.x = this.radius;
-      this.pOld.x = this.pCurr.x + (mvx+f);
+      this.pOld.x = this.pCurr.x + (mvx + f);
     }
 
     if (this.pCurr.y + this.radius > height) {
@@ -138,7 +138,7 @@ const collisons = () => {
 
       if (((shape2.radius + shape1.radius) > dist) && shape1 != shape2) {
         const rSum = shape1.radius + shape2.radius;
-        const angle = Math.abs(twoPointAngle(shape1.pCurr, shape2.pCurr)) !== twoPointAngle(shape1.pCurr, shape2.pCurr) ? twoPointAngle(shape1.pCurr, shape2.pCurr)+Math.PI*2 : twoPointAngle(shape1.pCurr, shape2.pCurr);
+        const angle = Math.abs(twoPointAngle(shape1.pCurr, shape2.pCurr)) !== twoPointAngle(shape1.pCurr, shape2.pCurr) ? twoPointAngle(shape1.pCurr, shape2.pCurr) + Math.PI * 2 : twoPointAngle(shape1.pCurr, shape2.pCurr);
         const overLap = (shape1.radius + shape2.radius) - dist;
 
         drawLine(shape1.pCurr.x, shape1.pCurr.y, shape1.pCurr.x + Math.cos(angle) * dist, shape1.pCurr.y + Math.sin(angle) * dist, "pink", 2);
@@ -154,11 +154,11 @@ const collisons = () => {
           const vx2 = shape2.pCurr.x - shape2.pOld.x;
           const vy2 = shape2.pCurr.y - shape2.pOld.y;
 
-          const vx2A = (2 * shape1.mass * vx) / (shape1.mass + shape2.mass) + ((shape2.mass - shape1.mass) / (shape1.mass + shape2.mass)) * vx2;
-          const vy2A = (2 * shape1.mass * vy) / (shape1.mass + shape2.mass) + ((shape2.mass - shape1.mass) / (shape1.mass + shape2.mass)) * vy2;
+          const vx2A = ((2 * shape1.mass * vx) / (shape1.mass + shape2.mass) + ((shape2.mass - shape1.mass) / (shape1.mass + shape2.mass)) * vx2)*f;
+          const vy2A = ((2 * shape1.mass * vy) / (shape1.mass + shape2.mass) + ((shape2.mass - shape1.mass) / (shape1.mass + shape2.mass)) * vy2)*f;
 
-          const vxA = vx2 + vx2A - vx;
-          const vyA = vy2 + vy2A - vy;
+          const vxA = (vx2 + vx2A - vx)*f;
+          const vyA = (vy2 + vy2A - vy)*f;
 
           shape2.pOld.x = shape2.pCurr.x;
           shape2.pOld.y = shape2.pCurr.y;
@@ -166,8 +166,8 @@ const collisons = () => {
           shape1.pOld.x = shape1.pCurr.x;
           shape1.pOld.y = shape1.pCurr.y;
           console.log(angle)
-          const cos = Math.cos(angle) * (overLap / 2+2);
-          const sin = Math.sin(angle) * (overLap / 2+2);
+          const cos = Math.cos(angle) * (overLap / 2 + 2);
+          const sin = Math.sin(angle) * (overLap / 2 + 2);
 
           console.log("cos: " + cos + ", sin: " + sin);
           shape1.pCurr.y -= sin;
@@ -224,19 +224,24 @@ registerOnKeyDown((k) => {
     clear();
     drawFilledRect(0, 0, width, height, Theme.background);
     ObjArray = [];
+    amountOfSpawn = 0;
     animateStart = false;
 
   }
   else if (k === "e") {
     stopSpawn = !stopSpawn;
   }
+  else if (k === "p") {
+    amountOfSpawn+=10;
+  }
 })
 
 let next = 0;
-let nextSpawn = 1000000;
+let nextSpawn = 100;
 let spawnSpeed = 100;
 let countFrame = 0;
 let justcollied = false;
+let amountOfSpawn = 20;
 
 //ObjArray.push(new Shape(10, twoPointXYDif({x : 0, y : 0}, {x : 0, y : 0}), 20, height/2, "cirlce"));
 //ObjArray.push(new Shape(20, twoPointXYDif({x : 0, y : 0}, {x : 0, y : 0}), 49, height/2, "cirlce"));
@@ -249,7 +254,7 @@ const nextFrame = (time) => {
     drawFilledRect(0, 0, width, height, Theme.background)
 
 
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < 7; i++) {
       collisons();
     }
     for (const element of ObjArray) {
@@ -259,8 +264,8 @@ const nextFrame = (time) => {
 
       element.draw("white");
     }
-    if (time > nextSpawn && animateStart) {
-      ObjArray.push(new Shape(20, twoPointXYDif({x : width*Math.random(), y : height*Math.random()}, {x : width*Math.random()-Math.random(), y : height*Math.random()-Math.random()}), 49, height/2, "circle"));
+    if (time > nextSpawn && animateStart && ObjArray.length < amountOfSpawn) {
+      ObjArray.push(new Shape(10, twoPointXYDif({ x: width * Math.random(), y: height / 2 }, { x: width * Math.random(), y: height / 2 }), 49, height / 2, "circle"));
     }
     next += msecPerFrame;
     countFrame++;
